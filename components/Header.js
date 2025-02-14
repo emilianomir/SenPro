@@ -1,3 +1,3 @@
 export default function Header() {
-  return <h1>Welcome to My Next.js App!</h1>;
+  return <h1>h</h1>;
 }
