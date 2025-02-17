@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "/components/Header";
 import Form from "/components/Form";
 import "./globals.css";
+import 'bootstrap/dist/css/bootstrap.css';
 import GoogleMap from "../../components/googlemap";
 import GoogleMap2 from "/components/GoogleMap2";
 import Distance from "/components/Distance";

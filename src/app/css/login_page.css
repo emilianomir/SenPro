@@ -1,0 +1,21 @@
+.title {
+    height: 150px;
+}
+
+.title_heading {
+    transform: translate(0%, 50%);
+}
+
+.title_text {
+    font-size: 60px;
+}
+
+.form_content {
+    height: 400px;
+
+}
+
+.body {
+    background-color: #9FA6B2;
+}
+
