@@ -1,9 +1,9 @@
+import { useRouter } from 'next/router';
 
-
-export function SaveInfoButton({name, location}){
+export default function SaveInfoButton({name, location}){
+    const router = useRouter();
     return (
-    
-            <button type = "button" className = "btn btn-primary ">{name}</button>
+        <button type = "button" onClick={()=> router.push(location)} className = "btn btn-primary ">{name}</button>
   
     )
 

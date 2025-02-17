@@ -2,10 +2,10 @@ import RouteButton from "../../../components/route_button";
 
 function WelcomePage(){
     return (
-        <>
+        <div className="bg-secondary">
             <div className = "position-relative">
                 <div className = "position-absolute top-0 end-0">
-                    <button type = "button" className="btn btn-primary fs-3">Login</button> 
+                    <RouteButton name = "Login" location = "/login"/>
                 </div>
 
             </div>
@@ -17,14 +17,14 @@ function WelcomePage(){
                     </div>
                     <div className="col d-flex justify-content-center">
                         <div className="w-25" >
-                            <button type = "button" className="btn btn-primary w-100 fs-3">Register</button>
+                            <RouteButton name = "Register" location = "/signup" />
                         </div>
-                        <RouteButton name ="hi" location = "/" />
+                        
                     </div>
                 </div>
             </div>
 
-        </>
+        </div>
     )
 }
 

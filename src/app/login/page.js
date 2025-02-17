@@ -1,10 +1,9 @@
-import 'bootstrap/dist/css/bootstrap.css';
 import '../css/login_page.css';
-
+import RouteButton from '../../../components/route_button';
 
 function LoginPage(){
     return (
-
+        <div className='bg-secondary full_content'>
             <div className = "container">
                 <div className = "row row-cols-2" >
                     <div className = "col title position-relative">  
@@ -13,7 +12,9 @@ function LoginPage(){
                         </div>
                     </div>
                     <div className = "col position-relative">
-                        <button type= "button" className='btn btn-primary h-25 w-50 position-absolute top-50 start-50 translate-middle-x'>Continue as Guest</button>
+                        <div className='position-absolute top-50 start-50 translate-middle-x'>
+                            <RouteButton name = "Continue as Guest" location = "/start" />
+                        </div>
                     </div>
                 </div>
                 <div className = "container bg-secondary-subtle form_content ms-0">
@@ -41,12 +42,14 @@ function LoginPage(){
                         <h2 className = "mt-5 text-center">New here?</h2>
                         <div className="mt-3 w-100 d-flex justify-content-center">
                             <div className='w-50 d-flex justify-content-center'>
-                                <button type = "button" className='btn btn-primary w-50' >Register</button>
+                                <RouteButton name = "Register" location = "/signup" />
                             </div>
                         </div>
                 </div>
 
             </div>
+        </div>
+
                     
     )
 }
