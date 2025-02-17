@@ -6,7 +6,7 @@ let statement;
 const db = new sqlite3.Database('./main.db', sqlite3.OPEN_READWRITE);
  
 
-/*
+
 statement = `
 CREATE TABLE User (
     Email text,
@@ -16,25 +16,25 @@ CREATE TABLE User (
     PRIMARY KEY (Email)
 );
 `;
-db.run(statement)
+//db.run(statement)
 
 
-db.run("INSERT INTO User VALUES ('u1@gmail.com', 'user1', '****', 'testAddress')");
-db.run("INSERT INTO User VALUES ('u2@gmail.com', 'user2', '*****', 'testAddress1')");
-db.run("INSERT INTO User VALUES ('u3@gmail.com', 'user3', '******', 'testAddress2')");
+//db.run("INSERT INTO User VALUES ('u1@gmail.com', 'user1', '****', 'testAddress')");
+//db.run("INSERT INTO User VALUES ('u2@gmail.com', 'user2', '*****', 'testAddress1')");
+//db.run("INSERT INTO User VALUES ('u3@gmail.com', 'user3', '******', 'testAddress2')");
 
 statement = `SELECT Email FROM User`; 
 
+/*
 db.all(statement, [], (err, rows) => {
 
   rows.forEach((x) => {
     console.log(x);
   })});
+
 */
 
 
-
-/*
 statement =  `
 CREATE Table TestJson (
     id varchar(3),
@@ -43,8 +43,7 @@ CREATE Table TestJson (
 )
 `
 
-db.run(statement);
-*/
+//db.run(statement);
 
 /*
 data.forEach(x => {
@@ -53,12 +52,37 @@ data.forEach(x => {
 });
 */
 
-//
+// This allow you to find array length as well as select specific sections within the json
+statement = `
+SELECT json_extract(data, '$.name') Name, json_array_length(data, '$.tags') Tags
+FROM TestJson
+`;
 
-statement = `SELECT json_extract(data, '$.email', '$.gender') Email FROM TestJson`; 
-
+/*
 db.all(statement, [], (err, rows) => {
 
   rows.forEach((x) => {
     console.log(x);
   })});
+*/
+
+
+
+// Seperating the sections by text removing arrays. Also finding duplicates
+statement = `
+SELECT json_extract (data, A.fullkey) Tags, count(json_extract (data, A.fullkey)) Count
+FROM TestJson JOIN json_tree(data, '$.tags') A ON A.type = 'text'
+GROUP BY Tags
+HAVING Count > 1
+ORDER BY Count DESC
+
+  
+`; 
+  
+  db.all(statement, [], (err, rows) => {
+  
+    rows.forEach((x) => {
+      console.log(x);
+    })});
+
+// Seperating the sections by text removing arrays. Also finding duplicates
