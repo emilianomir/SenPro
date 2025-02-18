@@ -21,8 +21,6 @@ function AddressPage(){
     }
 
     return (
-
-
             <div className="d-flex justify-content-center align-items-center vh-100 bg-secondary">
                 <div className="bg-secondary-subtle main_container">
                     <p className="text-center main_text">Please enter either your physical address or your Zip Code. </p>
