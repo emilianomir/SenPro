@@ -31,7 +31,7 @@ function LoginPage(){
             return;
         }
         else 
-            router.push("/start")
+            router.push("/start?user=" + formData.inputEmail)
     }
 
     return (

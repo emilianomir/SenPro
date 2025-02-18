@@ -37,7 +37,7 @@ function SignUpPage(){
         if (formData.inputPass != formData.confirmPass)
             alert("Passwords are not the same");
         else 
-            router.push("/address");
+            router.push("/address?user=" + formData.inputEmail);
 
         
     }
