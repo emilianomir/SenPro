@@ -1,6 +1,7 @@
 import '../css/login_page.css';
 import RouteButton from '../../../components/route_button';
 
+
 function LoginPage(){
     return (
         <div className='bg-secondary full_content'>

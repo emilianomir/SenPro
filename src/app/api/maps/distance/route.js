@@ -1,6 +1,6 @@
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(req.url); // get the searchParams prop from url
     const origin = searchParams.get("origin");
     const destination = searchParams.get("destination");
 
