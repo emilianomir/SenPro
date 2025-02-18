@@ -76,13 +76,124 @@ GROUP BY Tags
 HAVING Count > 1
 ORDER BY Count DESC
 
-  
+ 
 `; 
-  
+   /*
   db.all(statement, [], (err, rows) => {
   
     rows.forEach((x) => {
       console.log(x);
     })});
+*/
 
 // Seperating the sections by text removing arrays. Also finding duplicates
+
+
+statement = `
+CREATE TABLE Tags (
+    Tag text,
+    ID INTEGER PRIMARY KEY AUTOINCREMENT
+);
+`;
+/*
+db.run(statement);
+*/
+
+// 
+
+statement = `
+SELECT DISTINCT(json_extract (data, A.fullkey)) Tags
+FROM TestJson JOIN json_tree(data, '$.tags') A ON A.type = 'text' 
+`; 
+
+/*
+db.all(statement, [], (err, rows) => {
+
+  rows.forEach((x) => {
+    statement = 'INSERT INTO Tags (Tag) VALUES(?)';
+    db.run(statement, x['Tags'])
+  })});
+*/
+
+statement = `
+SELECT *
+FROM Tags 
+`; 
+
+/*
+db.all(statement, [], (err, rows) => {
+
+  rows.forEach((x) => {
+    console.log(x)
+  })});
+*/
+
+
+
+statement = `
+CREATE TABLE SeperateTags (
+  ID INTEGER,
+  JID varchar(3),
+  PRIMARY KEY (ID, JID),
+  FOREIGN KEY (ID) REFERENCES Tags(ID),
+  FOREIGN KEY (JID) REFERENCES TestJson(id)
+)`;
+/*
+db.run(statement)
+*/
+
+
+statement =`
+SELECT json_extract (data, A.fullkey) ID, json_extract(data, '$._id') JID
+FROM TestJson JOIN json_tree(data, '$.tags') A ON A.type = 'text' 
+`;
+
+/*
+db.all(statement, [], (err, rows) => {
+
+  rows.forEach((x) => {
+    console.log(x);
+  })});
+*/
+
+  statement =`
+  SELECT DISTINCT(json_extract (data, A.fullkey)) ID, TestJson.id
+  FROM (TestJson JOIN json_tree(data, '$.tags') A ON A.type = 'text') 
+  `;
+
+  /*
+  db.all(statement, [], (err, rows) => {
+
+    rows.forEach((x) => {
+      console.log(x);
+    })});
+    */
+
+    statement =`
+    INSERT INTO SeperateTags (ID, JID)
+    SELECT DISTINCT(Tags.id), TestJson.id
+    FROM (TestJson JOIN json_tree(data, '$.tags') A ON A.type = 'text') JOIN Tags ON json_extract (data, A.fullkey) = Tags.Tag
+    `;
+
+    /*
+    db.run(statement);
+    */
+
+    statement =`
+    SELECT *
+    FROM SeperateTags
+    ORDER BY ID ASC
+    `;
+
+    /*
+    db.all(statement, [], (err, rows) => {
+
+      rows.forEach((x) => {
+        console.log(x);
+      })});
+      */
+
+      statement = `
+      
+      
+      `
