@@ -1,8 +1,39 @@
+"use client"
+
 import '../css/login_page.css';
-import RouteButton from '../../../components/route_button';
+import RouteButton from '@/components/route_button';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 
 function LoginPage(){
+    const router = useRouter();
+    const [formData, changeFormData] = useState(
+    {
+        inputEmail: '',
+        inputPass: '',
+    });
+
+    const changeData = (event)=>{
+        const {id, value} = event.target;
+        changeFormData((oldData)=>({
+            ...oldData,
+            [id]: value,
+        }));
+        
+    };
+
+    const submitForm = (event)=>{
+        event.preventDefault();
+
+        if (!formData.inputEmail || !formData.inputPass){
+            alert("Please fill out all fields");
+            return;
+        }
+        else 
+            router.push("/start")
+    }
+
     return (
         <div className='bg-secondary full_content'>
             <div className = "container">
@@ -19,17 +50,17 @@ function LoginPage(){
                     </div>
                 </div>
                 <div className = "container bg-secondary-subtle form_content ms-0">
-                    <form>
+                    <form onSubmit={submitForm}>
 
                         <div className="mb-3">
                             <label htmlFor="inputEmail" className="form-label fs-3 mt-3">Username: </label>
-                            <input type="email" placeholder="Enter your username" className="form-control" id="inputEmail" aria-describedby="emailHelp" />
+                            <input type="email" value = {formData.inputEmail} onChange={changeData} placeholder="Enter your username" className="form-control" id="inputEmail" aria-describedby="emailHelp" />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="inputPass" className="form-label fs-3 ">Password: </label>
                             <div className = "row row-cols-2">
                                 <div className="col-11">
-                                    <input type="password" placeholder="Enter your password" className="form-control" id="inputPass" />
+                                    <input type="password" value = {formData.inputPass} onChange={changeData} placeholder="Enter your password" className="form-control" id="inputPass" />
                                 </div>
                                 <div className="col-1">
                                     <div className="w-100 p-0">

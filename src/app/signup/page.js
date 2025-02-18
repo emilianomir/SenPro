@@ -1,10 +1,10 @@
 "use client"
 
 import "../css/sign_up_page.css"
-import RouteButton from "../../../components/route_button";
+import RouteButton from "@/components/route_button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { userAgent } from "next/server";
+
 
 
 function SignUpPage(){
@@ -14,7 +14,7 @@ function SignUpPage(){
         inputEmail: '',
         inputPass: '',
         confirmPass: ''
-    })
+    });
 
     const changeData = (event)=>{
         const {id, value} = event.target;

@@ -1,4 +1,4 @@
-import RouteButton from "../../../components/route_button";
+import RouteButton from "@/components/route_button";
 
 function WelcomePage(){
     return (
