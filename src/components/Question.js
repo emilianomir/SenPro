@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Question({theQuestion, current, func}){
     const [valueSelect, valueSelected] = useState('');
     const [destSelect, changeDes] = useState('');
     const [mapKey, setKey] = useState(current);
     const ques = theQuestion.get(mapKey);
-
+    const [response, addResponse] = useState([]);
+    const [finished, setFinished] = useState(false);
 
     function changeValue(theEvent){
         const selectOptionDest = theEvent.target.selectedOptions[0].getAttribute("data-destination");  //gets the first select value (in this case, are only selected) then find the value of "data-other" 
@@ -15,12 +16,22 @@ function Question({theQuestion, current, func}){
     }
 
     function destValue(theEvent){
+        addResponse([...response, valueSelect]);
         setKey(destSelect);
         theEvent.preventDefault();
         valueSelected('');
-        if (destSelect == "End")
-            func();
+        if (destSelect == "End") {
+            setFinished(true);
+        }
+
     }
+
+    useEffect(() => {
+        if (finished && destSelect === "End") {
+            func();
+            setFinished(false); 
+        }
+      }, [response, destSelect, finished]);
 
     return (
     <div className = "container">
