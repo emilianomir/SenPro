@@ -2,28 +2,25 @@ import { useEffect, useRef } from "react";
 import Script from "next/script";
 
 export default function GoogleMap2() {
-  const mapRef = useRef(); // preserve the stuff inside box
-  const dataRef = useRef();
+  const mapRef = useRef();
 
   async function loadMap() {
-    const { Map } = await window.google.maps.importLibrary("maps"); // create usable Map from namespace google.maps
+    const { Map } = await window.google.maps.importLibrary("maps");
     try {
-      // get the current map, and then give it initial settinsg, this is the working map REF
       const myMap = new Map(mapRef.current, {
-        center: { lat: 26.304225, lng: -98.163751 }, // the settings
-        zoom: 8, // more settings , can add more
+        center: { lat: 26.304225, lng: -98.163751 },
+        zoom: 8,
       });
+
+      // places api dependencies
       var request = {
-        //im requesting this from the the api
         location: myMap.getCenter(),
         query: "restaurants near me",
         fields: ["name", "geometry", "place_id"],
       };
-      var placesService = new google.maps.places.PlacesService(myMap); // store the PLACE ID from the given myMap
+      var placesService = new google.maps.places.PlacesService(myMap);
 
-      // with the id, search for the ids and
       placesService.textSearch(request, (results, status) => {
-        // results comes from Google, results is each obj == place
         if (status == google.maps.places.PlacesServiceStatus.OK) {
           results.forEach((place) => {
             new google.maps.Marker({

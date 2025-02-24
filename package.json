@@ -9,13 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "better-sqlite3": "^11.8.1",
     "bootstrap": "^5.3.3",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.3",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "drizzle-kit": "^0.30.4",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
