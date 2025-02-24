@@ -38,7 +38,7 @@ export default function ServiceInfo(){
                             <div className="fs-3 text-center pt-3">{userServices.name}</div>
                             <div className="row row-cols-2 mt-4">
                                 <div className="col-5">
-                                    <img src = {userServices.image}/>
+                                    <img className = "service_images w-100" src = {userServices.image}/>
                                 </div>
                                 <div className="col-7 row row-cols-1 mt-5">
                                     <div className="col text-center">
