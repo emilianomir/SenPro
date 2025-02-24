@@ -1,9 +1,11 @@
-"use client";
+"use client"
+
 
 import "../css/sign_up_page.css";
 import RouteButton from "@/components/route_button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { addUser, testExistingUser} from "/workspaces/SenPro/src/components/DBactions.js";
 
 function SignUpPage() {
   const router = useRouter();
@@ -13,54 +15,64 @@ function SignUpPage() {
     confirmPass: "",
   });
 
-  const changeData = (event) => {
-    const { id, value } = event.target;
-    changeFormData((oldData) => ({
-      ...oldData,
-      [id]: value,
-    }));
-  };
-
-  const submitForm = (event) => {
-    event.preventDefault();
-    if (!formData.inputEmail || !formData.inputPass || !formData.confirmPass) {
-      alert("Please fill out all fields");
-      return;
+    const changeData = (event)=>{
+        const {id, value} = event.target;
+        changeFormData((oldData)=>({
+            ...oldData,
+            [id]: value,
+        }));
+        
     }
 
-    //enter logic here for database searching of existing user
+    const submitForm = (event)=> {
+        event.preventDefault();
+        if (!formData.inputEmail || !formData.inputPass || !formData.confirmPass){
+            alert("Please fill out all fields");
+            return;
+        }
+        if (formData.inputPass != formData.confirmPass){
+            alert("Passwords are not the same");
+            return;
+        }
 
-    if (formData.inputPass != formData.confirmPass)
-      alert("Passwords are not the same");
-    else router.push("/address?user=" + formData.inputEmail);
-  };
+        //enter logic here for database searching of existing user
+        testExistingUser(formData.inputEmail).then((data) =>
+            {
+                if(data){
+                    alert("Email Already in use");
+                    return;
+                }
+                else 
+                {
+                    // getting username from email (username should be later provided)
+                    let userName;
+                    let other;
+                    [userName, other] = formData.inputEmail.split('@');
+                    userName = userName.toUpperCase();
+                    addUser(formData.inputEmail, userName, formData.inputPass);
+                    
+                    router.push("/address?user=" + formData.inputEmail);
+                }
+            }) 
 
-  return (
-    <div className="fullPage bg-secondary">
-      <div className="container">
-        <div className="row row-col-1 mb-5">
-          <div className="col title position-relative">
-            <div className="position-absolute title_heading">
-              <h1 className="text-white title_text">Sign In</h1>
-            </div>
-          </div>
-        </div>
-        <div className="container bg-secondary-subtle ms-0 mt-5 sign_form_content">
-          <form onSubmit={submitForm}>
-            <div className="mb-3">
-              <label htmlFor="inputEmail" className="form-label fs-3 mt-3">
-                Username:{" "}
-              </label>
-              <input
-                value={formData.inputEmail}
-                onChange={changeData}
-                type="email"
-                placeholder="Enter your username"
-                className="form-control"
-                id="inputEmail"
-                aria-describedby="emailHelp"
-              />
-            </div>
+    }
+    
+    return (
+        <div className="fullPage bg-secondary">
+            <div className = "container">
+                <div className = "row row-col-1 mb-5" >
+                    <div className = "col title position-relative">  
+                        <div className="position-absolute title_heading">
+                            <h1 className = "text-white title_text">Sign In</h1>
+                        </div>
+                    </div>
+                </div>
+                <div className = "container bg-secondary-subtle ms-0 mt-5 sign_form_content">
+                    <form onSubmit={submitForm}>
+                        <div className="mb-3">
+                            <label htmlFor="inputEmail" className="form-label fs-3 mt-3">Username: </label>
+                            <input value={formData.inputEmail} onChange={changeData} type="email" placeholder="Enter your username" className="form-control" id="inputEmail" aria-describedby="emailHelp" />
+                        </div>
 
             <div className="mb-3">
               <label htmlFor="inputPass" className="form-label fs-3 ">
