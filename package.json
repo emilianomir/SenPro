@@ -11,10 +11,6 @@
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",
-<<<<<<< HEAD
-    "better-sqlite3": "^11.8.1",
-=======
->>>>>>> origin/main
     "bootstrap": "^5.3.3",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",

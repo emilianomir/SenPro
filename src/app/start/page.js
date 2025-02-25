@@ -64,7 +64,9 @@ function StartPage() {
                   min="0"
                   max="5"
                   value={numPlacesWant}
-                  onChange={(e) => setNumPlacesWant(parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setNumPlacesWant(Number(e.target.value) || 0)
+                  }
                 />
               </div>
               <div className="col">
