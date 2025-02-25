@@ -3,7 +3,7 @@ import { users } from "../db/schema/users.js";
 import { eq, and } from "drizzle-orm";
 
 
-// testing for existing emails
+// testing for existing emails in singup
 export async function testExistingUser(email){
    const data = await db.select().from(users).where(eq(users.email, email));
    if(data.length === 0)
@@ -41,3 +41,4 @@ export async function checkLogin(email, password){
      return true
     }
  }
+}
