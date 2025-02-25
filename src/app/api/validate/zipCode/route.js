@@ -68,7 +68,6 @@ export async function POST(req) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            console.log(data);
             let result;
             if (data.result.verdict.validationGranularity == "PREMISE" || data.result.verdict.validationGranularity == "SUB_PREMISE") {
                 result = true;

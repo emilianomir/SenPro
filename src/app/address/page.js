@@ -42,7 +42,6 @@ function AddressPage(){
                 }
             
                 const returnData = await response.json();
-                console.log(returnData);
                 if (!returnData.isValid) {
                     if (selectType == "zipCode")
                         alert("Enter a valid ZIP Code");

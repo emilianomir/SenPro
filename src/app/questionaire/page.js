@@ -1,6 +1,6 @@
 "use client"
 import "../css/question_page.css"
-import Question from "@/components/Question"
+import Question from "@/components/Question";
 import { useRouter } from "next/navigation";
 
 
@@ -46,7 +46,7 @@ function Questionaire({index = 1}){
             <div className="container mt-4 mb-5">
                 <div>
                     <div className="mb-4">
-                        <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext()}/>
+                        <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext}/>
                     </div>
                 </div>
                 <div className="text-center">
