@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 
-
 export default function SaveInfoButton({name, location}){
     const router = useRouter();
     return (

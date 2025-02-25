@@ -1,9 +1,9 @@
 "use client"
-
 import "../css/sign_up_page.css"
 import RouteButton from "@/components/route_button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { addUser, testExistingUser} from "/workspaces/SenPro/src/components/DBactions.js";
 
 
 
@@ -31,15 +31,31 @@ function SignUpPage(){
             alert("Please fill out all fields");
             return;
         }
+        if (formData.inputPass != formData.confirmPass){
+            alert("Passwords are not the same");
+            return;
+        }
 
         //enter logic here for database searching of existing user
+        testExistingUser(formData.inputEmail).then((data) =>
+            {
+                if(data){
+                    alert("Email Already in use");
+                    return;
+                }
+                else 
+                {
+                    // getting username from email (username should be later provided)
+                    let userName;
+                    let other;
+                    [userName, other] = formData.inputEmail.split('@');
+                    userName = userName.toUpperCase();
+                    addUser(formData.inputEmail, userName, formData.inputPass);
+                    
+                    router.push("/address?user=" + formData.inputEmail);
+                }
+            }) 
 
-        if (formData.inputPass != formData.confirmPass)
-            alert("Passwords are not the same");
-        else 
-            router.push("/address?user=" + formData.inputEmail);
-
-        
     }
     
     return (
