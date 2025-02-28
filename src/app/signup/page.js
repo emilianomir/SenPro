@@ -3,7 +3,8 @@ import "../css/sign_up_page.css"
 import RouteButton from "@/components/route_button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addUser, testExistingUser} from "/workspaces/SenPro/src/components/DBactions.js";
+// import { addUser, testExistingUser} from "/workspaces/SenPro/src/components/DBactions.js";
+import { addUser, testExistingUser } from "@/components/DBactions";
 
 
 
