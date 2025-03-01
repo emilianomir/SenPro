@@ -16,7 +16,7 @@ function Questionaire({index = 1}){
     questionsList.set("Begin",        
         { 
         question: ["What do you want to do?", 0], 
-        answer: [["Food and Drink", "FoodDrink"], ["Arts", "FoodQ"], ["Entertainment", "End"], ["Sports", "End"], ["Shopping", "End"] ]}
+        answer: [["Food and Drink", "FoodDrink"], ["Arts", "End"], ["Entertainment", "End"], ["Sports", "End"], ["Shopping", "End"] ]}
     );
     questionsList.set("FoodDrink",{
         question: ["What type would you like?", 1],
