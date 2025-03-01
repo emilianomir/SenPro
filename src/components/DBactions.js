@@ -1,9 +1,9 @@
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 
-// testing for existing emails
+// testing for existing emails in singup
 export async function testExistingUser(email){
    const data = await db.select().from(users).where(eq(users.email, email));
    if(data.length === 0)
@@ -26,4 +26,19 @@ export async function addUser (email, username, password, address = '', type = '
         address: address,
         type: type,
     })
+}
+
+
+// Checking Login
+export async function checkLogin(email, password){
+    const data = await db.select().from(users).where(and(eq(users.email, email), eq(users.password, password)));
+    if(data.length === 0)
+    {
+     return false
+    }
+    else
+    {
+     return true
+    }
+ }
 }

@@ -1,9 +1,11 @@
 "use client"
 
+import { checkLogin } from '@/components/DBactions';
 import '../css/login_page.css';
 import RouteButton from '@/components/route_button';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
 
 
 function LoginPage(){
@@ -30,8 +32,19 @@ function LoginPage(){
             alert("Please fill out all fields");
             return;
         }
-        else 
-            router.push("/start?user=" + formData.inputEmail)
+
+        // Checking Login Credentials 
+         checkLogin(formData.inputEmail, formData.inputPass).then((data) =>
+                    {
+                        if(!data){
+                            alert("Invalid email or pass");
+                            return;
+                        }
+                        else 
+                        {   
+                            router.push("/start?user=" + formData.inputEmail)
+                        }
+                    }) 
     }
 
     return (
