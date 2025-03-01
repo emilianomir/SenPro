@@ -1,9 +1,11 @@
 "use client"
 import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 function StartPage(){
     const searchParams = useSearchParams();
     const search = searchParams.get('user');
+    const router = useRouter();
     let userName;
     let other;
     if (!search)
@@ -14,6 +16,8 @@ function StartPage(){
 
     const formSubmit = (event)=>{
         event.preventDefault();
+        router.push("/questionaire")
+
     }
 
     return (
