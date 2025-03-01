@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 function AddressPage(){
     const router = useRouter();
     const [theInput, setInput] = useState('');
+    const [selectType, setSelect] = useState('');
     const searchParams = useSearchParams();
     const search = searchParams.get('user');
     let userName;
@@ -21,16 +22,44 @@ function AddressPage(){
 
     const handleChange = (event)=>{
         setInput(event.target.value);
-    }
+    };
 
-    const formCheck = (event) =>{
+    const formCheck = async (event) => {
         event.preventDefault();
-        if (theInput && theInput.length >= 5)
-            router.push("/start?user=" + search);
-        else 
-            alert("Input must be at least five characters")
+        if (selectType == '')
+            alert("Select an option");
+        else {
+            try {
+                console.log("formCheck function called");
+                const response = await fetch('/api/validate/zipCode', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userInput: theInput, userSelection: selectType }),
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+            
+                const returnData = await response.json();
+                if (!returnData.isValid) {
+                    if (selectType == "zipCode")
+                        alert("Enter a valid ZIP Code");
+                    else if (selectType == "address")
+                        alert("Enter a valid address");
+                }
+                else {
+                    router.push("/start");
+                }
+        
+            } catch (error) {
+                console.error("Error fetching API:", error);
+                alert("There was an issue validating the input.");
+            }
+        }
+    
 
-    }
+    };
 
     return (
         <>
@@ -46,12 +75,19 @@ function AddressPage(){
                     <div className=" ms-5 mt-5">
                         <form onSubmit={formCheck}>
                             <label htmlFor="addressInput" className="form-label fs-3">Address/ZipCode</label>
-                            <div className = "row row-cols-2">
-                                <div className="col-11">
+                            <div className = "row row-cols-3 m-0 p-0">
+                                <div className="col-8">
                                     <input id = "addressInput" value ={theInput} className="form-control" onChange={handleChange} type = "text" placeholder="Enter your address here"/>
                                 </div>
+                                <div className="col-2">
+                                    <select value={selectType} className="form-select w-100" onChange={(event)=>setSelect(event.target.value)}>
+                                        <option value = "" disabled>Select your type</option>
+                                        <option value = "zipCode">Zip Code</option>
+                                        <option value="address">Address</option>
+                                    </select>
+                                </div>
                                 <div className="col-1">
-                                    <button type = "submit" className="btn btn-primary">Enter</button>
+                                    <button type = "submit" className="btn btn-primary w-100">Enter</button>
                                 </div>
                             </div>
 

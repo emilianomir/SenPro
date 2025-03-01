@@ -3,6 +3,7 @@ import { db } from "./index.js";
 import { users } from "./schema/users.js";
 import { eq } from "drizzle-orm";
 import { addUser, testExistingUser} from "/workspaces/SenPro/src/components/DBactions.js";
+// import { addUser, testExistingUser } from "@/components/DBactions.js";
 
 /*
 return db.insert( users ).values({
