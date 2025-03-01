@@ -1,68 +1,81 @@
-class Responses{
-    constructor(){
-        this.category = null;
-        this.types = null;
-        this.priceLevel = null;
-        this.rating = null;
-    }
-}
-
 
 export async function POST(req){
     console.log("I ran!");
-    const theTest = new Responses();
-    theTest.category = "Mexican food";
-    theTest.types = ["fast_food_restaurant"];
-    theTest.priceLevel = ["PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE"];
-    theTest.rating = 3.5;
-    const address = "1310 N Texas Blvd, Weslaco, TX 78599";
+    const {userResponses} = await req.json();
+    if (userResponses)
+        console.log("User response in PLACES API call: " + userResponses);
+    else 
+        console.log("Value is null. ABORT!!!")
 
-     
-    const api_key = process.env.GOOGLE_API_KEY;
-    const url = "https://places.googleapis.com/v1/places:searchText"
+    try {
+        const address = "Weslaco, TX 78599";
+        const api_key = process.env.GOOGLE_API_KEY;
+        const url = "https://places.googleapis.com/v1/places:searchText"
 
-    const textBody = {
-        textQuery: `${theTest.category} near ${address}`,
-        openNow: true,
-        regionCode: "US",
-        languageCode: "en",
-        pageSize: 10,
-        rankPreference: "DISTANCE"
+        const textBody = {
+            textQuery: userResponses.category ?  `${userResponses.category} ${userResponses.types} near ${address}`: `${userResponses.main_category} near ${address}`,
+            openNow: true,
+            regionCode: "US",
+            languageCode: "en",
+            pageSize: 10,
+            rankPreference: "DISTANCE"
+        }
+        userResponses.rating ? textBody.minRating = userResponses.rating : null;
+        userResponses.priceLevel ? textBody.priceLevels = [userResponses.priceLevel]: null;
+        if (userResponses.types){
+            textBody.includedType = userResponses.types;
+            textBody.strictTypeFiltering = true;
+        }
+    
+
+        const headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": api_key,
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.priceRange"
+        };
+        
+        const response = await fetch(url, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(textBody)
+
+        });
+        if (!response.ok) {
+            const errorText = await response.text(); // Read error message
+            console.log("Error:", response.status, errorText);
+        } 
+        const data = await response.json();
+        await Promise.all(data.places.map(async (eachService) =>{
+            if (eachService.photos){
+                const image_url = `https://places.googleapis.com/v1/${eachService.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
+                const image_response = await fetch(image_url, {
+                    method: "GET",
+                    headers: {"Content-Type": "application/json"}
+                });
+                const theImage = image_response.url;
+                if (theImage){
+                    eachService.photo_image = theImage;
+                }
+                else 
+                    eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
+            }
+            else {
+                eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
+            }
+        }));
+
+        return new Response(JSON.stringify({ services_result: data.places}), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+        });
+
+    }catch (error) {
+        return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
     }
-    textBody.minRating = theTest.rating;
-    textBody.priceLevels = theTest.priceLevel;
-    textBody.includedType = theTest.types[0];
-    textBody.strictTypeFiltering = true;
 
-    const headers = {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": api_key,
-        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating"
-    };
-    
-    // const response = await fetch(url, {
-    //     method: "POST",
-    //     headers: headers,
-    //     body: JSON.stringify(textBody)
-
-    // });
-    // if (!response.ok) {
-    //     const errorText = await response.text(); // Read error message
-    //     console.log("Error:", response.status, errorText);
-    // } else {
-    //     const data = await response.json();
-    //     for (let i of data.places){
-    //         console.log("Address: " + i.formattedAddress);
-    //         console.log("Rating: " + i.rating);
-    //         console.log("Display Name: " + i.displayName.text)
-    //     }
-    // }
-
-    
-    return new Response(JSON.stringify({ message: "API is working!"}), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-    });
 }
 
 

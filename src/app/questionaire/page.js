@@ -20,7 +20,7 @@ function Questionaire({index = 1}){
     );
     questionsList.set("FoodDrink",{
         question: ["What type would you like?", 1],
-        answer: [["Bar", "Price"], ["Restaruant", "Rest"], ["Cafe", "Price"]]
+        answer: [["Bar", "Price"], ["Restaurant", "Rest"], ["Cafe", "Price"]]
     });
     questionsList.set("Price", {
         question: ["What is the average price range?", 3],
@@ -35,15 +35,15 @@ function Questionaire({index = 1}){
         answer: [["Cinemark", "End"], ["AMC", "End"], ["No Preference", "End"]]}
     );
     questionsList.set("Rest", {
-        question: ["What experience would you like?", 1 ], 
-        answer: [["Fast_Food", "FoodTQ"], ["Dining", "FoodTQ"], ["No Preference", "FoodTQ"]]}
+        question: ["What experience would you like?", 2 ], 
+        answer: [["Fast Food", "FoodTQ"], ["Dining", "FoodTQ"], ["Fine Dining", "FoodTQ"], ["No Preference", "FoodTQ"]]}
     );
     questionsList.set("FoodTQ", {
-        question: ["What food would you like?", 2], 
+        question: ["What food would you like?", 1], 
         answer: [["Asian", "Price"], ["Indian", "Price"], ["Mexican", "Price"], ["Italian", "Price"]]}
     );
     questionsList.set("End",{
-        question: ["Thats all folks!", 6],
+        question: ["Loading", 6],
         answer: [] }
     );
 

@@ -5,3 +5,8 @@
 .imageAdjust {
     max-height: 286px;
 }
+
+.fixHeight{
+    min-height: 200px;
+    max-height: 200px;
+}

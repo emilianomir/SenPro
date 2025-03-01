@@ -42,7 +42,7 @@ function Question({theQuestion, current, func}){
                 theTest.category = valueSelect;
                 break;
             case 3:
-                valueSelect === "No Preference" ? null: theTest.priceLevel = valueSelect;
+                valueSelect === "No Preference" ? null: theTest.priceLevel = "PRICE_LEVEL_"+ valueSelect.toUpperCase();
                 break;
             case 4: 
                 const theNumber = valueSelect.split(/[+-]/);
@@ -54,20 +54,20 @@ function Question({theQuestion, current, func}){
                 break;
         }
         changeTest(theTest);
+        console.log("theTest in Question component: ")
         console.log(theTest);
         setKey(destSelect);
         theEvent.preventDefault();
         valueSelected('');
         if (destSelect == "End") {
-            setFinished(true);
             setResponses(theTest);
+            setFinished(true);
         }
 
     }
 
     useEffect(() => {
         if (finished && destSelect === "End") {
-
             func();
             setFinished(false); 
         }
