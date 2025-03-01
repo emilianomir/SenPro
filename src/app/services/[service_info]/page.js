@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 
 export default function ServiceInfo(){
-    const [userServices, changeService] = useAppContext();
+    const {userServices, changeService} = useAppContext();
     const router = useRouter();
 
     const handleBack = ()=>{

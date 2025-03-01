@@ -1,12 +1,27 @@
 import { useState, useEffect } from "react";
+import { useAppContext } from "@/context";
+
+
+class Responses{
+    constructor(){
+        this.main_category = null;
+        this.types = null;
+        this.category = null;
+        this.priceLevel = null;
+        this.rating = null;
+        this.name = null;
+    }
+}
+
 
 function Question({theQuestion, current, func}){
+    const {setResponses} = useAppContext();
     const [valueSelect, valueSelected] = useState('');
     const [destSelect, changeDes] = useState('');
     const [mapKey, setKey] = useState(current);
     const ques = theQuestion.get(mapKey);
-    const [response, addResponse] = useState([]);
     const [finished, setFinished] = useState(false);
+    const [theTest, changeTest] = useState(new Responses());
 
     function changeValue(theEvent){
         const selectOptionDest = theEvent.target.selectedOptions[0].getAttribute("data-destination");  //gets the first select value (in this case, are only selected) then find the value of "data-other" 
@@ -16,27 +31,52 @@ function Question({theQuestion, current, func}){
     }
 
     function destValue(theEvent){
-        addResponse([...response, valueSelect]);
+        switch (ques.question[1]){
+            case 0:
+                theTest.main_category = valueSelect;
+                break;
+            case 1:
+                theTest.types ? theTest.types =`${valueSelect.toLowerCase()}_${theTest.types}`: theTest.types = valueSelect.toLowerCase();
+                break;
+            case 2:
+                theTest.category = valueSelect;
+                break;
+            case 3:
+                valueSelect === "No Preference" ? null: theTest.priceLevel = valueSelect;
+                break;
+            case 4: 
+                const theNumber = valueSelect.split(/[+-]/);
+                console.log(theNumber);
+                valueSelect === "No Preference" ? null: theTest.rating = Number(theNumber[0]);
+                break;
+            case 5:
+                valueSelect === "No Preference" ? null: theTest.name = valueSelect; //I know I don't set the value. I just put null to do the teritary. Default is null
+                break;
+        }
+        changeTest(theTest);
+        console.log(theTest);
         setKey(destSelect);
         theEvent.preventDefault();
         valueSelected('');
         if (destSelect == "End") {
             setFinished(true);
+            setResponses(theTest);
         }
 
     }
 
     useEffect(() => {
         if (finished && destSelect === "End") {
+
             func();
             setFinished(false); 
         }
-      }, [response, destSelect, finished]);
+      }, [destSelect, finished]);
 
     return (
     <div className = "container">
         <div className = "text-center text-white">
-            <h1 className="fs-3">{ques.question}</h1>
+            <h1 className="fs-3">{ques.question[0]}</h1>
         </div>
         <form onSubmit={destValue}>
             <div className="row row-cols-2">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAppContext } from "@/context";
 
 function ServiceCard({service}){
-    const [_, setService] = useAppContext();
+    const {setService} = useAppContext();
 
     const handleServiceSelect = ()=>{
         setService(service);

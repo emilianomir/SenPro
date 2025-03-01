@@ -14,9 +14,22 @@ function StartPage(){
         [userName, other] = search.split('@');
     userName = userName.toUpperCase();
 
-    const formSubmit = (event)=>{
+    const formSubmit = async (event)=>{
         event.preventDefault();
-        router.push("/questionaire")
+
+        const response = await fetch('/api/maps/places', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        console.log(response);
+
+
+        // router.push("/questionaire")
 
     }
 
