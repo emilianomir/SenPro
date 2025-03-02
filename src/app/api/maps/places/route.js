@@ -1,32 +1,30 @@
 
 export async function POST(req){
-    console.log("I ran!");
     const {userResponses} = await req.json();
-    if (userResponses)
-        console.log("User response in PLACES API call: " + userResponses);
-    else 
-        console.log("Value is null. ABORT!!!")
-
     try {
-        const address = "Weslaco, TX 78599";
+        const address = "Houston, TX 77015";
         const api_key = process.env.GOOGLE_API_KEY;
         const url = "https://places.googleapis.com/v1/places:searchText"
 
         const textBody = {
-            textQuery: userResponses.category ?  `${userResponses.category} ${userResponses.types} near ${address}`: `${userResponses.main_category} near ${address}`,
+            textQuery: userResponses.textQuery ? `${userResponses.textQuery} near ${address}`: null, //this should always have a value unless it is searched by url
             openNow: true,
             regionCode: "US",
             languageCode: "en",
-            pageSize: 10,
+            pageSize: 7, //this is to limit the max services sent by response. High numbers causing images not to load due to many requests 
             rankPreference: "DISTANCE"
         }
+
+        //this is how object can help with the API calls
+        //Its basically saying if the object has some value, that means the user agreed to a value and I want to modify the search to accomodate for that
+        //Otherwise, it would go with the default value. 
         userResponses.rating ? textBody.minRating = userResponses.rating : null;
         userResponses.priceLevel ? textBody.priceLevels = [userResponses.priceLevel]: null;
         if (userResponses.types){
             textBody.includedType = userResponses.types;
             textBody.strictTypeFiltering = true;
         }
-        console.log("The textBody: ")
+        console.log("The textBody: ") ///debugging purposes
         console.log(textBody);
     
 
@@ -42,16 +40,12 @@ export async function POST(req){
             body: JSON.stringify(textBody)
 
         });
-        console.log("The response:")
-        console.log(response);
         if (!response.ok) {
             const errorText = await response.text(); // Read error message
             console.log("Error:", response.status, errorText);
         } 
         const data = await response.json();
-        console.log("The data: ")
-        console.log(data);
-        if (data.places){
+        if (data.places){ //this section is to get the photos to be able to display. Each photo is a get request
             await Promise.all(data.places.map(async (eachService) =>{
                 if (eachService.photos){
                     const image_url = `https://places.googleapis.com/v1/${eachService.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
@@ -62,7 +56,7 @@ export async function POST(req){
                     if (image_response.ok) {
                         const theImage= image_response.url;
                         if (theImage){
-                            eachService.photo_image = theImage;
+                            eachService.photo_image = theImage; //added a new property to data.places objects for easier retrieval
                         }
                     }
                     else 
@@ -70,7 +64,7 @@ export async function POST(req){
                 }
                 else {
                     eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
-                }
+                } //these are placeholders photos in case an image can't be retrived. This does not work if a 429 occurs for some reason.
             }));
         }
 
@@ -89,42 +83,3 @@ export async function POST(req){
 
 }
 
-
-
-
-
-
-
-    // console.log("Status: " + status);
-
-    // const { Place } = await google.maps.importLibrary("places");
-
-
-   
-    
-   
-    
-    // const request = {
-
-    //   };
-    //   if (theTest.types){
-    //     for (const [index, value] of theTest.types.entries())
-    //         if (index != theTest.types.length-1)
-    //             request.includedType += `, ${value}` ;
-    //         else 
-    //             request.includedType += value;
-    //   }
-    
-    //   if (theTest.priceLevel)
-    //     request.priceLevel = theTest.priceLevel;
-    
-    //   if (theTest.rating)
-    //     request.rating = theTest.rating;
-    
-    
-    //   request.useStrictTypeFiltering = true;
-    //   const { places } = await Place.searchByText(request);
-    
-    //   for (let i of places){
-    //     console.log(i);
-    //   }

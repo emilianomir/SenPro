@@ -7,7 +7,7 @@ import { useAppContext } from "@/context";
 
 
 function Questionaire({index = 1}){
-    const {apiServices, setAPIServices} = useAppContext();
+    const {apiServices, setAPIServices} = useAppContext(); 
     const router = useRouter();
     const goToNext = ()=>{
         if (apiServices)

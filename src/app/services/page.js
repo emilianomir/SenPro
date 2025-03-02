@@ -10,6 +10,7 @@ import Link from "next/link";
 
 export default function Services(){
     const {userResponses, apiServices, setAPIServices} = useAppContext();
+
     const [loading, setLoading] = useState(true);
     useEffect(()=> {
         let change = true;
@@ -41,6 +42,8 @@ export default function Services(){
         }
         if (!apiServices)
             getInfo();
+        console.log("The apiServices: ")
+        console.log(apiServices);
         return () => {
             change = false;
             };
@@ -81,7 +84,7 @@ export default function Services(){
                                 </div>
                             )):    
                             <div className="text-center"> 
-                                <div className="fs-1 text-white">No services avaiable based on response. Try to search again </div>
+                                <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
                                 <Link href={"/questionaire"}><button className="btn btn-primary">Retry</button></Link>
                             </div>
                             }
