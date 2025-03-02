@@ -6,12 +6,15 @@ const AppContext = createContext();
 export function AppWrapper ({children}){
     const [userServices, setServices] = useState(null);
     const [userResponses, setResponses] = useState(null);
+    const [apiServices, setAPIServices] = useState(null);
 
     const contextValues = { //for better practice
         userServices,
         setServices,
         userResponses, 
-        setResponses
+        setResponses,
+        apiServices, 
+        setAPIServices
     }
 
     return(

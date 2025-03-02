@@ -2,12 +2,16 @@
 import "../css/question_page.css"
 import Question from "@/components/Question";
 import { useRouter } from "next/navigation";
+import { useAppContext } from "@/context";
 
 
 
 function Questionaire({index = 1}){
+    const {apiServices, setAPIServices} = useAppContext();
     const router = useRouter();
     const goToNext = ()=>{
+        if (apiServices)
+            setAPIServices(null);
         router.push("/services")
     }
 

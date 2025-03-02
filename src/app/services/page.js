@@ -8,8 +8,7 @@ import { useEffect, useState } from "react";
 
 
 export default function Services(){
-    const {userResponses} = useAppContext();
-    const [service_data, setData] = useState(null);
+    const {userResponses, apiServices, setAPIServices} = useAppContext();
     const [loading, setLoading] = useState(true);
     useEffect(()=> {
         let change = true;
@@ -29,7 +28,7 @@ export default function Services(){
                 console.log("Service result in services page: ");
                 console.log(services_result);
                 if (change){
-                    setData(services_result);
+                    setAPIServices(services_result);
                     setLoading(false);
                 }
         
@@ -38,8 +37,8 @@ export default function Services(){
                 alert("There was an issue getting the data.");
             }
         }
-
-        getInfo();
+        if (!apiServices)
+            getInfo();
         return () => {
             change = false;
             };
@@ -50,11 +49,11 @@ export default function Services(){
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />
-            {loading && 
+            {(!apiServices && loading) && 
             <div className="bg-primary w-100 h-100">
                 <div>Loading</div>
             </div> }
-            {!loading && 
+            {(apiServices || !loading) && 
                 <>
                     <div className="container mt-4 ms-4">
                         <div className="fs-2 text-white fw-bold mb-3">
@@ -74,7 +73,7 @@ export default function Services(){
                     <div className="me-0 ms-4 ps-3">
                         <div className="fs-2 mt-3 text-white fw-bold mb-3">Choose your service: </div>               
                         <div className="scroll">
-                            {service_data.map((service_object, index)=>(
+                            {apiServices.map((service_object, index)=>(
                                 <div key ={index} className="d-inline-block me-4">                         
                                     <ServiceCard service = {service_object} /> 
                                 </div>
