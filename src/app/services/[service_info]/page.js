@@ -8,7 +8,11 @@ import { useEffect } from "react";
 
 
 export default function ServiceInfo(){
+<<<<<<< HEAD
     const {userServices, setServices} = useAppContext();
+=======
+    const [userServices, changeService] = useAppContext();
+>>>>>>> origin/main
     const router = useRouter();
 
     const handleBack = ()=>{
@@ -17,7 +21,11 @@ export default function ServiceInfo(){
 
     useEffect(() => {
         const handleRouteChangeComplete = () => {
+<<<<<<< HEAD
           setServices(null);
+=======
+          setService(null);
+>>>>>>> origin/main
         };
     }
     )
