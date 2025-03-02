@@ -26,6 +26,8 @@ export async function POST(req){
             textBody.includedType = userResponses.types;
             textBody.strictTypeFiltering = true;
         }
+        console.log("The textBody: ")
+        console.log(textBody);
     
 
         const headers = {
@@ -40,29 +42,38 @@ export async function POST(req){
             body: JSON.stringify(textBody)
 
         });
+        console.log("The response:")
+        console.log(response);
         if (!response.ok) {
             const errorText = await response.text(); // Read error message
             console.log("Error:", response.status, errorText);
         } 
         const data = await response.json();
-        await Promise.all(data.places.map(async (eachService) =>{
-            if (eachService.photos){
-                const image_url = `https://places.googleapis.com/v1/${eachService.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
-                const image_response = await fetch(image_url, {
-                    method: "GET",
-                    headers: {"Content-Type": "application/json"}
-                });
-                const theImage = image_response.url;
-                if (theImage){
-                    eachService.photo_image = theImage;
+        console.log("The data: ")
+        console.log(data);
+        if (data.places){
+            await Promise.all(data.places.map(async (eachService) =>{
+                if (eachService.photos){
+                    const image_url = `https://places.googleapis.com/v1/${eachService.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
+                    const image_response = await fetch(image_url, {
+                        method: "GET",
+                        headers: {"Content-Type": "application/json"}
+                    });
+                    if (image_response.ok) {
+                        const theImage= image_response.url;
+                        if (theImage){
+                            eachService.photo_image = theImage;
+                        }
+                    }
+                    else 
+                        eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
                 }
-                else 
+                else {
                     eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
-            }
-            else {
-                eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
-            }
-        }));
+                }
+            }));
+        }
+
 
         return new Response(JSON.stringify({ services_result: data.places}), {
         status: 200,

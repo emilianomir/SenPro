@@ -4,6 +4,7 @@ import ServiceCard from "@/components/ServiceCard";
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useAppContext } from "@/context";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 
 
@@ -28,7 +29,8 @@ export default function Services(){
                 console.log("Service result in services page: ");
                 console.log(services_result);
                 if (change){
-                    setAPIServices(services_result);
+                    if (services_result)
+                        setAPIServices(services_result);
                     setLoading(false);
                 }
         
@@ -73,11 +75,17 @@ export default function Services(){
                     <div className="me-0 ms-4 ps-3">
                         <div className="fs-2 mt-3 text-white fw-bold mb-3">Choose your service: </div>               
                         <div className="scroll">
-                            {apiServices.map((service_object, index)=>(
+                            {apiServices ? apiServices.map((service_object, index)=>(
                                 <div key ={index} className="d-inline-block me-4">                         
                                     <ServiceCard service = {service_object} /> 
                                 </div>
-                            ))}           
+                            )):    
+                            <div className="text-center"> 
+                                <div className="fs-1 text-white">No services avaiable based on response. Try to search again </div>
+                                <Link href={"/questionaire"}><button className="btn btn-primary">Retry</button></Link>
+                            </div>
+                            }
+     
                         </div>  
                     </div>
                 </>
