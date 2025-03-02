@@ -13,10 +13,10 @@ class Responses{
     }
 }
 
-
 function Question({theQuestion, current, func}){
     const {setResponses} = useAppContext();
     const [valueSelect, valueSelected] = useState('');
+    const [apiValue, setAPIvalue] = useState('');
     const [destSelect, changeDes] = useState('');
     const [mapKey, setKey] = useState(current);
     const ques = theQuestion.get(mapKey);
@@ -25,35 +25,48 @@ function Question({theQuestion, current, func}){
 
     function changeValue(theEvent){
         const selectOptionDest = theEvent.target.selectedOptions[0].getAttribute("data-destination");  //gets the first select value (in this case, are only selected) then find the value of "data-other" 
+        const selectedAPIValue = theEvent.target.selectedOptions[0].getAttribute("data-valueforapi")
         valueSelected(theEvent.target.value);
         changeDes(selectOptionDest);
-
+        if (selectedAPIValue != "")
+            setAPIvalue(selectedAPIValue);
     }
 
     function destValue(theEvent){
-        switch (ques.question[1]){
-            case 0:
-                theTest.main_category = valueSelect;
-                break;
-            case 1:
-                theTest.types ? theTest.types =`${valueSelect.toLowerCase()}_${theTest.types}`: theTest.types = valueSelect.toLowerCase();
-                break;
-            case 2:
-                theTest.category = valueSelect;
-                break;
-            case 3:
-                valueSelect === "No Preference" ? null: theTest.priceLevel = "PRICE_LEVEL_"+ valueSelect.toUpperCase();
-                break;
-            case 4: 
-                const theNumber = valueSelect.split(/[+-]/);
-                console.log(theNumber);
-                valueSelect === "No Preference" ? null: theTest.rating = Number(theNumber[0]);
-                break;
-            case 5:
-                valueSelect === "No Preference" ? null: theTest.name = valueSelect; //I know I don't set the value. I just put null to do the teritary. Default is null
-                break;
+        if (valueSelect != "No Preference") {
+            switch (ques.question[1]){
+                case 0:
+                    theTest.main_category = apiValue === "" ? valueSelect: apiValue;
+                    break;
+                case 1:
+                    if (apiValue != ""){
+                        if (theTest.types)
+                            apiValue === theTest.types ? null: theTest.main_category != "Food and Drink" ? theTest.types = apiValue.toLowerCase() : `${apiValue.toLowerCase()}_${theTest.types}`  //if a type was added and the incoming type is same type string, do nothing, else if not food drink, replace the old value with new.
+                        else 
+                            theTest.types = apiValue.toLowerCase()
+                    }
+                    else 
+                        theTest.types ? theTest.types =`${valueSelect.toLowerCase()}_${theTest.types}`: theTest.types = valueSelect.toLowerCase();
+                    break;
+                case 2:
+                    theTest.category =  apiValue === "" ? valueSelect: apiValue;
+                    break;
+                case 3:
+                    theTest.priceLevel = "PRICE_LEVEL_"+ valueSelect.toUpperCase();
+                    break;
+                case 4: 
+                    const theNumber = valueSelect.split(/[+-]/);
+                    theTest.rating = Number(theNumber[0]);
+                    break;
+                case 5:
+                    theTest.name = valueSelect; 
+                    break;
+            }
+            changeTest(theTest);
         }
-        changeTest(theTest);
+
+
+
         console.log("theTest in Question component: ")
         console.log(theTest);
         setKey(destSelect);
@@ -83,8 +96,8 @@ function Question({theQuestion, current, func}){
                 <div className="col-11">
                     <select className="form-select" value = {valueSelect} onChange={changeValue}>
                         <option value="" disabled>Select</option>
-                        {ques.answer.map((desc, index) => (
-                        <option key = {[index, desc[0]]} value = {desc[0]} data-destination = {desc[1]}>{desc[0]}</option>
+                        {ques.answer.map((answer_array, index) => (
+                        <option key = {[index, answer_array[0]]} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
                         )
                         )}
                     </select>

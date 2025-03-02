@@ -16,20 +16,29 @@ function Questionaire({index = 1}){
     questionsList.set("Begin",        
         { 
         question: ["What do you want to do?", 0], 
-        answer: [["Food and Drink", "FoodDrink"], ["Arts", "End"], ["Entertainment", "End"], ["Sports", "End"], ["Shopping", "End"] ]}
+        answer: [["Food and Drink", "FoodDrink"], ["Arts", "ArtQ", "Culture"], ["Entertainment", "End", "Entertainment and Recreation"], ["Sports", "End"], ["Shopping", "End"], ["Services", "End"] ]}
     );
     questionsList.set("FoodDrink",{
         question: ["What type would you like?", 1],
-        answer: [["Bar", "Price"], ["Restaurant", "Rest"], ["Cafe", "Price"]]
+        answer: [["Bar", "Price"], ["Restaurant", "Rest"], ["Cafe", "CafeQ"]]
     });
-    questionsList.set("Price", {
-        question: ["What is the average price range?", 3],
-        answer: [["Inexpensive", "Rating"], ["Moderate", "Rating"], ["Expensive", "Rating"], ["Very_Expensive", "Rating"], ["No Preference", "Rating"]]
-    })
-    questionsList.set("Rating", {
-        question: ["Preferred Rating?", 4],
-        answer: [["3.0-", "End"], ["3.0+", "End"], ["3.5+", "End"], ["4.0+", "End"], ["No Preference", "End"]]
-    })
+    questionsList.set("ArtQ", {
+        question: ["What type of culture and arts would you like?", 1],
+        answer: [["Museum", "Price"], ["Gallery", "Price", "Art_Gallery"], ["Attractions", "AttractQ", "Cultural_Landmark"], 
+        ["Entertainment", "ArtEntertaimentQ", "Performing_Arts_Theater"], ["No Preference", "Price"]]
+    });
+    questionsList.set("AttractQ", {
+        question: ["What type of attractions would you like?", 1],
+        answer: [["Landmark", "Price", "Cultural_Landmark"], ["Historical Place", "Price", "Historical_Place"], ["Monument", "Price"]]
+    });
+    questionsList.set("ArtEntertaimentQ", {
+        question: ["What type of entertainment would you like?", 1],
+        answer: [["Theater", "Price", "Performing_Arts_Theater"], ["Auditorium", "Price"], ["Art Studio", "Price", "Art_Studio"]]
+    });
+    questionsList.set("CafeQ", {
+        question: ["What type of cafe would you like?", 1],
+        answer: [["Regular", "Price", "Cafe"], ["Cat", "Price"], ["Dog", "Price"], ["Internet", "Price"], ["No Preference", "Price"]]
+    });    
     questionsList.set("MovieQ", {
         question: ["What company do you want?", 5], 
         answer: [["Cinemark", "End"], ["AMC", "End"], ["No Preference", "End"]]}
@@ -40,8 +49,17 @@ function Questionaire({index = 1}){
     );
     questionsList.set("FoodTQ", {
         question: ["What food would you like?", 1], 
-        answer: [["Asian", "Price"], ["Indian", "Price"], ["Mexican", "Price"], ["Italian", "Price"]]}
+        answer: [["American", "Price"], ["Asian", "Price"], ["Indian", "Price"], ["Mexican", "Price"], ["Italian", "Price"],
+         ["Japenese", "Price"], ["Chinese", "Price"], ["Korean", "Price"], ["Greek", "Price"]]}
     );
+    questionsList.set("Price", {
+        question: ["What is the average price range?", 3],
+        answer: [["Inexpensive", "Rating"], ["Moderate", "Rating"], ["Expensive", "Rating"], ["Very_Expensive", "Rating"], ["No Preference", "Rating"]]
+    })
+    questionsList.set("Rating", {
+        question: ["Preferred Rating?", 4],
+        answer: [["3.0-", "End"], ["3.0+", "End"], ["3.5+", "End"], ["4.0+", "End"], ["No Preference", "End"]]
+    })
     questionsList.set("End",{
         question: ["Loading", 6],
         answer: [] }

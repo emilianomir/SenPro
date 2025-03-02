@@ -1,12 +1,13 @@
 .cardAdjust {
     width: 18rem;
-}
-
-.imageAdjust {
-    max-height: 286px;
+    height: 420px;
 }
 
 .fixHeight{
     min-height: 200px;
     max-height: 200px;
+}
+
+.titleHeight{
+    height:58px;
 }

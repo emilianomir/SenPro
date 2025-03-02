@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 
 export default function ServiceInfo(){
-    const {userServices, changeService} = useAppContext();
+    const {userServices, setServices} = useAppContext();
     const router = useRouter();
 
     const handleBack = ()=>{
@@ -17,7 +17,7 @@ export default function ServiceInfo(){
 
     useEffect(() => {
         const handleRouteChangeComplete = () => {
-          setService(null);
+          setServices(null);
         };
     }
     )
@@ -35,10 +35,10 @@ export default function ServiceInfo(){
                     <div className="col-8 h-100">
                         <h1 className="fs-1 text-white">Info:</h1>
                         <div className="bg-secondary-subtle h-100">
-                            <div className="fs-3 text-center pt-3">{userServices.name}</div>
+                            <div className="fs-3 text-center pt-3">{userServices.displayName.text}</div>
                             <div className="row row-cols-2 mt-4">
                                 <div className="col-5">
-                                    <img className = "service_images w-100" src = {userServices.image}/>
+                                    <img className = "service_images w-100" src = {userServices.photo_image}/>
                                 </div>
                                 <div className="col-7 row row-cols-1 mt-5">
                                     <div className="col text-center">
