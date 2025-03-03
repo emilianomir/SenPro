@@ -2,13 +2,16 @@
 import "../css/question_page.css"
 import Question from "@/components/Question";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from 'next/navigation'
 
 
 
 function Questionaire({index = 1}){
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
     const router = useRouter();
     const goToNext = ()=>{
-        router.push("/services");
+        router.push("/services?user=" + search);
     } 
 
     const questionsList = new Map();
