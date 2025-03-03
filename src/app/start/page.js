@@ -14,7 +14,7 @@ function StartPage(){
         [userName, other] = search.split('@');
     userName = userName.toUpperCase();
 
-    const formSubmit = (event)=>{
+    const formSubmit = async (event)=>{
         event.preventDefault();
         router.push("/questionaire")
 
