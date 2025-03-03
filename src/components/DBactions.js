@@ -1,7 +1,7 @@
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
 import { eq, and } from "drizzle-orm";
-import bcrypt from "bcrypt"
+import bcrypt from 'bcryptjs'
 
 
 // testing for existing emails in singup

@@ -20,6 +20,7 @@ await db.insert( users ).values({
 
 
 
+await addUser("test@gmail.com", "John Doe", "123", "Mcallen Tx")
 //addUser("gaelg@gmail.com", "gaelg", "testingpass", "78574", "admin");
 testExistingUser("gaelg@gmail.com").then((data) =>
 {

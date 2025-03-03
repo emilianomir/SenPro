@@ -1,30 +1,64 @@
 "use client"
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { getUser, testExistingUser } from '@/components/DBactions';
 
 function StartPage(){
     const searchParams = useSearchParams();
     const search = searchParams.get('user');
+
+    
+    const [sVal, setSearch] = useState(search);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+
+
     const router = useRouter();
     let userName;
     let other;
-    if (!search)
-        userName = "Guest";
-    else
-        [userName, other] = search.split('@');
-    userName = userName.toUpperCase();
+    //[userName, other] = search.split('@');
+        useEffect(() => {
+            const fetchProducts = async () => {
+                try{
+                    if(await testExistingUser(sVal))
+                    {
+                        const data = await getUser(sVal);
+                        setProducts(data);
+                    }
+                    else 
+                    {
+                        setProducts([{username: "Guest User"}])
+                    }
+                } catch(error) {
+                    console.error("Error fetching DB:", error);
+                    alert("There was an issue getting the data.");
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            fetchProducts();
+        }, []);
+    
+    
+    //userName = userName.toUpperCase();
 
     const formSubmit = (event)=>{
         event.preventDefault();
-        router.push("/questionaire")
+        router.push("/questionaire?user=" + search)
 
     }
+
+    if(loading)
+        return <p>loading...</p>
 
     return (
         <>
         <div className = "bg-secondary-subtle m-0" >
             <div className = "text-center">
-                <h1 className='fs-2 fw-bold'>Hello {userName}</h1>
+                <h1 className='fs-2 fw-bold'>Hello {products[0].username}</h1>
             </div>
         </div>
 

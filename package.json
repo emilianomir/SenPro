@@ -12,6 +12,7 @@
   "dependencies": {
     "@libsql/client": "^0.14.0",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.3",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/bcryptjs": "^2.4.6",
     "drizzle-kit": "^0.30.4",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
