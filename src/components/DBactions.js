@@ -2,6 +2,7 @@ import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
 import { eq, and } from "drizzle-orm";
 import bcrypt from 'bcryptjs'
+import { userAgentFromString } from "next/server.js";
 
 
 // testing for existing emails in singup
@@ -55,5 +56,16 @@ export async function checkLogin(email, password){
         username: users.username,
         address: users.address,
     }).from(users).where(eq(users.email, email));
+ }
+
+
+ //change password
+ export async function changePass(email, newpass)
+ {
+    const pass = await bcrypt.hash(newpass, 10);
+
+    await db.update( users )
+    .set({password: pass})
+    .where(eq(users.email, email));
  }
 

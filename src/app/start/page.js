@@ -16,8 +16,6 @@ function StartPage(){
 
 
     const router = useRouter();
-    let userName;
-    let other;
     //[userName, other] = search.split('@');
         useEffect(() => {
             const fetchProducts = async () => {
