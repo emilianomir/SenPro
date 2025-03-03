@@ -3,10 +3,11 @@ import "../app/css/service_card.css"
 import Link from "next/link";
 import { useAppContext } from "@/context";
 
-function ServiceCard({service}){
+function ServiceCard({service, userClick}){
     const {setServices} = useAppContext();
 
     const handleServiceSelect = ()=>{
+        userClick();
         setServices(service);
     }
 
