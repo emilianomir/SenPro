@@ -13,11 +13,17 @@ function Questionaire({index = 1}){
     const [isLoading, setLoading] = useState(false);
     const [atLeastOne, setOne] = useState(false); //checks to see if user enters on response.
     const [gSearch, setGSearch] = useState(false);
+    const [nameValue, setNameValue] = useState('');
+    const [specLoc, setSpecLoc] = useState(false);
     const router = useRouter();
     const goToNext = ()=>{
         if (apiServices)
             setAPIServices(null);
         router.push("/services")
+    }
+
+    const changeNameValue = (e)=>{
+        setNameValue(e.target.value);
     }
 
     const changeOne = ()=> {
@@ -30,6 +36,14 @@ function Questionaire({index = 1}){
 
     const changeGSearch = ()=>{
         setGSearch(true);
+    }
+
+    const changeSpecLoc = (e) => {
+        if (nameValue === '')
+            alert("Please enter an input");
+        else 
+            setSpecLoc(true);
+        e.preventDefault();
     }
 
     const questionsList = new Map();
@@ -71,7 +85,7 @@ function Questionaire({index = 1}){
     questionsList.set("FoodTQ", {
         question: ["What food would you like?", 1], 
         answer: [["American", "Price"], ["Asian", "Price"], ["Indian", "Price"], ["Mexican", "Price"], ["Italian", "Price"],
-         ["Japenese", "Price"], ["Chinese", "Price"], ["Korean", "Price"], ["Greek", "Price"]]}
+         ["Japanese", "Price"], ["Chinese", "Price"], ["Korean", "Price"], ["Greek", "Price"]]}
     );
     questionsList.set("Price", {
         question: ["What is the average price range?", 3],
@@ -101,7 +115,7 @@ function Questionaire({index = 1}){
                         <div className="mb-4">
                             <Question theQuestion= {questionsList} 
                             current = {"Begin"} func={goToNext} changeLoading={loading} entered={changeOne}
-                            generalSearch = {gSearch}/>
+                            generalSearch = {gSearch} specifiedLocation = {nameValue} userSearchName = {specLoc}/>
                         </div>
                     </div>
                     <div className="text-center">
@@ -121,9 +135,9 @@ function Questionaire({index = 1}){
                 <div className="container text-center">
                     <div className="fs-4 text-white">Have a specific location in mind?</div>
                     <div>
-                        <form>
-                            <input className="w-50"></input>
-                            <button className="btn btn-primary" type= "button">Enter</button>
+                        <form onSubmit={changeSpecLoc}>
+                            <input className="w-50 text-center" placeholder="Enter your location here" value ={nameValue} onChange={changeNameValue}></input>
+                            <button className="btn btn-primary" type= "submit">Enter</button>
                         </form>
                     </div>
                 </div>

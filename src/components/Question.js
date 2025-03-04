@@ -13,7 +13,7 @@ class Responses{
     }
 }
 
-function Question({theQuestion, current, func, changeLoading, entered, generalSearch}){
+function Question({theQuestion, current, func, changeLoading, entered, generalSearch, specifiedLocation, userSearchName}){
     const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
@@ -91,7 +91,10 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
     }
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
-        console.log(generalSearch);
+        if (userSearchName){
+            generalSearch = true;
+            theTest.name = specifiedLocation[0].toUpperCase() + specifiedLocation.substring(1);
+        }
         if (generalSearch) 
             setResponses(theTest)
         
@@ -100,7 +103,7 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
             func();// this is a function call from the questionaire page that just routes to services menu
             setFinished(false); 
         }
-      }, [destSelect, finished, generalSearch]);
+      }, [destSelect, finished, generalSearch, userSearchName]);
 
     return (
     <div className = "container">
