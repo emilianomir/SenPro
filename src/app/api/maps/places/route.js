@@ -7,7 +7,7 @@ export async function POST(req){
         const url = "https://places.googleapis.com/v1/places:searchText"
 
         const textBody = {
-            textQuery: userResponses.textQuery ? `${userResponses.textQuery} near ${address}`: null, //this should always have a value unless it is searched by url
+            textQuery: `${userResponses.name ? userResponses.name : userResponses.textQuery} near ${address}`,
             openNow: true,
             regionCode: "US",
             languageCode: "en",

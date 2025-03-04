@@ -13,7 +13,7 @@ class Responses{
     }
 }
 
-function Question({theQuestion, current, func}){
+function Question({theQuestion, current, func, changeLoading, entered, generalSearch, specifiedLocation, userSearchName}){
     const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
@@ -33,6 +33,9 @@ function Question({theQuestion, current, func}){
     }
 
     function destValue(theEvent){
+        if (mapKey == current){
+            entered();
+        }
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
@@ -43,11 +46,13 @@ function Question({theQuestion, current, func}){
                     //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
                     //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
                     if (apiValue != ""){
-                        if (theTest.types)
-                            //if a type was added and the incoming type is same string, do nothing, else if not food drink main category, replace the old value with new. Else add to the beginning of the string in API Call format: types_call
-                            apiValue === theTest.types ? null: theTest.textQuery != "Food and Drink" ? theTest.types = apiValue.toLowerCase() : `${apiValue.toLowerCase()}_${theTest.types}`  
-                        else 
-                            theTest.types = apiValue.toLowerCase()
+                        if (apiValue != "No Change"){
+                            if (theTest.types)
+                                //if a type was added and the incoming type is same string, do nothing, else if not food drink main category, replace the old value with new. Else add to the beginning of the string in API Call format: types_call
+                                apiValue === theTest.types ? null: theTest.textQuery != "Food and Drink" ? theTest.types = apiValue.toLowerCase() : `${apiValue.toLowerCase()}_${theTest.types}`  
+                            else 
+                                theTest.types = apiValue.toLowerCase()
+                        }
                     }
                     else 
                         //if the property has a string, then add to string, otherwise replace it
@@ -70,9 +75,6 @@ function Question({theQuestion, current, func}){
                     break;
             }
         }
-
-
-
         console.log("theTest in Question component: ")
         console.log(theTest);
         setKey(destSelect);
@@ -88,11 +90,19 @@ function Question({theQuestion, current, func}){
     }
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
-        if (finished && destSelect === "End") { 
+        if (userSearchName){
+            generalSearch = true;
+            theTest.name = specifiedLocation[0].toUpperCase() + specifiedLocation.substring(1);
+        }
+        if (generalSearch) 
+            setResponses(theTest)
+        
+        if ((finished && destSelect === "End") || generalSearch) { 
+            changeLoading();
             func();// this is a function call from the questionaire page that just routes to services menu
             setFinished(false); 
         }
-      }, [destSelect, finished]);
+      }, [destSelect, finished, generalSearch, userSearchName]);
 
     return (
     <div className = "container">
