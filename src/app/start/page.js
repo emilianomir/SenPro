@@ -1,9 +1,12 @@
 "use client"
+import { useAppContext } from '@/context';
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
+import { useContext } from 'react';
 
 function StartPage(){
     const searchParams = useSearchParams();
+    const {setNumberPlaces} = useAppContext();
     const search = searchParams.get('user');
     const router = useRouter();
     let userName;
@@ -14,10 +17,11 @@ function StartPage(){
         [userName, other] = search.split('@');
     userName = userName.toUpperCase();
 
-    const formSubmit = async (event)=>{
+    const formSubmit = (event)=>{
+        const userNumber = event.target[0].value;
+        setNumberPlaces(userNumber);
         event.preventDefault();
         router.push("/questionaire")
-
     }
 
     return (
@@ -36,7 +40,7 @@ function StartPage(){
                 <form onSubmit={formSubmit}>
                     <div className="col  row row-cols-1" >
                         <div className="col d-flex justify-content-center">
-                            <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" id="desiredNumber" min = "0" max = "5"/>
+                            <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" min = "1" max = "5" required/>
                         </div>
                         <div className="col">
                             <button type="submit" className="btn btn-primary w-25">Enter</button>

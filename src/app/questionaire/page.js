@@ -8,8 +8,8 @@ import Loading from "@/components/Loading";
 
 
 
-function Questionaire({index = 1}){
-    const {apiServices, setAPIServices} = useAppContext(); 
+function Questionaire(){
+    const {apiServices, setAPIServices, userServices} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [atLeastOne, setOne] = useState(false); //checks to see if user enters on response.
     const [gSearch, setGSearch] = useState(false);
@@ -107,7 +107,7 @@ function Questionaire({index = 1}){
             <>
                 <div className="container">
                     <div className="mb-5">
-                        <h1 className="pt-5 title text-white fw-bold">Place {index}:</h1>
+                        <h1 className="pt-5 title text-white fw-bold">Place {userServices.length + 1}:</h1>
                     </div>
                 </div>
                 <div className="container mt-4 mb-5">
