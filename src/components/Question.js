@@ -80,7 +80,6 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         setKey(destSelect);
         theEvent.preventDefault();
         valueSelected('');
-
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
         if (destSelect == "End") { 
