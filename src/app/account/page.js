@@ -19,7 +19,8 @@ export default function Account(){
     const [loading, setLoading] = useState(true);
     const [oldPass, changeOldPass] = useState("");
     const [newPass, changeNewPass] = useState("");
-    
+  
+
 
         // OnChange Events
         function oldPassChange(event)
@@ -64,14 +65,22 @@ export default function Account(){
 
 
 
+
+    function Reset(){
+        changeOldPass("");
+        changeNewPass("");
+    }
+    // Form submission
     const submitForm = (event)=> {
         event.preventDefault();
          if (!oldPass || !newPass){
                     alert("Please fill out all fields");
+                    Reset();
                     return;
-                }
+                }   
                 if (oldPass === newPass){
                     alert("The new password should be different");
+                    Reset();
                     return;
                 }
 
@@ -80,17 +89,22 @@ export default function Account(){
             {
                 if(!data){
                     alert("Invalid password");
+                    Reset();
                     return;
                 }
                 else 
                 {   
+  
                     changePass(search, newPass);
-                    alert("Password has been changed!")
+                    alert("Password has been changed!");
+                    Reset();
                     return;
                 }
             }) 
 
     }
+
+
 
 
 
@@ -127,7 +141,7 @@ export default function Account(){
 
                                 <div className="col ps-5 fs-2 mt-4 text-info">
 
-                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal" >Change Password</button>
+                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal">Change Password</button>
                                 </div>
                             
                                 <div className="col ps-5 fs-2 mt-4">
@@ -146,7 +160,7 @@ export default function Account(){
                 </div>
             </div>
 
-            <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
+            <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true"> 
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -162,13 +176,13 @@ export default function Account(){
                             <input value={newPass} type="password" onChange={newPassChange} className="form-control" id="modal-password2"/>
                         </div>  
                         <div className="modal-footer">
-                            <button type = "submit" className="btn btn-primary">Submit</button>
+                            <button type = "submit" className="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                         </div>
                         </form>
 
                     </div>
                 </div>
-            </div>
+            </div> 
         </div>
 
 
