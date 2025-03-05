@@ -36,7 +36,7 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
                 theTest.main_category = null; 
                 theTest.textQuery = null;
                 break;
-            case 1:
+            case 1: //fix api value
                 if (theTest.types?.includes('_')){
                     const splitString = theTest.types.split("_");
                     theTest.types = splitString[splitString.length-1];
