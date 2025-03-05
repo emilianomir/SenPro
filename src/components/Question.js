@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
+import { cosineDistance } from "drizzle-orm";
 
 //object to help with Places API calls
 class Responses{
@@ -18,10 +19,62 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
     const [destSelect, changeDes] = useState(''); //destination for map purposes
+    const [prevKeys] = useState([]);
+    const [prevValues] = useState([])
     const [mapKey, setKey] = useState(current);
     const ques = theQuestion.get(mapKey);
     const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
     const [theTest, _] = useState(new Responses()); //the created object for API calls
+
+    function gotoPrev() {
+        if (prevKeys.length === 0)
+            return;
+        const prevQuestion = theQuestion.get(prevKeys[prevKeys.length-1][0]);
+        console.log(prevQuestion);
+        switch (prevQuestion.question[1]){
+            case 0: 
+                theTest.main_category = null; 
+                theTest.textQuery = null;
+                break;
+            case 1:
+                if (theTest.types?.includes('_')){
+                    const splitString = theTest.types.split("_");
+                    theTest.types = splitString[splitString.length-1];
+                    let full_phrase;
+                    for (let i in splitString){
+                        if (i == splitString.length-1)
+                            break;
+                        full_phrase = splitString[i][0].toUpperCase() + splitString[i].substring(1,splitString[i].length) + " "
+                    }
+                    theTest.textQuery = theTest.textQuery.replace(full_phrase, "");
+                }
+                else {
+                    theTest.types = null;
+                    theTest.textQuery = theTest.main_category;
+                }
+                break;
+            case 2:
+                theTest.textQuery = theTest.textQuery.replace(prevValues + " ", "");
+                prevValues.pop();
+                break;
+            case 3:
+                theTest.priceLevel = null;
+                break;
+
+            case 5:
+                theTest.name = null;
+
+        }
+        console.log("After back:")
+        console.log(theTest);
+        changeDes(mapKey);
+        setKey(prevKeys[prevKeys.length-1][0]);
+        valueSelected(prevKeys[prevKeys.length-1][1]);
+        prevKeys.pop();
+        if (prevKeys.length == 0)
+            entered();
+        
+    }
 
     function changeValue(theEvent){
         const selectOptionDest = theEvent.target.selectedOptions[0].getAttribute("data-destination");  //gets the first select value (in this case, are only selected) then find the value of "data-other" 
@@ -36,6 +89,7 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         if (mapKey == current){
             entered();
         }
+
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
@@ -62,6 +116,7 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
                     break;
                 case 2:
                     theTest.textQuery ? theTest.textQuery = `${valueSelect} ${theTest.textQuery}`: theTest.textQuery = valueSelect;  
+                    prevValues.push(valueSelect);
                     break;
                 case 3:
                     theTest.priceLevel = "PRICE_LEVEL_"+ valueSelect.toUpperCase();
@@ -77,6 +132,7 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         }
         console.log("theTest in Question component: ")
         console.log(theTest);
+        prevKeys.push([mapKey, valueSelect]);
         setKey(destSelect);
         theEvent.preventDefault();
         valueSelected('');
@@ -110,20 +166,40 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
             <h1 className="fs-3">{ques.question[0]}</h1>
         </div>
         <form onSubmit={destValue}>
-            <div className="row row-cols-2">
-                <div className="col-11">
-                    <select className="form-select" value = {valueSelect} onChange={changeValue}>
-                        <option value="" disabled>Select</option>
-                        {ques.answer.map((answer_array, index) => (
-                        <option key = {[index, answer_array[0]]} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
-                        )
-                        )}
-                    </select>
-                </div>
-                <div className="col-1">
-                    <button  type="submit" className="btn btn-primary w-100">Enter</button>
-                </div>
- 
+            <div className="row row-cols-3">
+                {prevKeys.length > 0 ? 
+                <>
+                    <div className="col-10"> 
+                        <select className="form-select" value = {valueSelect} onChange={changeValue}>
+                            <option value="" disabled>Select</option>
+                            {ques.answer.map((answer_array, index) => (
+                            <option key = {[index, answer_array[0]]} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
+                            )
+                            )}
+                        </select>
+                    </div>
+                    <div className="col-1 d-flex align-items-top">
+`                       <button  type="button" onClick={gotoPrev} className="btn btn-primary w-100">Back</button> 
+                    </div>
+                    <div className="col-1">
+                        <button  type="submit" className="btn btn-primary w-100">Next</button>
+                    </div>
+                </>: 
+                <>
+                    <div className="col-11"> 
+                        <select className="form-select" value = {valueSelect} onChange={changeValue}>
+                            <option value="" disabled>Select</option>
+                            {ques.answer.map((answer_array, index) => (
+                            <option key = {[index, answer_array[0]]} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
+                            )
+                            )}
+                        </select>
+                    </div>
+                    <div className="col-1">
+                        <button  type="submit" className="btn btn-primary w-100">Next</button>
+                    </div>
+                </>
+                }
             </div>
         
         </form>

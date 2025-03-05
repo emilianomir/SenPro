@@ -70,8 +70,8 @@ export default function Services(){
                         </div>
                         <div className="row row-cols-5 circles mb-2">
                             <div className="col-2" >
-                                <div className="h-100 rounded-circle bg-white w-75">
-                                    <div className="d-flex justify-content-center align-items-center h-100 fs-4 text-center">
+                                <div className="h-100 rounded-circle bg-white w-100">
+                                    <div className="d-flex justify-content-center align-items-center h-100 fs-5 text-center">
                                         {userResponses.name ? userResponses.name: userResponses.main_category}
                                     </div>
                                 </div>

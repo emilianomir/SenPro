@@ -27,7 +27,9 @@ function Questionaire(){
     }
 
     const changeOne = ()=> {
-        setOne(true);
+        console.log(atLeastOne);
+        setOne(!atLeastOne);
+        console.log(atLeastOne);
     }
 
     const loading = () =>{
