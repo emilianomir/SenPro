@@ -2,7 +2,6 @@
 import { useAppContext } from '@/context';
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
 
 function StartPage(){
     const searchParams = useSearchParams();

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
-import { cosineDistance } from "drizzle-orm";
 
 //object to help with Places API calls
 class Responses{
@@ -30,41 +29,60 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         if (prevKeys.length === 0)
             return;
         const prevQuestion = theQuestion.get(prevKeys[prevKeys.length-1][0]);
-        console.log(prevQuestion);
-        switch (prevQuestion.question[1]){
-            case 0: 
-                theTest.main_category = null; 
-                theTest.textQuery = null;
+        for (let i of prevQuestion.answer){
+            if (i[0] === prevKeys[prevKeys.length-1][1]) {
+                setAPIvalue(i[2] ? i[2]: "");    
                 break;
-            case 1: //fix api value
-                if (theTest.types?.includes('_')){
-                    const splitString = theTest.types.split("_");
-                    theTest.types = splitString[splitString.length-1];
-                    let full_phrase;
-                    for (let i in splitString){
-                        if (i == splitString.length-1)
-                            break;
-                        full_phrase = splitString[i][0].toUpperCase() + splitString[i].substring(1,splitString[i].length) + " "
-                    }
-                    theTest.textQuery = theTest.textQuery.replace(full_phrase, "");
-                }
-                else {
-                    theTest.types = null;
-                    theTest.textQuery = theTest.main_category;
-                }
-                break;
-            case 2:
-                theTest.textQuery = theTest.textQuery.replace(prevValues + " ", "");
-                prevValues.pop();
-                break;
-            case 3:
-                theTest.priceLevel = null;
-                break;
-
-            case 5:
-                theTest.name = null;
-
+            }
         }
+
+        if (prevKeys[prevKeys.length-1][1] != "No Preference") {
+            switch (prevQuestion.question[1]){
+                case 0: 
+                    theTest.main_category = null; 
+                    theTest.textQuery = null;
+                    break;
+                case 1: //fix api value
+                    if (theTest.types?.includes('_')){
+                        const splitString = theTest.types.split("_");
+                        console.log(splitString);
+                        let full_phrase = "";
+                        let part_phrase;
+                        for (let i in splitString){
+                            full_phrase += splitString[i][0].toUpperCase() + splitString[i].substring(1,splitString[i].length) + " "
+                            if (i != splitString.length-1)
+                                part_phrase = full_phrase;
+                        }
+                        console.log("Full phrase: ")
+                        console.log(full_phrase);
+                        if (full_phrase == theTest.textQuery + " ") {
+                            theTest.types = null;
+                            theTest.textQuery = theTest.main_category;
+                        }
+                        else {
+                            theTest.types = splitString[splitString.length-1];
+                            theTest.textQuery = full_phrase.replace(part_phrase, "")
+                        }
+                    }
+                    else {
+                        theTest.types = null;
+                        theTest.textQuery = theTest.main_category;
+                    }
+                    break;
+                case 2:
+                    theTest.textQuery = theTest.textQuery.replace(prevValues + " ", "");
+                    prevValues.pop();
+                    break;
+                case 3:
+                    theTest.priceLevel = null;
+                    break;
+    
+                case 5:
+                    theTest.name = null;
+    
+            }
+        }
+        
         console.log("After back:")
         console.log(theTest);
         changeDes(mapKey);
@@ -86,10 +104,14 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
     }
 
     function destValue(theEvent){
+        theEvent.preventDefault();
+        if (valueSelect == '') {
+            alert("Please choose an option")
+            return;
+        }
         if (mapKey == current){
             entered();
         }
-
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
@@ -134,7 +156,6 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         console.log(theTest);
         prevKeys.push([mapKey, valueSelect]);
         setKey(destSelect);
-        theEvent.preventDefault();
         valueSelected('');
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
