@@ -5,11 +5,15 @@ import { useAppContext } from "@/context";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useSearchParams } from 'next/navigation'
 
 
 export default function ServiceInfo(){
     const {userServices, setServices} = useAppContext();
     const router = useRouter();
+
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
 
     const handleBack = ()=>{
         router.back();
@@ -24,7 +28,7 @@ export default function ServiceInfo(){
 
     return(
         <div className="full_page bg-secondary">
-            <ServicePageHeading />
+            <ServicePageHeading/>
             <div className="container mt-5">
                 <div className="row row-cols-2 service_info">
                     <div className="col-4 h-100">

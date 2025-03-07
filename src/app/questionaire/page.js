@@ -2,6 +2,7 @@
 import "../css/question_page.css"
 import Question from "@/components/Question";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from 'next/navigation'
 import { useAppContext } from "@/context";
 import { useState } from "react";
 import Loading from "@/components/Loading";
@@ -9,6 +10,9 @@ import Loading from "@/components/Loading";
 
 
 function Questionaire({index = 1}){
+  
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
     const {apiServices, setAPIServices} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [atLeastOne, setOne] = useState(false); //checks to see if user enters on response.
@@ -19,7 +23,7 @@ function Questionaire({index = 1}){
     const goToNext = ()=>{
         if (apiServices)
             setAPIServices(null);
-        router.push("/services")
+        router.push("/services?user=" + search);
     }
 
     const changeNameValue = (e)=>{
