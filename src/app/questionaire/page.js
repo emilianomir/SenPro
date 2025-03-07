@@ -1,23 +1,28 @@
 "use client"
 import "../css/question_page.css"
 import Question from "@/components/Question";
-import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
-
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 
 function Questionaire({index = 1}){
     const {apiServices, setAPIServices} = useAppContext(); 
     const router = useRouter();
+    const [currentQuestion, setCurrentQuestion] = useState("Begin");
+    const searchParams = useSearchParams();
+    const userEmail = searchParams.get("user");
+
+    useEffect(() => {
+        console.log("curr routed user email:", userEmail);
+    }, [userEmail]);
+
     const goToNext = ()=>{
-        if (apiServices)
-            setAPIServices(null);
-        router.push("/services")
-    }
+        router.push(`/services?user=${userEmail}`);
+    } 
 
     const questionsList = new Map();
-  
-    questionsList.set("Begin",        
+    questionsList.set("Begin",
         { 
         question: ["What do you want to do?", 0], 
         answer: [["Food and Drink", "FoodDrink"], ["Arts", "ArtQ", "Culture"], ["Entertainment", "End", "Entertainment and Recreation"], ["Sports", "End"], ["Shopping", "End"], ["Services", "End"] ]}
@@ -80,7 +85,7 @@ function Questionaire({index = 1}){
             <div className="container mt-4 mb-5">
                 <div>
                     <div className="mb-4">
-                        <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext}/>
+                        <Question theQuestion= {questionsList} current = {currentQuestion} func={goToNext} userEmail={userEmail}/>
                     </div>
                 </div>
                 <div className="text-center">

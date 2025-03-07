@@ -1,6 +1,8 @@
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-import { eq, and } from "drizzle-orm";
+
+import { eq } from "drizzle-orm";
+import { questions } from "../db/schema/questions.js";
 
 
 // testing for existing emails in singup
@@ -29,6 +31,7 @@ export async function addUser (email, username, password, address = '', type = '
 }
 
 
+
 // Checking Login
 export async function checkLogin(email, password){
     const data = await db.select().from(users).where(and(eq(users.email, email), eq(users.password, password)));
@@ -41,4 +44,43 @@ export async function checkLogin(email, password){
      return true
     }
  }
+export async function updateUserAddress(email, address) {
+    try {
+        await db.update(users)
+            .set({ address: address })
+            .where(eq(users.email, email));
+        console.log("address updated successfully");
+    } catch (e) {
+        console.error("error updating address:", e);
+        throw e;
+    }
+}
+
+export async function addQuestion(userEmail, question, answer) {
+    try {
+        console.log("adding question to db:", {
+            userEmail,
+            question,
+            answer
+        });
+        
+        await db.insert(questions).values({
+            userEmail: userEmail,
+            question: question,
+            answer: answer
+        });
+    } catch (e) {
+        console.error("error in in question adding:", e);
+        throw e;
+    }
+}
+
+export async function getUserQuestions(userEmail) {
+    try {
+        const data = await db.select().from(questions).where(eq(questions.userEmail, userEmail));
+        return data;
+    } catch (e) {
+        console.error("error getting questions and answers:", e);
+        throw e;
+    }
 }

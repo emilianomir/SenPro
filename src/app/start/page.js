@@ -16,7 +16,7 @@ function StartPage(){
 
     const formSubmit = async (event)=>{
         event.preventDefault();
-        router.push("/questionaire")
+        router.push(`/questionaire?user=${search}`); // pass user email to questionaire page
 
     }
 

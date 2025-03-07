@@ -7,9 +7,6 @@ config(); // instead of passing path to config of env file this will load the en
 const connectionUrl = process.env.TURSO_CONNECTION_URL;
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
-console.log(connectionUrl);
-console.log(authToken);
-
 const client = createClient({
   url: connectionUrl,
   authToken: authToken,

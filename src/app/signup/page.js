@@ -51,9 +51,17 @@ function SignUpPage(){
                     let other;
                     [userName, other] = formData.inputEmail.split('@');
                     userName = userName.toUpperCase();
-                    addUser(formData.inputEmail, userName, formData.inputPass);
+
+                    try{
+                        console.log("adding user:", formData.inputEmail, userName, formData.inputPass);
+                        addUser(formData.inputEmail, userName, formData.inputPass, formData.inputAddress);
+                        router.push("/address?user=" + formData.inputEmail);
+                    }
+                    catch(e){
+                        console.error("error adding user:", e);
+                    }
                     
-                    router.push("/address?user=" + formData.inputEmail);
+                    
                 }
             }) 
 

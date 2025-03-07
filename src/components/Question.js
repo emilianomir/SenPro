@@ -18,6 +18,12 @@ function Question({theQuestion, current, func}){
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
     const [destSelect, changeDes] = useState(''); //destination for map purposes
+
+import { addQuestion } from "@/components/DBactions";
+import { testExistingUser } from "@/components/DBactions";
+function Question({theQuestion, current, func, userEmail}){ // pass in userEmail from questionaire page
+    const [valueSelect, valueSelected] = useState('');
+    const [destSelect, changeDes] = useState('');
     const [mapKey, setKey] = useState(current);
     const ques = theQuestion.get(mapKey);
     const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
@@ -76,7 +82,23 @@ function Question({theQuestion, current, func}){
         console.log("theTest in Question component: ")
         console.log(theTest);
         setKey(destSelect);
+    async function destValue(theEvent){
         theEvent.preventDefault();
+        addResponse([...response, valueSelect]); // store value of answer
+
+        if (userEmail) { // if user email is passed in, store question and answer
+            try {
+                const exists = await testExistingUser(userEmail); // test if user exists
+                if (exists) {
+                    await addQuestion(userEmail, ques.question, valueSelect);
+                } else {
+                    console.error("user doesnt exist in db:", userEmail);
+                }
+            } catch (e) {
+                console.error("error storing question and answer:", e);
+            }
+        }
+        setKey(destSelect);
         valueSelected('');
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
@@ -104,8 +126,11 @@ function Question({theQuestion, current, func}){
                 <div className="col-11">
                     <select className="form-select" value = {valueSelect} onChange={changeValue}>
                         <option value="" disabled>Select</option>
-                        {ques.answer.map((answer_array, index) => (
-                        <option key = {[index, answer_array[0]]} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
+                        {ques.answer.map((desc, index) => (
+                        <option key = {[index, desc[0]]}
+                        value = {desc[0]}
+                        data-destination = {desc[1]}>{desc[0]}
+                        </option>
                         )
                         )}
                     </select>
