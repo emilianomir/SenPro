@@ -104,11 +104,14 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
     }
 
     function destValue(theEvent){
+<<<<<<< HEAD
         theEvent.preventDefault();
         if (valueSelect == '') {
             alert("Please choose an option")
             return;
         }
+=======
+>>>>>>> origin/main
         if (mapKey == current){
             entered();
         }

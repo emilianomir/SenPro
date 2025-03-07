@@ -4,11 +4,19 @@ import Link from "next/link";
 import { useAppContext } from "@/context";
 
 function ServiceCard({service, userClick}){
+<<<<<<< HEAD
     const {userServices, setServices} = useAppContext();
 
     const handleServiceSelect = ()=>{
         userClick();
         setServices([...userServices, service]);
+=======
+    const {setServices} = useAppContext();
+
+    const handleServiceSelect = ()=>{
+        userClick();
+        setServices(service);
+>>>>>>> origin/main
     }
 
     return (

@@ -4,12 +4,16 @@ import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSearchParams } from 'next/navigation'
 
 
 export default function ServiceInfo(){
     const {userServices, setServices, numberPlaces} = useAppContext();
     const [wentBack, setBack] = useState(false);
     const router = useRouter();
+
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
 
     const handleBack = ()=>{
         setBack(true);
@@ -33,7 +37,7 @@ export default function ServiceInfo(){
 
     return(
         <div className="full_page bg-secondary">
-            <ServicePageHeading />
+            <ServicePageHeading/>
             <div className="container mt-5">
                 <div className="row row-cols-2 service_info">
                     <div className="col-4 h-100">

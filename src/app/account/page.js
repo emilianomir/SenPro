@@ -1,7 +1,102 @@
 "use client"
-import { useRouter } from "next/navigation"
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { getUser, testExistingUser } from '@/components/DBactions';
+import { checkLogin, changePass } from '@/components/DBactions';
+import { Modal } from 'bootstrap';
+
+
+
 export default function Account(){
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
     const router = useRouter();
+
+    // States to be user in async function. 
+    const [sVal, setSearch] = useState(search);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [oldPass, changeOldPass] = useState("");
+    const [newPass, changeNewPass] = useState("");
+    
+
+        // OnChange Events
+        function oldPassChange(event)
+        {
+            changeOldPass(event.target.value);
+        }
+        function newPassChange(event)
+        {
+            changeNewPass(event.target.value);
+        }
+
+
+    // Using effect to pull necessary data from the db
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try{
+                if(await testExistingUser(sVal))
+                {
+                    const data = await getUser(sVal);
+                    setProducts(data);
+                }
+                else 
+                {
+                    setProducts([{username: "Guest User"}])
+                }
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchProducts();
+    }, []);
+
+
+    // Logout
+    const routeClick = () => {
+        router.push("/welcome");
+    }
+
+
+
+    const submitForm = (event)=> {
+        event.preventDefault();
+         if (!oldPass || !newPass){
+                    alert("Please fill out all fields");
+                    return;
+                }
+                if (oldPass === newPass){
+                    alert("The new password should be different");
+                    return;
+                }
+
+        // checking if initial password is correct
+        checkLogin(search, oldPass).then((data) =>
+            {
+                if(!data){
+                    alert("Invalid password");
+                    return;
+                }
+                else 
+                {   
+                    changePass(search, newPass);
+                    alert("Password has been changed!")
+                    return;
+                }
+            }) 
+
+    }
+
+
+
+    if(loading)
+        return <p>loading...</p>
+
     return (
         <div className="container">
             <div>
@@ -26,28 +121,57 @@ export default function Account(){
                             <h2 className="text-center pt-4">Account Settings</h2>
                             <div className="row row-cols-1">
                                 <div className="col ps-5 fs-2 mt-4">
-                                    UserName: User
+                                    UserName: {products[0].username}
                                 </div>
+
+
                                 <div className="col ps-5 fs-2 mt-4 text-info">
-                                    Change Password
+
+                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal" >Change Password</button>
+                                </div>
+                            
+                                <div className="col ps-5 fs-2 mt-4">
+                                    Email: {products[0].email}
                                 </div>
                                 <div className="col ps-5 fs-2 mt-4">
-                                    Default Zip Code: 78577
-                                </div>
-                                <div className="col ps-5 fs-2 mt-4">
-                                    Address: 12345 Hill Rd, Pharr TX
+                                    Address: {products[0].address}
                                 </div>
 
                                 <div className="col w-25 ps-5 mt-5 pb-5 h-100">
-                                    <button className="btn btn-danger w-100 fs-3 h-100">Log Out</button>
+                                    <button className="btn btn-danger w-100 fs-3 h-100" onClick={routeClick}>Log Out</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="modal-title">Change your password</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form onSubmit={submitForm}>
+                        <div className="modal-body">
+                            <label htmlFor="modal-password" className="form-label">Current Password:</label>
+                            <input value={oldPass} type="password" onChange={oldPassChange} className="form-control" id="modal-password"/>
+                            <label htmlFor="modal-password2" className="form-label">New Password:</label>
+                            <input value={newPass} type="password" onChange={newPassChange} className="form-control" id="modal-password2"/>
+                        </div>  
+                        <div className="modal-footer">
+                            <button type = "submit" className="btn btn-primary">Submit</button>
+                        </div>
+                        </form>
+
+                    </div>
+                </div>
             </div>
         </div>
+
+
 
 
     )

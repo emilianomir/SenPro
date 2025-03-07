@@ -2,8 +2,11 @@
 import Account_Overlay from "./Account_Overlay"
 import "../app/css/service_card.css"
 import { useState } from "react"
+import { useSearchParams } from 'next/navigation'
 
 export default function ServicePageHeading(){
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
     const [isVisible, setIsVisible] = useState(false);
 
     const toggleOverlay = () => {
