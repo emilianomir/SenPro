@@ -1,9 +1,14 @@
 "use client"
 import "../css/question_page.css"
 import Question from "@/components/Question";
-import { useAppContext } from "@/context";
+
+
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
+import { addQuestion } from "@/components/DBactions";
+
+
 
 
 function Questionaire({index = 1}){
@@ -16,6 +21,7 @@ function Questionaire({index = 1}){
     useEffect(() => {
         console.log("curr routed user email:", userEmail);
     }, [userEmail]);
+
 
     const goToNext = ()=>{
         router.push(`/services?user=${userEmail}`);

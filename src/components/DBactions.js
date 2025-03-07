@@ -1,8 +1,10 @@
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
 
+
 import { eq } from "drizzle-orm";
 import { questions } from "../db/schema/questions.js";
+import bcrypt from "bcryptjs";
 
 // testing for existing emails in singup
 export async function testExistingUser(email){
@@ -130,5 +132,22 @@ export async function getUser(email) {
     })
     .from(users)
     .where(eq(users.email, email));
+<<<<<<< HEAD
 >>>>>>> 8f25892 (add bycript)
 }
+=======
+}
+
+// Checking Login
+// export async function checkLogin(email, password) {
+//   const data = await db
+//     .select()
+//     .from(users)
+//     .where(and(eq(users.email, email), eq(users.password, password)));
+//   if (data.length === 0) {
+//     return false;
+//   } else {
+//     return true;
+//   }
+// }
+>>>>>>> 5552ca5 (fix, add: enabled google api, question and answer to db)

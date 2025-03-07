@@ -3,8 +3,7 @@ import { sql } from "drizzle-orm";
 import { integer, text, sqliteTable } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
-  email: text('email').notNull().primaryKey(), // email is the primary key to connect to other tables
-  username: text('username').notNull(),
+  email: text('email').notNull().primaryKey(),
   password: text('password').notNull(),
   type: text('type', { enum: ["user", "admin"] }),
   address: text('address'),
