@@ -1,36 +1,43 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
+import { testExistingUser, addQuestion } from "./DBactions";
 
 //object to help with Places API calls
-class Responses{
-    constructor(){
-        this.main_category = null;
-        this.types = null;
-        this.priceLevel = null;
-        this.rating = null;
-        this.name = null;
-        this.textQuery = null;
-    }
+class Responses {
+  constructor() {
+    this.main_category = null;
+    this.types = null;
+    this.priceLevel = null;
+    this.rating = null;
+    this.name = null;
+    this.textQuery = null;
+  }
 }
 
-function Question({theQuestion, current, func, changeLoading, entered, generalSearch, specifiedLocation, userSearchName}){
-    const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
-    const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
-    const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
-    const [destSelect, changeDes] = useState(''); //destination for map purposes
-    const [mapKey, setKey] = useState(current);
-    const ques = theQuestion.get(mapKey);
-    const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
-    const [theTest, _] = useState(new Responses()); //the created object for API calls
 
-    function changeValue(theEvent){
-        const selectOptionDest = theEvent.target.selectedOptions[0].getAttribute("data-destination");  //gets the first select value (in this case, are only selected) then find the value of "data-other" 
-        const selectedAPIValue = theEvent.target.selectedOptions[0].getAttribute("data-valueforapi");
-        valueSelected(theEvent.target.value);
-        changeDes(selectOptionDest);
-        if (selectedAPIValue != "")
-            setAPIvalue(selectedAPIValue);
-    }
+function Question({ theQuestion, current, func, userEmail }) {
+  const { setResponses } = useAppContext(); //used to pass the respones of the user to other pages (mainly services menu page)
+  const [valueSelect, valueSelected] = useState(""); //what the user sees and selects
+  const [apiValue, setAPIvalue] = useState(""); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
+  const [destSelect, changeDes] = useState(""); //destination for map purposes
+  const [mapKey, setKey] = useState(current);
+  const ques = theQuestion.get(mapKey);
+  const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
+  const [theTest, _] = useState(new Responses()); //the created object for API calls
+
+
+
+  function changeValue(theEvent) {
+    const selectOptionDest =
+      theEvent.target.selectedOptions[0].getAttribute("data-destination"); //gets the first select value (in this case, are only selected) then find the value of "data-other"
+    const selectedAPIValue =
+      theEvent.target.selectedOptions[0].getAttribute("data-valueforapi");
+    valueSelected(theEvent.target.value);
+    changeDes(selectOptionDest);
+    if (selectedAPIValue != "") setAPIvalue(selectedAPIValue);
+  }
+
+    
 
     function destValue(theEvent){
         if (mapKey == current){
@@ -80,14 +87,27 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         setKey(destSelect);
         theEvent.preventDefault();
         valueSelected('');
+      
+      if (userEmail) { 
+        try {
+            const exists = await testExistingUser(userEmail);
+            if (exists) {
+                await addQuestion(userEmail, ques.question, valueSelect);
+            } else {
+                console.error("user doesnt exist in db:", userEmail);
+            }
+        } catch (e) {
+            console.error("error storing question and answer:", e);
+      
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
         if (destSelect == "End") { 
             setResponses(theTest);//to have the object in mulitple pages
             setFinished(true);
-        }
 
+        }
     }
+
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
         if (userSearchName){
@@ -104,36 +124,47 @@ function Question({theQuestion, current, func, changeLoading, entered, generalSe
         }
       }, [destSelect, finished, generalSearch, userSearchName]);
 
-    return (
-    <div className = "container">
-        <div className = "text-center text-white">
-            <h1 className="fs-3">{ques.question[0]}</h1>
+  return (
+    <div className="container">
+      <div className="text-center text-white">
+        <h1 className="fs-3">{ques.question[0]}</h1>
+      </div>
+      <form onSubmit={destValue}>
+        <div className="row row-cols-2">
+          <div className="col-11">
+            <select
+              className="form-select"
+              value={valueSelect}
+              onChange={changeValue}
+            >
+              <option value="" disabled>
+                Select
+              </option>
+              {ques.answer.map((answer_array, index) => (
+                <option
+                  key={[index, answer_array[0]]}
+                  value={answer_array[0]}
+                  data-valueforapi={answer_array[2] ? answer_array[2] : ""}
+                  data-destination={answer_array[1]}
+                >
+                  {answer_array[0]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-1">
+            <button type="submit" className="btn btn-primary w-100">
+              Enter
+            </button>
+          </div>
         </div>
-        <form onSubmit={destValue}>
-            <div className="row row-cols-2">
-                <div className="col-11">
-                    <select className="form-select" value = {valueSelect} onChange={changeValue}>
-                        <option value="" disabled>Select</option>
-                        {ques.answer.map((answer_array, index) => (
-                        <option key = {[index, answer_array[0]]} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
-                        )
-                        )}
-                    </select>
-                </div>
-                <div className="col-1">
-                    <button  type="submit" className="btn btn-primary w-100">Enter</button>
-                </div>
- 
-            </div>
-        
-        </form>
-
+      </form>
     </div>
-    );
-    //answer_array indexes values are :
-    //0: The response string. EX: "Museum", "Food and Drink", etc
-    //1: The key for the map. This just says where to go in hash map if the option is picked
-    //2: Some have an additonal value for the API value. Otherwise it would be treated as ""
+  );
+  //answer_array indexes values are :
+  //0: The response string. EX: "Museum", "Food and Drink", etc
+  //1: The key for the map. This just says where to go in hash map if the option is picked
+  //2: Some have an additonal value for the API value. Otherwise it would be treated as ""
 }
 
 export default Question;
