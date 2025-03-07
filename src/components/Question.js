@@ -26,6 +26,7 @@ function Question({ theQuestion, current, func, userEmail }) {
   const [theTest, _] = useState(new Responses()); //the created object for API calls
 
 
+
   function changeValue(theEvent) {
     const selectOptionDest =
       theEvent.target.selectedOptions[0].getAttribute("data-destination"); //gets the first select value (in this case, are only selected) then find the value of "data-other"
@@ -36,67 +37,58 @@ function Question({ theQuestion, current, func, userEmail }) {
     if (selectedAPIValue != "") setAPIvalue(selectedAPIValue);
   }
 
-  async function destValue(theEvent) {
-    theEvent.preventDefault();
-    if (valueSelect != "No Preference") {
-      //we do not need to change or update values if no preference
-      switch (
-        ques.question[1] //looks at the grouping index
-      ) {
-        case 0:
-          theTest.main_category = apiValue === "" ? valueSelect : apiValue;
-          theTest.textQuery = valueSelect;
-          break;
-        case 1:
-          //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
-          //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
-          if (apiValue != "") {
-            if (theTest.types)
-              //if a type was added and the incoming type is same string, do nothing, else if not food drink main category, replace the old value with new. Else add to the beginning of the string in API Call format: types_call
-              apiValue === theTest.types
-                ? null
-                : theTest.textQuery != "Food and Drink"
-                ? (theTest.types = apiValue.toLowerCase())
-                : `${apiValue.toLowerCase()}_${theTest.types}`;
-            else theTest.types = apiValue.toLowerCase();
-          }
-          //if the property has a string, then add to string, otherwise replace it
-          else
-            theTest.types
-              ? (theTest.types = `${valueSelect.toLowerCase()}_${
-                  theTest.types
-                }`)
-              : (theTest.types = valueSelect.toLowerCase());
-          //this is just saying if we are in the food drink category, don't replace, but add unless theText query property is actually the string "Food and Drink"
-          theTest.main_category === "Food and Drink" &&
-          theTest.textQuery != "Food and Drink"
-            ? (theTest.textQuery = `${valueSelect} ${theTest.textQuery}`)
-            : (theTest.textQuery = valueSelect);
-          break;
-        case 2:
-          theTest.textQuery
-            ? (theTest.textQuery = `${valueSelect} ${theTest.textQuery}`)
-            : (theTest.textQuery = valueSelect);
-          break;
-        case 3:
-          theTest.priceLevel = "PRICE_LEVEL_" + valueSelect.toUpperCase();
-          break;
-        case 4:
-          const theNumber = valueSelect.split(/[+-]/); //regex to get the number seperated from plus or minus symbol
-          theTest.rating = Number(theNumber[0]);
-          break;
-        case 5:
-          theTest.name = valueSelect;
-          break;
-      }
-    }
-    console.log("theTest in Question component: ")
-    console.log(theTest);
-    setKey(destSelect);
-    theEvent.preventDefault();
-    valueSelected("");
+    
 
-    if (userEmail) { 
+    function destValue(theEvent){
+        if (mapKey == current){
+            entered();
+        }
+        if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
+            switch (ques.question[1]){ //looks at the grouping index
+                case 0:
+                    theTest.main_category = apiValue === "" ? valueSelect: apiValue; 
+                    theTest.textQuery = valueSelect;
+                    break;
+                case 1:
+                    //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
+                    //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
+                    if (apiValue != ""){
+                        if (apiValue != "No Change"){
+                            if (theTest.types)
+                                //if a type was added and the incoming type is same string, do nothing, else if not food drink main category, replace the old value with new. Else add to the beginning of the string in API Call format: types_call
+                                apiValue === theTest.types ? null: theTest.textQuery != "Food and Drink" ? theTest.types = apiValue.toLowerCase() : `${apiValue.toLowerCase()}_${theTest.types}`  
+                            else 
+                                theTest.types = apiValue.toLowerCase()
+                        }
+                    }
+                    else 
+                        //if the property has a string, then add to string, otherwise replace it
+                        theTest.types ? theTest.types =`${valueSelect.toLowerCase()}_${theTest.types}`: theTest.types = valueSelect.toLowerCase();
+                    //this is just saying if we are in the food drink category, don't replace, but add unless theText query property is actually the string "Food and Drink"
+                    theTest.main_category === 'Food and Drink' && theTest.textQuery != 'Food and Drink' ? theTest.textQuery = `${valueSelect} ${theTest.textQuery}` : theTest.textQuery = valueSelect;
+                    break;
+                case 2:
+                    theTest.textQuery ? theTest.textQuery = `${valueSelect} ${theTest.textQuery}`: theTest.textQuery = valueSelect;  
+                    break;
+                case 3:
+                    theTest.priceLevel = "PRICE_LEVEL_"+ valueSelect.toUpperCase();
+                    break;
+                case 4: 
+                    const theNumber = valueSelect.split(/[+-]/); //regex to get the number seperated from plus or minus symbol
+                    theTest.rating = Number(theNumber[0]);
+                    break;
+                case 5:
+                    theTest.name = valueSelect; 
+                    break;
+            }
+        }
+        console.log("theTest in Question component: ")
+        console.log(theTest);
+        setKey(destSelect);
+        theEvent.preventDefault();
+        valueSelected('');
+      
+      if (userEmail) { 
         try {
             const exists = await testExistingUser(userEmail);
             if (exists) {
@@ -106,24 +98,31 @@ function Question({ theQuestion, current, func, userEmail }) {
             }
         } catch (e) {
             console.error("error storing question and answer:", e);
+      
+        if (apiValue != '') //if there was an api value, reset it for next time
+            setAPIvalue('');
+        if (destSelect == "End") { 
+            setResponses(theTest);//to have the object in mulitple pages
+            setFinished(true);
+
         }
     }
-    if (apiValue != "")
-      //if there was an api value, reset it for next time
-      setAPIvalue("");
-    if (destSelect == "End") {
-    setResponses(theTest); //to have the object in mulitple pages
-    setFinished(true);
-    }
-  }
 
-  useEffect(() => {
-    //this only called if finished and destSelect changes in values.
-    if (finished && destSelect === "End") {
-      func(); // this is a function call from the questionaire page that just routes to services menu
-      setFinished(false);
-    }
-  }, [destSelect, finished]);
+
+    useEffect(() => { //this only called if finished and destSelect changes in values.
+        if (userSearchName){
+            generalSearch = true;
+            theTest.name = specifiedLocation[0].toUpperCase() + specifiedLocation.substring(1);
+        }
+        if (generalSearch) 
+            setResponses(theTest)
+        
+        if ((finished && destSelect === "End") || generalSearch) { 
+            changeLoading();
+            func();// this is a function call from the questionaire page that just routes to services menu
+            setFinished(false); 
+        }
+      }, [destSelect, finished, generalSearch, userSearchName]);
 
   return (
     <div className="container">
