@@ -8,8 +8,8 @@ export default defineConfig({
     dialect: "turso",
     out: "./src/db/migrations",
     dbCredentials: {
-        url: TURSO_CONNECTION_URL, // change this
-        authToken: TURSO_AUTH_TOKEN, // change this
+        url: connectionUrl, // change this
+        authToken: authToken, // change this
     },
 
 });

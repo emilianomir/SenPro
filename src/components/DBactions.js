@@ -1,8 +1,8 @@
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
 
-
-import { eq } from "drizzle-orm";
+import { eq} from "drizzle-orm";
+import { userAgentFromString } from "next/server.js";
 import { questions } from "../db/schema/questions.js";
 import bcrypt from "bcryptjs";
 
@@ -20,6 +20,7 @@ export async function testExistingUser(email){
   }
 
 // Adding User for Sign up
+
 export async function addUser(
   email,
   username,
@@ -50,18 +51,18 @@ export async function addUser(
   }
 }
 
-
-
 // Checking Login
 export async function checkLogin(email, password){
-    const data = await db.select().from(users).where(and(eq(users.email, email), eq(users.password, password)));
+    
+    const data = await db.select().from(users).where(eq(users.email, email));
     if(data.length === 0)
     {
+
      return false
     }
     else
     {
-     return true
+        return await bcrypt.compare(password, data[0].password)
     }
  }
 export async function updateUserAddress(email, address) {
@@ -84,6 +85,7 @@ export async function addQuestion(userEmail, question, answer) {
       question,
       answer,
     });
+
 
     await db.insert(questions).values({
       userEmail: userEmail,
@@ -126,3 +128,15 @@ export async function getUser(email) {
     .from(users)
     .where(eq(users.email, email));
   }
+
+
+ //change password
+ export async function changePass(email, newpass)
+ {
+    const pass = await bcrypt.hash(newpass, 10);
+
+    await db.update( users )
+    .set({password: pass})
+    .where(eq(users.email, email));
+ }
+

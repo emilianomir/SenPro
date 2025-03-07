@@ -7,11 +7,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
+import { useSearchParams } from 'next/navigation'
+
 
 export default function ServiceInfo(){
     const {userServices, setServices} = useAppContext();
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const router = useRouter();
+
+    const searchParams = useSearchParams();
+    const search = searchParams.get('user');
 
     const handleBack = ()=>{
         router.back();
