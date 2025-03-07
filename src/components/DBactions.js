@@ -17,15 +17,7 @@ export async function testExistingUser(email){
    {
     return true
    }
-// testing for existing emails
-export async function testExistingUser(email) {
-  const data = await db.select().from(users).where(eq(users.email, email));
-  if (data.length === 0) {
-    return false;
-  } else {
-    return true;
   }
-}
 
 // Adding User for Sign up
 export async function addUser(
@@ -35,14 +27,27 @@ export async function addUser(
   address = "",
   type = "user"
 ) {
-  const pass = await bcrypt.hash(password, 10);
-  await db.insert(users).values({
-    email: email,
-    username: username,
-    password: password,
-    address: address,
-    type: type,
+  console.log("Adding user to db:", {
+    email,
+    username,
+    password,
+    address,
+    type
   });
+  const pass = await bcrypt.hash(password, 10);
+  try{
+    await db.insert(users).values({
+      email: email,
+      username: username,
+      password: password,
+      address: address,
+      type: type,
+    });
+    console.log("user added successfully");
+  } catch (e) {
+    console.error("error in adding user:", e);
+    throw e;
+  }
 }
 
 
@@ -101,14 +106,14 @@ export async function getUserQuestions(userEmail) {
     }
 }
 
-export async function checkLogin(email, password) {
-  const data = await db.select().from(users).where(eq(users.email, email));
-  if (data.length === 0) {
-    return false;
-  } else {
-    return await bcrypt.compare(password, data[0].password);
-  }
-}
+// export async function checkLogin(email, password) {
+//   const data = await db.select().from(users).where(eq(users.email, email));
+//   if (data.length === 0) {
+//     return false;
+//   } else {
+//     return await bcrypt.compare(password, data[0].password);
+//   }
+// }
 
 // get user attrributes
 export async function getUser(email) {
@@ -120,16 +125,4 @@ export async function getUser(email) {
     })
     .from(users)
     .where(eq(users.email, email));
-
-// Checking Login
-// export async function checkLogin(email, password) {
-//   const data = await db
-//     .select()
-//     .from(users)
-//     .where(and(eq(users.email, email), eq(users.password, password)));
-//   if (data.length === 0) {
-//     return false;
-//   } else {
-//     return true;
-//   }
-// }
+  }
