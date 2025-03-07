@@ -92,7 +92,6 @@ export async function addQuestion(userEmail, question, answer) {
 }
 
 export async function getUserQuestions(userEmail) {
-<<<<<<< HEAD
     try {
         const data = await db.select().from(questions).where(eq(questions.userEmail, userEmail));
         return data;
@@ -100,17 +99,6 @@ export async function getUserQuestions(userEmail) {
         console.error("error getting questions and answers:", e);
         throw e;
     }
-=======
-  try {
-    const data = await db
-      .select()
-      .from(questions)
-      .where(eq(questions.userEmail, userEmail));
-    return data;
-  } catch (e) {
-    console.error("error getting questions and answers:", e);
-    throw e;
-  }
 }
 
 export async function checkLogin(email, password) {
@@ -132,11 +120,6 @@ export async function getUser(email) {
     })
     .from(users)
     .where(eq(users.email, email));
-<<<<<<< HEAD
->>>>>>> 8f25892 (add bycript)
-}
-=======
-}
 
 // Checking Login
 // export async function checkLogin(email, password) {
@@ -150,4 +133,3 @@ export async function getUser(email) {
 //     return true;
 //   }
 // }
->>>>>>> 5552ca5 (fix, add: enabled google api, question and answer to db)

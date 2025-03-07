@@ -98,7 +98,6 @@ function Question({ theQuestion, current, func, userEmail }) {
       }
     }
 
-<<<<<<< HEAD
     function destValue(theEvent){
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
@@ -168,7 +167,6 @@ function Question({ theQuestion, current, func, userEmail }) {
             setFinished(true);
         }
 
-=======
     console.log("theTest in Question component: ");
     console.log(theTest);
     setKey(destSelect);
@@ -181,7 +179,6 @@ function Question({ theQuestion, current, func, userEmail }) {
     if (destSelect == "End") {
       setResponses(theTest); //to have the object in mulitple pages
       setFinished(true);
->>>>>>> 5552ca5 (fix, add: enabled google api, question and answer to db)
     }
   }
 
