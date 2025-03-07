@@ -2,15 +2,13 @@ import { useEffect, useRef } from "react";
 import Script from "next/script";
 
 export default function GoogleMap2() {
-  const mapRef = useRef(); // preserve the stuff inside box
-  const dataRef = useRef();
+  const mapRef = useRef();
 
   async function loadMap() {
     const { Map } = await window.google.maps.importLibrary("maps"); // create usable Map from namespace google.maps
     try {
-      // get the current map, and then give it initial settinsg, this is the working map REF
       const myMap = new Map(mapRef.current, {
-        center: { lat: 26.304225, lng: -98.163751 }, // the settings
+        center: { lat: 26.304225, lng: -98.163751 },
         zoom: 8, // more settings , can add more
       });
       var request = {

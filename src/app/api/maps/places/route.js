@@ -2,7 +2,7 @@ export async function POST(req) {
   const { userResponses } = await req.json();
   try {
     const address = "Houston, TX 77015";
-    const api_key = process.env.GOOGLE_API_KEY;
+    const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
     const url = "https://places.googleapis.com/v1/places:searchText";
     console.log("my url: ", url);
 

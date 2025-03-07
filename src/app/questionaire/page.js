@@ -6,9 +6,13 @@ import Question from "@/components/Question";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
-import { addQuestion } from "@/components/DBactions";
 
 
+
+  const goToNext = () => {
+    if (apiServices) setAPIServices(null);
+    router.push("/services");
+  };
 
 
 function Questionaire({index = 1}){

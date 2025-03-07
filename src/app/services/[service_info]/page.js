@@ -4,11 +4,13 @@ import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import GenericSingleMap from "@/components/GenericSingleMap";
+import Script from "next/script";
 
 export default function ServiceInfo(){
     const {userServices, setServices} = useAppContext();
+    const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const router = useRouter();
 
     const handleBack = ()=>{
@@ -19,17 +21,29 @@ export default function ServiceInfo(){
         const handleRouteChangeComplete = () => {
           setServices(null);
         };
-    }
-    )
+    }, []);
 
     return(
         <div className="full_page bg-secondary">
+              <Script
+                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
+                onLoad={() => setIsScriptLoaded(true)}
+                strategy="afterInteractive"
+            />
             <ServicePageHeading />
             <div className="container mt-5">
                 <div className="row row-cols-2 service_info">
                     <div className="col-4 h-100">
                         <h1 className="fs-1 text-white">Map:</h1>
-                        <div className="h-100 bg-secondary-subtle">MAP API HERE</div>
+                        <div className="h-100 bg-secondary-subtle">
+                            {userServices?.formattedAddress ? (
+                                <GenericSingleMap 
+                                    address={userServices.formattedAddress}
+                                    isLoaded={isScriptLoaded}
+                                />
+                            ):(<div className="text-center pt-3">Loading map...</div>)
+                            }
+                        </div>
                     </div>
 
                     <div className="col-8 h-100">

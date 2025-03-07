@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 
-export default function GenericMap({ address }) {
+export default function GenericMap({ address, isLoaded }) {
   const mapRef = useRef(null);
   const geocoderRef = useRef(null);
 
@@ -10,7 +10,7 @@ export default function GenericMap({ address }) {
     if (window.google) {
       loadGenericMap();
     }
-  }, []);
+  }, [isLoaded]);
 
   async function loadGenericMap() {
     const { Map } = await window.google.maps.importLibrary("maps");
@@ -18,8 +18,11 @@ export default function GenericMap({ address }) {
     try {
       mapRef.current = new Map(document.getElementById("map"), {
         center: { lat: 26.304225, lng: -98.163751 }, //default
-        zoom: 1,
+        zoom: 13,
       });
+      if (address) {
+        geocodeTheAddress(address);
+      }
     } catch (e) {
       console.log("mmap didnt load: ", e);
     }
@@ -27,7 +30,7 @@ export default function GenericMap({ address }) {
 
   async function geocodeTheAddress(userAddress) {
     if (!userAddress || !mapRef.current) {
-      console.log("address didnt go trhough or bad map");
+      console.log("address didnt go through or bad map");
       return;
     }
 
@@ -38,8 +41,6 @@ export default function GenericMap({ address }) {
           if (status === "OK") {
             const geoCodedLocation = results[0].geometry.location;
             mapRef.current.setCenter(geoCodedLocation);
-            // mapRef.current.setZoom(8);
-            // will need to change this maybe, giving setzoom time to change might not be best
             setTimeout(() => {
               mapRef.current.setZoom(11);
             }, 200);
@@ -61,11 +62,10 @@ export default function GenericMap({ address }) {
 
   // loop over new input of address
   useEffect(() => {
-    // update the new address, when adding new address, without rreladoing
-    if (address) {
+    if (address && mapRef.current && isLoaded) {
       geocodeTheAddress(address);
     }
-  }, [address]); // dependency arr, when this value changes, useeffecthook runs again
+  }, [address, isLoaded]); // dependency arr, when this value changes, useeffecthook runs again
 
   return (
     <div>
