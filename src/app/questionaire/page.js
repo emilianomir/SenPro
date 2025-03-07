@@ -9,7 +9,7 @@ import Loading from "@/components/Loading";
 
 
 function Questionaire(){
-    const {apiServices, setAPIServices, userServices, numberPlaces} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setServices} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [atLeastOne, setOne] = useState(false); //checks to see if user enters on response.
     const [gSearch, setGSearch] = useState(false);
@@ -17,8 +17,8 @@ function Questionaire(){
     const [specLoc, setSpecLoc] = useState(false);
     const router = useRouter();
     if (numberPlaces < userServices.length + 1){ //reset
-        // setServices([]);
-        router.push("/start"); 
+        setServices([]);
+        redirect("/start"); 
         return;
     }
     const goToNext = ()=>{
