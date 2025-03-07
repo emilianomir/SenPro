@@ -39,7 +39,7 @@ function Question({ theQuestion, current, func, userEmail }) {
 
     
 
-    function destValue(theEvent){
+    async function destValue(theEvent){
         if (mapKey == current){
             entered();
         }
@@ -107,6 +107,7 @@ function Question({ theQuestion, current, func, userEmail }) {
 
         }
     }
+  }
 
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
@@ -166,5 +167,5 @@ function Question({ theQuestion, current, func, userEmail }) {
   //1: The key for the map. This just says where to go in hash map if the option is picked
   //2: Some have an additonal value for the API value. Otherwise it would be treated as ""
 }
-
+}
 export default Question;
