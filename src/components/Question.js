@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
 import { testExistingUser, addQuestion } from "./DBactions";
+import { useSearchParams } from "next/navigation";
 
 //object to help with Places API calls
 class Responses {
@@ -15,7 +16,9 @@ class Responses {
 }
 
 
-function Question({ theQuestion, current, func, userEmail }) {
+function Question({ theQuestion, current, func, changeLoading, entered, generalSearch, specifiedLocation, userSearchName }) {
+  const searchParams = useSearchParams();
+  const userEmail = searchParams.get("user");
   const { setResponses } = useAppContext(); //used to pass the respones of the user to other pages (mainly services menu page)
   const [valueSelect, valueSelected] = useState(""); //what the user sees and selects
   const [apiValue, setAPIvalue] = useState(""); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
@@ -40,6 +43,7 @@ function Question({ theQuestion, current, func, userEmail }) {
     
 
     async function destValue(theEvent){
+      theEvent.preventDefault();
         if (mapKey == current){
             entered();
         }
@@ -85,20 +89,19 @@ function Question({ theQuestion, current, func, userEmail }) {
         console.log("theTest in Question component: ")
         console.log(theTest);
         setKey(destSelect);
-        theEvent.preventDefault();
         valueSelected('');
       
       if (userEmail) { 
         try {
             const exists = await testExistingUser(userEmail);
             if (exists) {
-                await addQuestion(userEmail, ques.question, valueSelect);
+                await addQuestion(userEmail, ques.question[0], valueSelect);
             } else {
                 console.error("user doesnt exist in db:", userEmail);
             }
         } catch (e) {
             console.error("error storing question and answer:", e);
-      
+        }
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
         if (destSelect == "End") { 
@@ -167,5 +170,5 @@ function Question({ theQuestion, current, func, userEmail }) {
   //1: The key for the map. This just says where to go in hash map if the option is picked
   //2: Some have an additonal value for the API value. Otherwise it would be treated as ""
 }
-}
+
 export default Question;

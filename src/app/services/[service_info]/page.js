@@ -31,7 +31,7 @@ export default function ServiceInfo(){
     return(
         <div className="full_page bg-secondary">
               <Script
-                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}&libraries=places&loading=async`}
+                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
                 onLoad={() => setIsScriptLoaded(true)}
                 strategy="afterInteractive"
             />
