@@ -48,6 +48,7 @@ export async function checkLogin(email, password){
     }
  }
 
+
  // get user attrributes
  export async function getUser(email)
  {
