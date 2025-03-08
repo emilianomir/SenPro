@@ -6,13 +6,24 @@ import { useAppContext } from "@/context";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
+import { useSearchParams } from 'next/navigation';
 
 
 
 export default function Services(){
-    const {userResponses, apiServices, setAPIServices} = useAppContext();
+    const {userResponses, apiServices, setAPIServices, userEmail, setUserEmail} = useAppContext();
     const [clickedService, setClicked] = useState(false);
     const [loading, setLoading] = useState(true);
+    const searchParams = useSearchParams();
+    const userEmailFromURL = searchParams.get('user');
+
+    // each time the userEmailFromURL changes, set the userEmail
+    useEffect(() => {
+        if (userEmailFromURL) {
+            setUserEmail(userEmailFromURL);
+        }
+    }, [userEmailFromURL, setUserEmail]);
+    console.log("the userEmail: ", userEmail);
 
 
     function changeClick(){
@@ -24,12 +35,15 @@ export default function Services(){
 
         const getInfo = async ()=> {
             try {
+                console.log("sending userEmail:", userEmail);
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses})
+                    body: JSON.stringify({userResponses, userEmail})
                 });
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log("Error:", response.status, errorText);
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
         

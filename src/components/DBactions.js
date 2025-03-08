@@ -140,3 +140,23 @@ export async function getUser(email) {
     .where(eq(users.email, email));
  }
 
+export async function getUserAddress(userEmail) {
+  try {
+    const data = await db.select().from(users).where(eq(users.email, userEmail));
+    if (!data || data.length === 0) {
+      throw new Error(`no user found with email: ${userEmail}`);
+    }
+    if (!data[0].address) {
+      throw new Error(`no address found for user: ${userEmail}`); 
+    }
+    return data[0].address;
+  } catch (e) {
+    console.error("error getting user address:", e);
+    throw e;
+  } 
+}
+
+export async function getUserEmail(email) {
+  const data = await db.select().from(users).where(eq(users.email, email));
+  return data[0].email;
+} 

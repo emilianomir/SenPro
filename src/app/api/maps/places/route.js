@@ -1,7 +1,15 @@
 export async function POST(req){
-    const {userResponses} = await req.json();
+    const {userResponses, userEmail} = await req.json();
+    const { getUserAddress } = await import('@/components/DBactions');
+    console.log("The userEmail: ", userEmail);
     try {
-        const address = "Houston, TX 77015";
+        let address;
+        console.log("checking userEmail right before:", userEmail);
+        if (userEmail) {
+            address = await getUserAddress(userEmail);
+        } else {
+            address = "Houston, TX 77015";
+        }
         const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
         const url = "https://places.googleapis.com/v1/places:searchText"
 
