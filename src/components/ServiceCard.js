@@ -2,28 +2,23 @@
 import "../app/css/service_card.css"
 import Link from "next/link";
 import { useAppContext } from "@/context";
+import Image from "next/image";
+import { useState } from "react";
 
 function ServiceCard({service, userClick}){
-<<<<<<< HEAD
     const {userServices, setServices} = useAppContext();
+    const [error, setError] = useState(false);
 
     const handleServiceSelect = ()=>{
-        userClick();
-        setServices([...userServices, service]);
-=======
-    const {setServices} = useAppContext();
-
-    const handleServiceSelect = ()=>{
-        userClick();
-        setServices(service);
->>>>>>> origin/main
+        userClick(); //this is a function from the services menu page that helps with showing loading UI
+        setServices([...userServices, service]); //makes a copy and adds the current service to it only on click
     }
 
     return (
         <Link href = {"/services/" + service.displayName.text} >
             <div onClick={handleServiceSelect} className = "card cardAdjust">
                 <div className ="card-body">
-                    <img className = "card-img-top img-fluid fixHeight" src= {service.photo_image}/>  
+                    <Image className = "card-img-top img-fluid fixHeight" src= {error? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photo_image} width={300} height={300} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                     <h4 className = "card-title text-wrap pt-3 titleHeight mb-4">{service.displayName.text}</h4>
                     <div className="d-flex align-items-center">
                         <p className = "card-text fs-4"> Rating: {service.rating ? service.rating : "N/A" }</p> 
@@ -31,7 +26,8 @@ function ServiceCard({service, userClick}){
                     </div>
   
                     <p className = "card-text fs-4 text-wrap">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
-                                                                 {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") }</p>
+                                                                 {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
+                                                                 }</p>
                 </div>
             </div>
          </Link>

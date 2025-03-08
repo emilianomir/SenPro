@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation'
 
 export default function ServiceInfo(){
     const {userServices, setServices, numberPlaces} = useAppContext();
-    const [wentBack, setBack] = useState(false);
+    const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const router = useRouter();
 
     const searchParams = useSearchParams();
@@ -20,15 +20,15 @@ export default function ServiceInfo(){
     }
 
     const handleEnter = ()=> {
-        router.push(numberPlaces == userServices.length ? "/end": "/questionaire")
+        router.push(numberPlaces == userServices.length ? "/end": "/questionaire") //checks to see if user reaches decided limit
     }
     useEffect(() => {
         const handleRouteChangeComplete = () => {
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
-                setServices(userServices.slice(0, userServices.length -1));
+                setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects
             if (wentBack){
                 setBack(false);
-                router.back();
+                router.back(); //should be the services menu page since you can only reach this page by clicking a service in services menu
             }
         };
         handleRouteChangeComplete();
@@ -47,7 +47,7 @@ export default function ServiceInfo(){
 
                     <div className="col-8 h-100">
                         <h1 className="fs-1 text-white">Info:</h1>
-                        {userServices.length > 0 && 
+                        {userServices.length > 0 && //to prevent errors when scenario that there are no services in list
                         <div className="bg-secondary-subtle h-100">
                         <div className="fs-3 text-center pt-3">{userServices[userServices.length-1].displayName.text}</div>
                         <div className="row row-cols-2 mt-4">

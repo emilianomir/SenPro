@@ -10,8 +10,8 @@ import Link from "next/link";
 
 
 export default function Services(){
-    const {userResponses, apiServices, setAPIServices} = useAppContext();
-    const [clickedService, setClicked] = useState(false);
+    const {userResponses, apiServices, setAPIServices} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const [clickedService, setClicked] = useState(false); //loading purposes
     const [loading, setLoading] = useState(true);
 
 
@@ -34,10 +34,10 @@ export default function Services(){
                 }
         
                 const {services_result} = await response.json();
-                console.log("Service result in services page: ");
+                console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
                 if (change){
-                    if (services_result)
+                    if (services_result) //only replace if there is at least a service
                         setAPIServices(services_result);
                     setLoading(false);
                 }
@@ -47,9 +47,9 @@ export default function Services(){
                 alert("There was an issue getting the data.");
             }
         }
-        if (!apiServices)
+        if (!apiServices) //if we already have services from previous call, don't make a new call
             getInfo();
-        console.log("The apiServices: ")
+        console.log("The apiServices: ") //debugging
         console.log(apiServices);
         return () => {
             change = false;
@@ -61,8 +61,8 @@ export default function Services(){
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />
-            {(!apiServices && loading) && <Loading message = {"Fetching data based on response"}/> }
-            {(apiServices || !loading) && 
+            {(!apiServices && loading) && <Loading message = {"Fetching data based on response"}/> } 
+            {(apiServices || !loading) && //this either means we had services stored from previous call or fetch data was finsihed
                 <>
                     <div className="container mt-4 ms-4">
                         <div className="fs-2 text-white fw-bold mb-3">
@@ -90,7 +90,7 @@ export default function Services(){
 
                         </div>               
                         <div className="scroll">
-                            {apiServices ? apiServices.map((service_object, index)=>(
+                            {apiServices ? apiServices.map((service_object, index)=>( //if there were services, show them else show the message below 
                                 <div key ={index} className="d-inline-block me-4">                         
                                     <ServiceCard service = {service_object} userClick = {changeClick}/> 
                                 </div>

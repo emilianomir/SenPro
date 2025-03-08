@@ -4,7 +4,7 @@ import ServicePageHeading from "@/components/ServicePageHeading";
 import "../css/end_page.css"
 
 export default function End(){
-    const {userServices} = useAppContext();
+    const {userServices} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     console.log("The services: ")
     console.log(userServices);
     console.log(userServices.length);

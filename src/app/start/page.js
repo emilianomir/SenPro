@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { getUser, testExistingUser } from '@/components/DBactions';
+import Loading from '@/components/Loading';
 
 function StartPage(){
     const searchParams = useSearchParams();
@@ -54,7 +55,10 @@ function StartPage(){
     }
 
     if(loading)
-        return <p>loading...</p>
+        return (<div className='vh-100 vw-100'>
+            <Loading message={search != "" ? "Setting up" : "Getting account info"} />
+        </div>)
+
 
     return (
         <>

@@ -1,3 +1,4 @@
+"use server"
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
 import { eq, and } from "drizzle-orm";
@@ -48,8 +49,6 @@ export async function checkLogin(email, password){
     }
  }
 
-<<<<<<< HEAD
-=======
 
  // get user attrributes
  export async function getUser(email)
@@ -72,4 +71,3 @@ export async function checkLogin(email, password){
     .where(eq(users.email, email));
  }
 
->>>>>>> origin/main
