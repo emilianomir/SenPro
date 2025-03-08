@@ -16,62 +16,57 @@ export default function Services(){
     const [loading, setLoading] = useState(true);
     const searchParams = useSearchParams();
     const userEmailFromURL = searchParams.get('user');
-
-    // each time the userEmailFromURL changes, set the userEmail
-    useEffect(() => {
-        if (userEmailFromURL) {
-            setUserEmail(userEmailFromURL);
-        }
-    }, [userEmailFromURL, setUserEmail]);
-    console.log("the userEmail: ", userEmail);
-
-
+    let change = true;
     function changeClick(){
         setClicked(true);
     }
 
-    useEffect(()=> {
-        let change = true;
-
-        const getInfo = async ()=> {
-            try {
-                console.log("sending userEmail:", userEmail);
-                const response = await fetch('/api/maps/places', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses, userEmail})
-                });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.log("Error:", response.status, errorText);
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-        
-                const {services_result} = await response.json();
-                console.log("Service result in services page: ");
-                console.log(services_result);
-                if (change){
-                    if (services_result)
-                        setAPIServices(services_result);
-                    setLoading(false);
-                }
-        
-            }catch (error) {
-                console.error("Error fetching API:", error);
-                alert("There was an issue getting the data.");
-            }
+    // each time the userEmailFromURL changes, set the userEmail
+    useEffect(() => {
+        if (userEmailFromURL && userEmail !== userEmailFromURL) {
+            setUserEmail(userEmailFromURL);
         }
-        if (!apiServices)
+    }, [userEmailFromURL, userEmail, setUserEmail]);
+
+    const getInfo = async () => { // run the fetch request to get the services
+        try {
+            console.log("sending userEmail:", userEmail);
+            const response = await fetch('/api/maps/places', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({userResponses, userEmail})
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.log("Error:", response.status, errorText);
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const {services_result} = await response.json();
+            console.log("Service result in services page: ");
+            console.log(services_result);
+            if (services_result)
+                setAPIServices(services_result);
+            setLoading(false);
+    
+        }catch (error) {
+            console.error("Error fetching API:", error);
+            alert("There was an issue getting the data.");
+        }
+    }
+
+    useEffect(() => {
+        if (userEmail && !apiServices) {
             getInfo();
-        console.log("The apiServices: ")
+        }
+        console.log("the apiServices: ")
         console.log(apiServices);
         return () => {
             change = false;
             };
-    }, []);
- 
+    }, [userEmail, apiServices]);
 
-   
+    console.log("the userEmail: ", userEmail);
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />
