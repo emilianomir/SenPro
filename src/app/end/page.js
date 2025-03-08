@@ -5,6 +5,7 @@ import "../css/end_page.css"
 
 export default function End(){
     const {userServices} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+                                            //add the list to the services here. But remember on every load this code runs
     console.log("The services: ")
     console.log(userServices);
     console.log(userServices.length);

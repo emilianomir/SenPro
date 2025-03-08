@@ -6,38 +6,3 @@
     width: 90%;
     height: 400px;
 }
-
-/* <div className="container mt-4 mb-5">
-                    <div>
-                        <div className="mb-4">
-                            <Question theQuestion= {questionsList} 
-                            current = {"Begin"} func={goToNext} changeLoading={loading} entered={changeOne}
-                            generalSearch = {gSearch} specifiedLocation = {nameValue} userSearchName = {specLoc}/>
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        {atLeastOne && 
-                        <>
-                            <div className="fs-3 text-white">Ready to search for places?(Note: this does not include current response)</div> 
-                            <div className="w-100">
-                                <div className="fs-3 text-white">Click here :</div>
-                                <button className="btn btn-primary w-25" onClick={changeGSearch} type = "button">Done</button>
-                            </div>
-                        </>
-                        }
-                    </div>
-
-                </div>
-
-                <div className="container text-center">
-                    <div className="fs-4 text-white">Have a specific location in mind?</div>
-                    <div>
-                        <form onSubmit={changeSpecLoc}>
-                            <input className="w-50 text-center" placeholder="Enter your location here" value ={nameValue} onChange={changeNameValue}></input>
-                            <button className="btn btn-primary" type= "submit">Enter</button>
-                        </form>
-                    </div>
-                </div> */
-
-
-                /* onError={setPhoto("https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg") */
