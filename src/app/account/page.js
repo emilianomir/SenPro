@@ -75,12 +75,12 @@ export default function Account(){
         event.preventDefault();
          if (!oldPass || !newPass){
                     alert("Please fill out all fields");
-                    Reset();
+
                     return;
                 }   
                 if (oldPass === newPass){
                     alert("The new password should be different");
-                    Reset();
+
                     return;
                 }
 
@@ -89,7 +89,7 @@ export default function Account(){
             {
                 if(!data){
                     alert("Invalid password");
-                    Reset();
+
                     return;
                 }
                 else 
@@ -97,7 +97,6 @@ export default function Account(){
   
                     changePass(search, newPass);
                     alert("Password has been changed!");
-                    Reset();
                     return;
                 }
             }) 
@@ -117,7 +116,7 @@ export default function Account(){
                 <button className="btn btn-primary" onClick={()=>router.back()}>Back</button>
             </div>
             <div className="container">
-                <div className="text-center mb-5 border-bottom"><h1 className="fs-1 text-white fw-bolder">Hi User!</h1></div>
+                <div className="text-center mb-5 border-bottom"><h1 className="fs-1 text-white fw-bolder">Hi {products[0].username}!</h1></div>
                 <div className="row row-cols-2">
                     <div className="col-2 m-0 p-0">
                         <div className="row row-cols-1 w-100 m-0 p-0">
@@ -141,7 +140,7 @@ export default function Account(){
 
                                 <div className="col ps-5 fs-2 mt-4 text-info">
 
-                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal">Change Password</button>
+                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal" onClick={Reset}>Change Password</button>
                                 </div>
                             
                                 <div className="col ps-5 fs-2 mt-4">
