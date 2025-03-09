@@ -4,12 +4,16 @@ import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import GenericSingleMap from "@/components/GenericSingleMap";
+import Script from "next/script";
 import { useSearchParams } from 'next/navigation'
 
 
 export default function ServiceInfo(){
     const {userServices, setServices, numberPlaces} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
+
+    const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const router = useRouter();
 
     const searchParams = useSearchParams();
@@ -37,12 +41,25 @@ export default function ServiceInfo(){
 
     return(
         <div className="full_page bg-secondary">
-            <ServicePageHeading/>
+              <Script
+                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
+                onLoad={() => setIsScriptLoaded(true)}
+                strategy="afterInteractive"
+            />
+            <ServicePageHeading />
             <div className="container mt-5">
                 <div className="row row-cols-2 service_info">
                     <div className="col-4 h-100">
                         <h1 className="fs-1 text-white">Map:</h1>
-                        <div className="h-100 bg-secondary-subtle">MAP API HERE</div>
+                        <div className="h-100 bg-secondary-subtle">
+                            {userServices[userServices.length-1]?.formattedAddress ? (
+                                <GenericSingleMap 
+                                    address={userServices[userServices.length-1].formattedAddress}
+                                    isLoaded={isScriptLoaded}
+                                />
+                            ):(<div className="text-center pt-3">Loading map...</div>)
+                            }
+                        </div>
                     </div>
 
                     <div className="col-8 h-100">

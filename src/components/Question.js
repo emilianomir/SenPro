@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
+import { testExistingUser, addQuestion } from "./DBactions";
+import { useSearchParams } from "next/navigation";
 
 //object to help with Places API calls
-class Responses{
-    constructor(){
-        this.main_category = null;
-        this.types = null;
-        this.priceLevel = null;
-        this.rating = null;
-        this.name = null;
-        this.textQuery = null;
-    }
+class Responses {
+  constructor() {
+    this.main_category = null;
+    this.types = null;
+    this.priceLevel = null;
+    this.rating = null;
+    this.name = null;
+    this.textQuery = null;
+  }
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
 function Question({theQuestion, current, func, changeLoading}){
+    const searchParams = useSearchParams();
+    const userEmail = searchParams.get("user");
     const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
@@ -122,7 +126,7 @@ function Question({theQuestion, current, func, changeLoading}){
         setAPIvalue(selectedAPIValue);
     }
 
-    function destValue(theEvent){
+    async function destValue(theEvent){
         theEvent.preventDefault();
         if (prevKeys.length == 0 && wentBack){ //to prevent form submission for the first question (IDK its weird why it does this for only the first option)
             setBack(false);
@@ -190,19 +194,33 @@ function Question({theQuestion, current, func, changeLoading}){
         prevKeys.push([mapKey, valueSelect]);
         setKey(destSelect);
         valueSelected('');
+      
+      if (userEmail) { 
+        try {
+            const exists = await testExistingUser(userEmail);
+            if (exists) {
+                await addQuestion(userEmail, ques.question[0], valueSelect);
+            } else {
+                console.error("user doesnt exist in db:", userEmail);
+            }
+        } catch (e) {
+            console.error("error storing question and answer:", e);
+        }
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
         if (destSelect == "End") { 
             setResponses(theTest);//to have the object in mulitple pages
             setFinished(true);
-        }
 
+        }
     }
+  }
+
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
         if (nameSearch){
             setGeneralSearch(true);
-            theTest.name = nameValue.toUpperCase() + nameValue.substring(1);
+            theTest.name = nameValue[0].toUpperCase() + nameValue.substring(1);
         }
         if (readyGeneralSearch) 
             setResponses(theTest)

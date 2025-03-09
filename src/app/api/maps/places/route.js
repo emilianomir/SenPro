@@ -1,8 +1,8 @@
-
 export async function POST(req){
     const {userResponses} = await req.json();
     try {
         const address = "Houston, TX 77015";
+        // const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
         const api_key = process.env.GOOGLE_API_KEY;
         const url = "https://places.googleapis.com/v1/places:searchText"
 
@@ -66,17 +66,16 @@ export async function POST(req){
         }
 
 
-        return new Response(JSON.stringify({ services_result: data.places}), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-        });
+   
 
-    }catch (error) {
-        return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        });
-    }
-
+    return new Response(JSON.stringify({ services_result: data.places }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
-
