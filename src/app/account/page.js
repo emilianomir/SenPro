@@ -19,7 +19,7 @@ export default function Account(){
     const [loading, setLoading] = useState(true);
     const [oldPass, changeOldPass] = useState("");
     const [newPass, changeNewPass] = useState("");
-    
+
 
         // OnChange Events
         function oldPassChange(event)
@@ -64,12 +64,17 @@ export default function Account(){
 
 
 
+    function Reset(){
+        changeOldPass("");
+        changeNewPass("");
+    }
+    // Form submission
     const submitForm = (event)=> {
         event.preventDefault();
          if (!oldPass || !newPass){
                     alert("Please fill out all fields");
                     return;
-                }
+                }   
                 if (oldPass === newPass){
                     alert("The new password should be different");
                     return;
@@ -85,12 +90,13 @@ export default function Account(){
                 else 
                 {   
                     changePass(search, newPass);
-                    alert("Password has been changed!")
+                    alert("Password has been changed!");
                     return;
                 }
             }) 
 
     }
+
 
 
 
@@ -103,7 +109,7 @@ export default function Account(){
                 <button className="btn btn-primary" onClick={()=>router.back()}>Back</button>
             </div>
             <div className="container">
-                <div className="text-center mb-5 border-bottom"><h1 className="fs-1 text-white fw-bolder">Hi User!</h1></div>
+                <div className="text-center mb-5 border-bottom"><h1 className="fs-1 text-white fw-bolder">Hi {products[0].username}!</h1></div>
                 <div className="row row-cols-2">
                     <div className="col-2 m-0 p-0">
                         <div className="row row-cols-1 w-100 m-0 p-0">
@@ -127,7 +133,7 @@ export default function Account(){
 
                                 <div className="col ps-5 fs-2 mt-4 text-info">
 
-                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal" >Change Password</button>
+                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal" onClick={Reset}>Change Password</button>
                                 </div>
                             
                                 <div className="col ps-5 fs-2 mt-4">
@@ -169,6 +175,30 @@ export default function Account(){
                     </div>
                 </div>
             </div>
+
+            <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true"> 
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="modal-title">Change your password</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form onSubmit={submitForm}>
+                        <div className="modal-body">
+                            <label htmlFor="modal-password" className="form-label">Current Password:</label>
+                            <input value={oldPass} type="password" onChange={oldPassChange} className="form-control" id="modal-password"/>
+                            <label htmlFor="modal-password2" className="form-label">New Password:</label>
+                            <input value={newPass} type="password" onChange={newPassChange} className="form-control" id="modal-password2"/>
+                        </div>  
+                        <div className="modal-footer">
+                            <button type = "submit" className="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                        </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div> 
         </div>
 
 
