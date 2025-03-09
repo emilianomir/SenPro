@@ -50,7 +50,7 @@ export async function POST(req) {
     }
     else if (userSelection == "address"){
         try {
-            const url = "https://addressvalidation.googleapis.com/v1:validateAddress?key=" + process.env.GOOGLE_API_KEY;
+            const url = "https://addressvalidation.googleapis.com/v1:validateAddress?key=" + process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
             const response = await fetch(url, {
                 method: "POST",
                 headers: {

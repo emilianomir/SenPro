@@ -3,7 +3,7 @@ import "../css/address_page.css"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-
+import { addUser, updateUserAddress } from "@/components/DBactions";
 function AddressPage(){
     const router = useRouter();
     const [theInput, setInput] = useState('');
@@ -20,8 +20,19 @@ function AddressPage(){
     }
 
 
-    const handleChange = (event)=>{
+    const handleChange = (event) => {
         setInput(event.target.value);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        console.log("submitted address:", theInput);
+        try {
+            await updateUserAddress(search, theInput);
+            router.push(`/start?user=${search}`); // pass user email to start page
+        } catch (error) {
+            console.error("error updating user address:", error.message);
+        }
     };
 
     const formCheck = async (event) => {
@@ -72,31 +83,29 @@ function AddressPage(){
                 <div className="bg-secondary-subtle main_container">
                     <p className="text-center main_text">Please enter either your physical address or your Zip Code. </p>
                     <p className="text-center main_text fw-bold">(Recommend address for best experience).</p>
-                    <div className=" ms-5 mt-5">
-                        <form onSubmit={formCheck}>
+                    <div className="ms-5 mt-5">
+                        <form onSubmit={handleSubmit}>
                             <label htmlFor="addressInput" className="form-label fs-3">Address/ZipCode</label>
-                            <div className = "row row-cols-3 m-0 p-0">
+                            <div className="row row-cols-3 m-0 p-0">
                                 <div className="col-8">
-                                    <input id = "addressInput" value ={theInput} className="form-control" onChange={handleChange} type = "text" placeholder="Enter your address here"/>
+                                    <input id="addressInput" value={theInput} className="form-control" onChange={handleChange} type="text" placeholder="Enter your address here" />
                                 </div>
                                 <div className="col-2">
-                                    <select value={selectType} className="form-select w-100" onChange={(event)=>setSelect(event.target.value)}>
-                                        <option value = "" disabled>Select your type</option>
-                                        <option value = "zipCode">Zip Code</option>
+                                    <select value={selectType} className="form-select w-100" onChange={(event) => setSelect(event.target.value)}>
+                                        <option value="" disabled>Select your type</option>
+                                        <option value="zipCode">Zip Code</option>
                                         <option value="address">Address</option>
                                     </select>
                                 </div>
                                 <div className="col-1">
-                                    <button type = "submit" className="btn btn-primary w-100">Enter</button>
+                                    <button type="submit" className="btn btn-primary w-100">Enter</button>
                                 </div>
                             </div>
-
                         </form>
                     </div>
                 </div>
-
             </div>    
-    </> 
+        </> 
     )
 
 }

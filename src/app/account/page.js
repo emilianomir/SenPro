@@ -19,7 +19,6 @@ export default function Account(){
     const [loading, setLoading] = useState(true);
     const [oldPass, changeOldPass] = useState("");
     const [newPass, changeNewPass] = useState("");
-  
 
 
         // OnChange Events
@@ -65,7 +64,6 @@ export default function Account(){
 
 
 
-
     function Reset(){
         changeOldPass("");
         changeNewPass("");
@@ -75,12 +73,10 @@ export default function Account(){
         event.preventDefault();
          if (!oldPass || !newPass){
                     alert("Please fill out all fields");
-
                     return;
                 }   
                 if (oldPass === newPass){
                     alert("The new password should be different");
-
                     return;
                 }
 
@@ -89,12 +85,10 @@ export default function Account(){
             {
                 if(!data){
                     alert("Invalid password");
-
                     return;
                 }
                 else 
                 {   
-  
                     changePass(search, newPass);
                     alert("Password has been changed!");
                     return;
@@ -102,7 +96,6 @@ export default function Account(){
             }) 
 
     }
-
 
 
 
@@ -155,6 +148,30 @@ export default function Account(){
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="modal-title">Change your password</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form onSubmit={submitForm}>
+                        <div className="modal-body">
+                            <label htmlFor="modal-password" className="form-label">Current Password:</label>
+                            <input value={oldPass} type="password" onChange={oldPassChange} className="form-control" id="modal-password"/>
+                            <label htmlFor="modal-password2" className="form-label">New Password:</label>
+                            <input value={newPass} type="password" onChange={newPassChange} className="form-control" id="modal-password2"/>
+                        </div>  
+                        <div className="modal-footer">
+                            <button type = "submit" className="btn btn-primary">Submit</button>
+                        </div>
+                        </form>
+
                     </div>
                 </div>
             </div>

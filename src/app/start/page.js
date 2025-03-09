@@ -43,7 +43,7 @@ function StartPage(){
     
     //userName = userName.toUpperCase();
 
-    const formSubmit = (event)=>{
+    const formSubmit = async (event)=>{
         event.preventDefault();
         router.push("/questionaire?user=" + search)
 

@@ -5,8 +5,6 @@ export default function Distance() {
   const origins = encodeURIComponent("Edinburg, TX");
   const destinations = encodeURIComponent("Rio Grande City, TX");
 
-  //   const url = `${ep}?origins=${origins}&destinations=${destinations}&units=imperial&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`;
-
   const [distance, setDistance] = useState(null);
 
   useEffect(() => {
