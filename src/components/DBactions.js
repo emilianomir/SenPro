@@ -1,8 +1,8 @@
 "use server";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-
 import { eq, and} from "drizzle-orm";
+
 import { userAgentFromString } from "next/server.js";
 import { questions } from "../db/schema/questions.js";
 import { services } from "../db/schema/services.js";
@@ -23,7 +23,6 @@ export async function testExistingUser(email){
   }
 
 // Adding User for Sign up
-
 export async function addUser(
   email,
   username,
@@ -68,6 +67,7 @@ export async function checkLogin(email, password){
         return await bcrypt.compare(password, data[0].password)
     }
  }
+
 export async function updateUserAddress(email, address) {
   try {
     await db
