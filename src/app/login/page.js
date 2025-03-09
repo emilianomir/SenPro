@@ -7,12 +7,7 @@ import RouteButton from "@/components/route_button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-function LoginPage() {
-  const router = useRouter();
-  const [formData, changeFormData] = useState({
-    inputEmail: "",
-    inputPass: "",
-  });
+
 
 
   function LoginPage() {
@@ -132,5 +127,4 @@ function LoginPage() {
       </div>
     );
   }
-}
 export default LoginPage;
