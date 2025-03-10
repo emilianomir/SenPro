@@ -6,6 +6,8 @@ import { useAppContext } from "@/context";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
+import Favorites from "@/components/Favorites";
+import { useSearchParams } from 'next/navigation'
 
 
 
@@ -18,6 +20,25 @@ export default function Services(){
     function changeClick(){
         setClicked(true);
     }
+
+    /*
+    {setStars([
+        ...stars,
+        {id: {index}, name: "false"}
+    ])}
+
+
+            console.log(apiServices);
+        apiServices.map((service_object, index)=>( 
+            setStars([
+                ...stars,
+                {id: index, name: 'false'}
+            ])
+        ))
+
+    */
+
+
 
     useEffect(()=> {
         let change = true;
@@ -39,8 +60,9 @@ export default function Services(){
                 if (change){
                     if (services_result) //only replace if there is at least a service
                         setAPIServices(services_result);
+                    }
                     setLoading(false);
-                }
+                
         
             }catch (error) {
                 console.error("Error fetching API:", error);
@@ -55,6 +77,8 @@ export default function Services(){
             change = false;
             };
     }, []);
+
+
  
 
    
@@ -90,8 +114,10 @@ export default function Services(){
 
                         </div>               
                         <div className="scroll">
-                            {apiServices ? apiServices.map((service_object, index)=>( //if there were services, show them else show the message below 
-                                <div key ={index} className="d-inline-block me-4">                         
+                            {apiServices ? apiServices.map((service_object, index)=>(
+                                
+                                <div key ={index} className="d-inline-block me-4">
+                                    <Favorites service={service_object}/>          
                                     <ServiceCard service = {service_object} userClick = {changeClick}/> 
                                 </div>
                             )):    

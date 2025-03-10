@@ -1,22 +1,17 @@
 "use client"
 import "../css/begin_page.css"
 import { useAppContext } from "@/context"
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 
 export default function Begin(){
     const {userEmail} = useAppContext();
-    const hasAccount = userEmail != null ? true: false;
-    let userName;
-    if (!hasAccount)
+    if (userEmail == null)
         redirect("/login");
-    else {
-        userName = userEmail.split("@")[0].toUpperCase();
-    }
     return (
         <div className="container mt-4">
             <div className="mt-5">
-                <h1 className="fs-1 text-white text-center fw-bolder">Welcome {userName} </h1>
+                <h1 className="fs-1 text-white text-center fw-bolder">Welcome {userEmail[0]} </h1>
                 <div className="fs-2 text-white text-center mt-3 mb-5">What are you planning to do today?</div>
             </div>
             <div className="container mt-4 squares">

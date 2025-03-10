@@ -1,9 +1,12 @@
-"use server"
+"use server";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-import { eq} from "drizzle-orm";
+import { eq, and} from "drizzle-orm";
+
 import { userAgentFromString } from "next/server.js";
 import { questions } from "../db/schema/questions.js";
+import { services } from "../db/schema/services.js";
+import { favorites } from "../db/schema/favorites.js";
 import bcrypt from "bcryptjs";
 
 // testing for existing emails in singup
@@ -138,5 +141,50 @@ export async function getUser(email) {
     await db.update( users )
     .set({password: pass})
     .where(eq(users.email, email));
+ }
+
+
+
+ export async function addFavoriteService(primaryKey, info, email) {
+  try {
+    console.log("adding service to db:", {
+      primaryKey,
+      info,
+    });
+
+
+    await db.insert(services).values({
+      address: primaryKey,
+      info: JSON.stringify(info),
+    });
+    await db.insert(favorites).values({
+      userEmail: email,
+      sAddress:  primaryKey,
+    })
+  } catch (e) {
+    console.error("error in in service adding:", e);
+    throw e;
+  }
+ }
+
+ export async function checkService(primaryKey){
+  const data = await db.select().from(services).where(eq(services.address, primaryKey));
+  return data.length === 0;
+ }
+
+
+
+ export async function removeFavoriteService(primaryKey, email) {
+  try {
+    console.log("deleting service to db:", {
+      primaryKey,
+    });
+
+    await db.delete(favorites).where(and(eq(favorites.sAddress, primaryKey), eq(favorites.userEmail, email)));
+    await db.delete(services).where(eq(services.address, primaryKey));
+  } catch (e) {
+    console.error("error in in service deletion:", e);
+    throw e;
+  }
  }
 

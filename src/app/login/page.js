@@ -1,6 +1,5 @@
 "use client";
 
-
 import { checkLogin } from "@/components/DBactions";
 import "../css/login_page.css";
 import RouteButton from "@/components/route_button";
@@ -27,14 +26,14 @@ function LoginPage() {
 
     const submitForm = (event) => {
       event.preventDefault();
-
       // Checking Login Credentials
       checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
         if (!data) {
           alert("Invalid email or pass");
           return;
         } else {
-          setUserEmail(formData.inputEmail);
+          let userName = formData.inputEmail.split('@')[0].toUpperCase();
+          setUserEmail([userName, formData.inputEmail]);
           router.push("/begin");
         }
       });
@@ -106,6 +105,6 @@ function LoginPage() {
         </div>
       </div>
     );
-  }
+}
 
 export default LoginPage;

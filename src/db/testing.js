@@ -2,7 +2,7 @@
 import { db } from "./index.js";
 import { users } from "./schema/users.js";
 import { eq } from "drizzle-orm";
-import { addUser, checkLogin, testExistingUser, getUser} from "/workspaces/SenPro/src/components/DBactions.js";
+import { addUser, checkLogin, testExistingUser, getUser, addService, removeService, checkService} from '../components/DBactions.js'
 // import { addUser, testExistingUser } from "@/components/DBactions.js";
 import bcrypt from "bcrypt"
 import { getModifiedCookieValues } from "next/dist/server/web/spec-extension/adapters/request-cookies.js";
@@ -18,7 +18,7 @@ await db.insert( users ).values({
 */
 
 
-
+/* 
 
 await addUser("test@gmail.com", "John Doe", "123", "Mcallen Tx")
 //addUser("gaelg@gmail.com", "gaelg", "testingpass", "78574", "admin");
@@ -47,3 +47,18 @@ console.log(values[0].username);
 const test = await db.select({email: users.email}).from(users).where(eq(users.email, 'gaelg@gmail.com')) 
 //console.log(test.length)
 
+*/
+//addService("test email", "TEST:tewewfeww");
+
+//removeService("test email");
+
+
+        checkService("test email").then((data) => {
+          if (data)
+            addService("test email", "TEST:tewewfeww");
+        });
+
+        checkService("test email").then((data) => {
+            if (!data)
+                removeService("test email");
+          });
