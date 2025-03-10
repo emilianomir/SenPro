@@ -41,7 +41,6 @@ export default function Begin(){
             </div>
             <div className="fs-2 text-white text-center fw-bolder mb-3">Your Favorites Section:</div>
             <Favorites_Section favoritesList = {theList} />
-
         </div>
     )
 }

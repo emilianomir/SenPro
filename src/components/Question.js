@@ -16,7 +16,13 @@ class Responses {
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
 function Question({theQuestion, current, func, changeLoading}){
+<<<<<<< HEAD
     const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
+=======
+    const searchParams = useSearchParams();
+    const userEmail = searchParams.get("user");
+    const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
+>>>>>>> origin/main
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
     const [destSelect, changeDes] = useState(''); //destination for map purposes
