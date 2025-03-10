@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
-import { useSearchParams } from 'next/navigation'
+
 
 
 export default function ServiceInfo(){
@@ -16,14 +16,11 @@ export default function ServiceInfo(){
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const router = useRouter();
 
-    const searchParams = useSearchParams();
-    const search = searchParams.get('user');
-
     const handleBack = ()=>{
         setBack(true);
     }
 
-    const handleEnter = ()=> {
+    const handleEnter = ()=> { 
         router.push(numberPlaces == userServices.length ? "/end": "/questionaire") //checks to see if user reaches decided limit
     }
     useEffect(() => {
