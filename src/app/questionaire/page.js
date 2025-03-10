@@ -2,7 +2,6 @@
 import "../css/question_page.css"
 import Question from "@/components/Question";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from 'next/navigation'
 import { useAppContext } from "@/context";
 import { useState } from "react";
 import Loading from "@/components/Loading";
@@ -10,8 +9,6 @@ import Loading from "@/components/Loading";
 
 function Questionaire(){
   
-    const searchParams = useSearchParams();
-    const search = searchParams.get('user');
     const {apiServices, setAPIServices, userServices, numberPlaces, setServices} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const router = useRouter();
@@ -23,7 +20,7 @@ function Questionaire(){
     const goToNext = ()=>{
         if (apiServices)
             setAPIServices(null); //reset the copy of services for new services
-        router.push("/services?user=" + search);
+        router.push("/services");
     }
 
   

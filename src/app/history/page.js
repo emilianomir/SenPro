@@ -1,6 +1,7 @@
 "use client"
 import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
+import RouteButton from "@/components/route_button";
 import { useState } from "react";
 
 export default function History(){
@@ -26,6 +27,12 @@ export default function History(){
         <div className="container w-100 vh-100 mt-4">
             <h1 className="text-center text-white fs-1 fw-bolder">History</h1> 
             <div className="d-flex justify-content-center w-100 h-100 mt-4">
+                {dummyData.length === 0 ?   
+                <div>
+                    <h2>No Previous History. Make one to show up here!</h2>
+                    <RouteButton name ={"Make Plan!"} location={"/start"} />
+                </div>
+                :
                 <div className="row row-col-2 w-100 h-100">
                     <div className="col-2 h-25">
                         <div className="row row-cols-1 h-25">
@@ -59,6 +66,8 @@ export default function History(){
                         <div className="text-center">{optionSelect[1].name}</div>
                     </div>
                 </div>
+                }
+
             </div>
         </div>
     )

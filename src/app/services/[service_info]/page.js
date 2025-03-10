@@ -41,24 +41,24 @@ export default function ServiceInfo(){
 
     return(
         <div className="full_page bg-secondary">
-              <Script
+              {/* <Script
                 src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
                 onLoad={() => setIsScriptLoaded(true)}
                 strategy="afterInteractive"
-            />
+            /> */}
             <ServicePageHeading />
             <div className="container mt-5">
                 <div className="row row-cols-2 service_info">
                     <div className="col-4 h-100">
                         <h1 className="fs-1 text-white">Map:</h1>
                         <div className="h-100 bg-secondary-subtle">
-                            {userServices[userServices.length-1]?.formattedAddress ? (
+                            {/* {userServices[userServices.length-1]?.formattedAddress ? (
                                 <GenericSingleMap 
                                     address={userServices[userServices.length-1].formattedAddress}
                                     isLoaded={isScriptLoaded}
                                 />
                             ):(<div className="text-center pt-3">Loading map...</div>)
-                            }
+                            } */}
                         </div>
                     </div>
 

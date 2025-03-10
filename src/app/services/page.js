@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
-import { useSearchParams } from 'next/navigation'
+
 
 
 
 export default function Services(){
-    const {userResponses, apiServices, setAPIServices} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [loading, setLoading] = useState(true);
 
@@ -117,7 +117,7 @@ export default function Services(){
                             {apiServices ? apiServices.map((service_object, index)=>(
                                 
                                 <div key ={index} className="d-inline-block me-4">
-                                    <Favorites service={service_object}/>          
+                                    {userEmail != null && <Favorites service={service_object}/>}       
                                     <ServiceCard service = {service_object} userClick = {changeClick}/> 
                                 </div>
                             )):    

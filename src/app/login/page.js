@@ -34,7 +34,7 @@ function LoginPage() {
         } else {
           let userName = formData.inputEmail.split('@')[0].toUpperCase();
           setUserEmail([userName, formData.inputEmail]);
-          router.push("/begin");
+          router.push("/home");
         }
       });
     };

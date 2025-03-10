@@ -7,41 +7,40 @@ import { getUser, testExistingUser } from '@/components/DBactions';
 import Loading from '@/components/Loading';
 
 function StartPage(){
-    const searchParams = useSearchParams();
-    const {setNumberPlaces} = useAppContext();
-    const search = searchParams.get('user');
+    const {userEmail, setNumberPlaces} = useAppContext();
+    const router = useRouter();
 
     
-    const [sVal, setSearch] = useState(search);
-    const [products, setProducts] = useState([]);
+    // const [sVal, setSearch] = useState(search);
+    // const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
 
-    const router = useRouter();
-    //[userName, other] = search.split('@');
-        useEffect(() => {
-            const fetchProducts = async () => {
-                try{
-                    if(await testExistingUser(sVal))
-                    {
-                        const data = await getUser(sVal);
-                        setProducts(data);
-                    }
-                    else 
-                    {
-                        setProducts([{username: "Guest User"}])
-                    }
-                } catch(error) {
-                    console.error("Error fetching DB:", error);
-                    alert("There was an issue getting the data.");
-                } finally {
-                    setLoading(false);
-                }
-            }
 
-            fetchProducts();
-        }, []);
+    // //[userName, other] = search.split('@');
+    //     useEffect(() => {
+    //         const fetchProducts = async () => {
+    //             try{
+    //                 if(await testExistingUser(sVal))
+    //                 {
+    //                     const data = await getUser(sVal);
+    //                     setProducts(data);
+    //                 }
+    //                 else 
+    //                 {
+    //                     setProducts([{username: "Guest User"}])
+    //                 }
+    //             } catch(error) {
+    //                 console.error("Error fetching DB:", error);
+    //                 alert("There was an issue getting the data.");
+    //             } finally {
+    //                 setLoading(false);
+    //             }
+    //         }
+
+    //         fetchProducts();
+    //     }, []);
     
     
     //userName = userName.toUpperCase();
@@ -50,21 +49,21 @@ function StartPage(){
         const userNumber = event.target[0].value;
         setNumberPlaces(userNumber);
         event.preventDefault();
-        router.push("/questionaire?user=" + search)
+        router.push("/questionaire")
 
     }
 
-    if(loading)
-        return (<div className='vh-100 vw-100'>
-            <Loading message={search != "" ? "Setting up" : "Getting account info"} />
-        </div>)
+    // if(loading)
+    //     return (<div className='vh-100 vw-100'>
+    //         <Loading message={userEmail == null ? "Setting up" : "Getting account info"} />
+    //     </div>)
 
 
     return (
         <>
         <div className = "bg-secondary-subtle m-0" >
             <div className = "text-center">
-                <h1 className='fs-2 fw-bold'>Hello {products[0].username}</h1>
+                <h1 className='fs-2 fw-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
             </div>
         </div>
 

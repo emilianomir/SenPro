@@ -1,7 +1,8 @@
 "use client"
-import { useSearchParams } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
+import { useAppContext } from '@/context';
 import { getUser, testExistingUser } from '@/components/DBactions';
 import { checkLogin, changePass } from '@/components/DBactions';
 import { Modal } from 'bootstrap';
@@ -9,42 +10,35 @@ import { Modal } from 'bootstrap';
 
 
 export default function Account(){
-    const searchParams = useSearchParams();
-    const search = searchParams.get('user');
     const router = useRouter();
-
+    const {userEmail} = useAppContext();
+    if (userEmail == null)
+        redirect("/login");
     // States to be user in async function. 
-    const [sVal, setSearch] = useState(search);
+    const [sVal, setSearch] = useState(userEmail[1]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [oldPass, changeOldPass] = useState("");
     const [newPass, changeNewPass] = useState("");
 
 
-        // OnChange Events
-        function oldPassChange(event)
-        {
-            changeOldPass(event.target.value);
-        }
-        function newPassChange(event)
-        {
-            changeNewPass(event.target.value);
-        }
+    // OnChange Events
+    function oldPassChange(event)
+    {
+        changeOldPass(event.target.value);
+    }
+    function newPassChange(event)
+    {
+        changeNewPass(event.target.value);
+    }
 
 
     // Using effect to pull necessary data from the db
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-                if(await testExistingUser(sVal))
-                {
-                    const data = await getUser(sVal);
-                    setProducts(data);
-                }
-                else 
-                {
-                    setProducts([{username: "Guest User"}])
-                }
+                const data = await getUser(sVal);
+                setProducts(data);             
             } catch(error) {
                 console.error("Error fetching DB:", error);
                 alert("There was an issue getting the data.");
