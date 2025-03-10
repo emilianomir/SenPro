@@ -1,3 +1,4 @@
+import "../app/css/services_page.css"
 export default function Favorites_Section ({favoritesList}){
 
     return (
@@ -9,7 +10,12 @@ export default function Favorites_Section ({favoritesList}){
             :
             <div className="scroll">
                 {favoritesList.map((theFavorite) => (
-                    <div className="bg-white"> {theFavorite.name} </div>
+                    <div className="d-inline-block me-4">
+                        <div key = {theFavorite.name} className="card">
+                            <img src = {theFavorite.photo} className="card-img-top"/>
+                            <h5 className="card-title fs-3 text-center fw-bold">{theFavorite.name}</h5>
+                        </div>
+                    </div>
                 ) )
                 }
             </div>
