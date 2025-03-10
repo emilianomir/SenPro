@@ -25,29 +25,6 @@ function LoginPage() {
 
     const submitForm = (event) => {
       event.preventDefault();
-
-
-      const submitForm = (event) => {
-        event.preventDefault();
-
-        if (!formData.inputEmail || !formData.inputPass) {
-          alert("Please fill out all fields");
-          return;
-        }
-
-
-        // Checking Login Credentials
-        checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
-          if (!data) {
-            alert("Invalid email or pass");
-            return;
-          } else {
-            router.push("/start?user=" + formData.inputEmail);
-          }
-        });
-      };
-
-
       // Checking Login Credentials
       checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
         if (!data) {
@@ -125,6 +102,6 @@ function LoginPage() {
         </div>
       </div>
     );
-  }
+}
 
 export default LoginPage;
