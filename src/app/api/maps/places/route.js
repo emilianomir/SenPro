@@ -2,16 +2,18 @@ export async function POST(req){
     const {userResponses} = await req.json();
     try {
         const address = "Houston, TX 77015";
-        const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+        // const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+        const api_key = process.env.GOOGLE_API_KEY;
         const url = "https://places.googleapis.com/v1/places:searchText"
 
         const textBody = {
             textQuery: `${userResponses.name ? userResponses.name : userResponses.textQuery} near ${address}`,
-            openNow: true,
+            openNow: true, //we can change to false to show more services. But then we would need to ask for the business operations of each place to help user see time 
             regionCode: "US",
             languageCode: "en",
             pageSize: 7, //this is to limit the max services sent by response. High numbers causing images not to load due to many requests 
             rankPreference: "DISTANCE"
+            //enter the location restriction inside here for the API calls
         }
 
         //this is how object can help with the API calls
@@ -58,12 +60,8 @@ export async function POST(req){
                             eachService.photo_image = theImage; //added a new property to data.places objects for easier retrieval
                         }
                     }
-                    else 
-                        eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
                 }
-                else {
-                    eachService.photo_image = "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg";
-                } //these are placeholders photos in case an image can't be retrived. This does not work if a 429 occurs for some reason.
+                 //these are placeholders photos in case an image can't be retrived. This does not work if a 429 occurs for some reason.
             }));
         }
 

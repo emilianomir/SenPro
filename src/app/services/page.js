@@ -7,24 +7,19 @@ import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
-import { useSearchParams } from 'next/navigation'
+
 
 
 
 export default function Services(){
-    const {userResponses, apiServices, setAPIServices} = useAppContext();
-    const [clickedService, setClicked] = useState(false);
+    const {userResponses, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const [clickedService, setClicked] = useState(false); //loading purposes
     const [loading, setLoading] = useState(true);
-
-
 
 
     function changeClick(){
         setClicked(true);
     }
-
-
-
 
     /*
     {setStars([
@@ -60,23 +55,23 @@ export default function Services(){
                 }
         
                 const {services_result} = await response.json();
-                console.log("Service result in services page: ");
+                console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
                 if (change){
-                    if (services_result){
+                    if (services_result) //only replace if there is at least a service
                         setAPIServices(services_result);
                     }
                     setLoading(false);
-                }
+                
         
             }catch (error) {
                 console.error("Error fetching API:", error);
                 alert("There was an issue getting the data.");
             }
         }
-        if (!apiServices)
+        if (!apiServices) //if we already have services from previous call, don't make a new call
             getInfo();
-        console.log("The apiServices: ")
+        console.log("The apiServices: ") //debugging
         console.log(apiServices);
         return () => {
             change = false;
@@ -90,8 +85,8 @@ export default function Services(){
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />
-            {(!apiServices && loading) && <Loading message = {"Fetching data based on response"}/> }
-            {(apiServices || !loading) && 
+            {(!apiServices && loading) && <Loading message = {"Fetching data based on response"}/> } 
+            {(apiServices || !loading) && //this either means we had services stored from previous call or fetch data was finsihed
                 <>
                     <div className="container mt-4 ms-4">
                         <div className="fs-2 text-white fw-bold mb-3">
@@ -99,8 +94,8 @@ export default function Services(){
                         </div>
                         <div className="row row-cols-5 circles mb-2">
                             <div className="col-2" >
-                                <div className="h-100 rounded-circle bg-white w-75">
-                                    <div className="d-flex justify-content-center align-items-center h-100 fs-4 text-center">
+                                <div className="h-100 rounded-circle bg-white w-100">
+                                    <div className="d-flex justify-content-center align-items-center h-100 fs-5 text-center">
                                         {userResponses.name ? userResponses.name: userResponses.main_category}
                                     </div>
                                 </div>
@@ -122,7 +117,7 @@ export default function Services(){
                             {apiServices ? apiServices.map((service_object, index)=>(
                                 
                                 <div key ={index} className="d-inline-block me-4">
-                                    <Favorites service={service_object}/>          
+                                    {userEmail != null && <Favorites service={service_object}/>}       
                                     <ServiceCard service = {service_object} userClick = {changeClick}/> 
                                 </div>
                             )):    

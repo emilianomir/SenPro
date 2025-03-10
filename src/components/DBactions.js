@@ -145,8 +145,6 @@ export async function getUser(email) {
 
 
 
-
-
  export async function addFavoriteService(primaryKey, info, email) {
   try {
     console.log("adding service to db:", {

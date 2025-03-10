@@ -1,62 +1,69 @@
 "use client"
+import { useAppContext } from '@/context';
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { getUser, testExistingUser } from '@/components/DBactions';
+import Loading from '@/components/Loading';
 
 function StartPage(){
-    const searchParams = useSearchParams();
-    const search = searchParams.get('user');
+    const {userEmail, setNumberPlaces} = useAppContext();
+    const router = useRouter();
 
     
-    const [sVal, setSearch] = useState(search);
-    const [products, setProducts] = useState([]);
+    // const [sVal, setSearch] = useState(search);
+    // const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
 
-    const router = useRouter();
-    //[userName, other] = search.split('@');
-        useEffect(() => {
-            const fetchProducts = async () => {
-                try{
-                    if(await testExistingUser(sVal))
-                    {
-                        const data = await getUser(sVal);
-                        setProducts(data);
-                    }
-                    else 
-                    {
-                        setProducts([{username: "Guest User"}])
-                    }
-                } catch(error) {
-                    console.error("Error fetching DB:", error);
-                    alert("There was an issue getting the data.");
-                } finally {
-                    setLoading(false);
-                }
-            }
 
-            fetchProducts();
-        }, []);
+    // //[userName, other] = search.split('@');
+    //     useEffect(() => {
+    //         const fetchProducts = async () => {
+    //             try{
+    //                 if(await testExistingUser(sVal))
+    //                 {
+    //                     const data = await getUser(sVal);
+    //                     setProducts(data);
+    //                 }
+    //                 else 
+    //                 {
+    //                     setProducts([{username: "Guest User"}])
+    //                 }
+    //             } catch(error) {
+    //                 console.error("Error fetching DB:", error);
+    //                 alert("There was an issue getting the data.");
+    //             } finally {
+    //                 setLoading(false);
+    //             }
+    //         }
+
+    //         fetchProducts();
+    //     }, []);
     
     
     //userName = userName.toUpperCase();
 
-    const formSubmit = async (event)=>{
+    const formSubmit = (event)=>{
+        const userNumber = event.target[0].value;
+        setNumberPlaces(userNumber);
         event.preventDefault();
-        router.push("/questionaire?user=" + search)
+        router.push("/questionaire")
 
     }
 
-    if(loading)
-        return <p>loading...</p>
+    // if(loading)
+    //     return (<div className='vh-100 vw-100'>
+    //         <Loading message={userEmail == null ? "Setting up" : "Getting account info"} />
+    //     </div>)
+
 
     return (
         <>
         <div className = "bg-secondary-subtle m-0" >
             <div className = "text-center">
-                <h1 className='fs-2 fw-bold'>Hello {products[0].username}</h1>
+                <h1 className='fs-2 fw-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
             </div>
         </div>
 
@@ -68,7 +75,7 @@ function StartPage(){
                 <form onSubmit={formSubmit}>
                     <div className="col  row row-cols-1" >
                         <div className="col d-flex justify-content-center">
-                            <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" id="desiredNumber" min = "0" max = "5"/>
+                            <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" min = "1" max = "5" required/>
                         </div>
                         <div className="col">
                             <button type="submit" className="btn btn-primary w-25">Enter</button>

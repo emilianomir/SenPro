@@ -1,14 +1,12 @@
 "use client"
 import { useEffect, useState } from "react";
 import { addFavoriteService, checkService, removeFavoriteService } from "./DBactions";
-import { useSearchParams } from 'next/navigation'
-
+import { useAppContext } from "@/context";
 
 
 function Favorites({service}){
-    const searchParams = useSearchParams();
-    const search = searchParams.get('user');
-    const [sVal, setSearch] = useState(search);
+    const {userEmail} = useAppContext();
+    const [sVal, setSearch] = useState(userEmail[1]);
     // Stars
     const [star, setStar] = useState(true);
     const [info, setInfo] = useState(service);

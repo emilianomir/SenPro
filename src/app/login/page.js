@@ -1,21 +1,21 @@
 "use client";
 
-
 import { checkLogin } from "@/components/DBactions";
 import "../css/login_page.css";
 import RouteButton from "@/components/route_button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAppContext } from "@/context";
+
+function LoginPage() {
+  const {setUserEmail} = useAppContext();
+  const router = useRouter();
+  const [formData, changeFormData] = useState({
+    inputEmail: "",
+    inputPass: "",
+  });
 
 
-
-
-  function LoginPage() {
-    const router = useRouter();
-    const [formData, changeFormData] = useState({
-      inputEmail: "",
-      inputPass: "",
-    });
   const changeData = (event) => {
     const { id, value } = event.target;
     changeFormData((oldData) => ({
@@ -26,36 +26,15 @@ import { useState } from "react";
 
     const submitForm = (event) => {
       event.preventDefault();
-
-
-      const submitForm = (event) => {
-        event.preventDefault();
-
-        if (!formData.inputEmail || !formData.inputPass) {
-          alert("Please fill out all fields");
-          return;
-        }
-
-
-        // Checking Login Credentials
-        checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
-          if (!data) {
-            alert("Invalid email or pass");
-            return;
-          } else {
-            router.push("/start?user=" + formData.inputEmail);
-          }
-        });
-      };
-
-
       // Checking Login Credentials
       checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
         if (!data) {
           alert("Invalid email or pass");
           return;
         } else {
-          router.push("/start?user=" + formData.inputEmail);
+          let userName = formData.inputEmail.split('@')[0].toUpperCase();
+          setUserEmail([userName, formData.inputEmail]);
+          router.push("/home");
         }
       });
     };
@@ -126,5 +105,6 @@ import { useState } from "react";
         </div>
       </div>
     );
-  }
+}
+
 export default LoginPage;
