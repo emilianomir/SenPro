@@ -4,14 +4,17 @@ import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { addService, addHistoryService } from '@/components/DBactions';
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
+import { users } from "@/db/schema/users";
 
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces} = useAppContext();
-    const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
+    const {userServices, setServices, numberPlaces, userEmail} = useAppContext();
+    const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser
+    const [moreThan1, setMoreThan1] = useState(false);
 
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const router = useRouter();
@@ -20,11 +23,24 @@ export default function ServiceInfo(){
         setBack(true);
     }
 
-    const handleEnter = ()=> { 
-        router.push(numberPlaces == userServices.length ? "/end": "/questionaire") //checks to see if user reaches decided limit
+    //checks to see if user reaches decided limit
+    const handleEnter = ()=> {
+        router.push(numberPlaces == userServices.length ? "/end": "/questionaire")
     }
     useEffect(() => {
-        const handleRouteChangeComplete = () => {
+        const handleRouteChangeComplete = async () => {
+
+            if (numberPlaces == userServices.length && !moreThan1)
+            {
+                const addressArr = [];
+                userServices.forEach(element => {
+                    addService(element.formattedAddress, element);
+                    addressArr.push(element.formattedAddress);
+                });
+                addHistoryService(addressArr, userEmail[1]);
+                setMoreThan1(true);
+            }
+
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
                 setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects
             if (wentBack){
