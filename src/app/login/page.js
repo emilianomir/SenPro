@@ -49,8 +49,8 @@ function LoginPage() {
               </div>
             </div>
             <div className="col position-relative">
-              <div className="position-absolute top-50 start-50 translate-middle-x">
-                <RouteButton name="Continue as Guest" location="/start" />
+              <div className="position-absolute top-50 start-50 translate-middle-x" onClick={()=> setUserEmail(null)}>
+                <RouteButton name="Continue as Guest" location="/address" />
               </div>
             </div>
           </div>

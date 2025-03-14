@@ -16,9 +16,7 @@ class Responses {
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
 function Question({theQuestion, current, func, changeLoading}){
-    const searchParams = useSearchParams();
-    const userEmail = searchParams.get("user");
-    const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
+    const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
     const [destSelect, changeDes] = useState(''); //destination for map purposes
@@ -195,17 +193,19 @@ function Question({theQuestion, current, func, changeLoading}){
         setKey(destSelect);
         valueSelected('');
       
-      if (userEmail) { 
-        try {
-            const exists = await testExistingUser(userEmail);
-            if (exists) {
-                await addQuestion(userEmail, ques.question[0], valueSelect);
-            } else {
-                console.error("user doesnt exist in db:", userEmail);
+        if (userEmail != null) {
+            try {
+                const exists = await testExistingUser(userEmail[1]);
+                if (exists) {
+                    await addQuestion(userEmail[1], ques.question[0], valueSelect);
+                } else {
+                    console.error("user doesnt exist in db:", userEmail[1]);
+                }
+            } catch (e) {
+                console.error("error storing question and answer:", e);
             }
-        } catch (e) {
-            console.error("error storing question and answer:", e);
         }
+
         if (apiValue != '') //if there was an api value, reset it for next time
             setAPIvalue('');
         if (destSelect == "End") { 
@@ -213,7 +213,7 @@ function Question({theQuestion, current, func, changeLoading}){
             setFinished(true);
 
         }
-    }
+    
   }
 
 

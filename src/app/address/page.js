@@ -2,40 +2,27 @@
 import "../css/address_page.css"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useAppContext } from "@/context";
 import { addUser, updateUserAddress } from "@/components/DBactions";
 function AddressPage(){
     const router = useRouter();
+    const {userEmail, setGuestAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
     const [theInput, setInput] = useState('');
     const [selectType, setSelect] = useState('');
-    const searchParams = useSearchParams();
-    const search = searchParams.get('user');
-    let userName;
-    let other;
-    if (!search)
-        router.back();
-    else {
-        [userName, other] = search.split('@');
-        userName = userName.toUpperCase();
-    }
+
 
 
     const handleChange = (event) => {
         setInput(event.target.value);
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        console.log("submitted address:", theInput);
-        try {
-            await updateUserAddress(search, theInput);
-            router.push(`/start?user=${search}`); // pass user email to start page
-        } catch (error) {
-            console.error("error updating user address:", error.message);
-        }
-    };
+    // const handleSubmit = async (event) => {
+    //     event.preventDefault();
+    //     console.log("submitted address:", theInput);
 
-    const formCheck = async (event) => {
+    // };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (selectType == '')
             alert("Select an option");
@@ -60,7 +47,18 @@ function AddressPage(){
                         alert("Enter a valid address");
                 }
                 else {
-                    router.push("/start");
+                    if (userEmail == null){
+                        setGuestAddress(theInput);
+                        router.push('/start');
+                    }
+                    else {
+                        try {
+                            await updateUserAddress(userEmail[1], theInput);
+                            router.push(`/start`); // pass user email to start page
+                        } catch (error) {
+                            console.error("error updating user address:", error.message);
+                        }
+                    }   
                 }
         
             } catch (error) {
@@ -76,12 +74,12 @@ function AddressPage(){
         <>
             <div className="bg-secondary-subtle">
                 <div className="text-center">
-                    <h1 className='fs-2 fw-bold'>Welcome {userName}!</h1>
+                    <h1 className='fs-2 fw-bold'>Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h1>
                 </div>
             </div>
             <div className="d-flex justify-content-center align-items-center vh-100 bg-secondary">
                 <div className="bg-secondary-subtle main_container">
-                    <p className="text-center main_text">Please enter either your physical address or your Zip Code. </p>
+                    <p className="text-center main_text text-wrap p-3">Please enter either a physical address or a Zip Code to begin. </p>
                     <p className="text-center main_text fw-bold">(Recommend address for best experience).</p>
                     <div className="ms-5 mt-5">
                         <form onSubmit={handleSubmit}>
