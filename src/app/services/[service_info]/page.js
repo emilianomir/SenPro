@@ -4,27 +4,38 @@ import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { addService, addHistoryService } from '@/components/DBactions';
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
+import { users } from "@/db/schema/users";
 
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces} = useAppContext();
-    const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
+    const {userServices, setServices, numberPlaces, userEmail} = useAppContext();
+    const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser
+    const [moreThan1, setMoreThan1] = useState(false);
 
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const router = useRouter();
+    const [addServices, setYes] = useState(false)
 
     const handleBack = ()=>{
         setBack(true);
     }
 
+    //checks to see if user reaches decided limit
     const handleEnter = ()=> { 
-        router.push(numberPlaces == userServices.length ? "/end": "/questionaire") //checks to see if user reaches decided limit
+        if (numberPlaces == userServices.length)
+            setYes(true);
+        else
+            router.push("/questionaire") //checks to see if user reaches decided limit
     }
     useEffect(() => {
-        const handleRouteChangeComplete = () => {
+        const handleRouteChangeComplete = async () => {
+
+
+
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
                 setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects
             if (wentBack){
@@ -32,8 +43,27 @@ export default function ServiceInfo(){
                 router.back(); //should be the services menu page since you can only reach this page by clicking a service in services menu
             }
         };
-        handleRouteChangeComplete();
-    }, [wentBack]
+
+        const handleAdd = async () => {
+            if (numberPlaces == userServices.length && !moreThan1)
+                {
+                    const addressArr = [];
+                    userServices.forEach(element => {
+                        addService(element.formattedAddress, element);
+                        addressArr.push(element.formattedAddress);
+                    });
+                    await addHistoryService(addressArr, userEmail[1]);
+                    setMoreThan1(true);
+                }
+            router.push("/end");
+        }
+
+        if (!addServices)
+            handleRouteChangeComplete();
+        else 
+            handleAdd();
+
+    }, [wentBack, addServices]
     );
 
     return(

@@ -1,8 +1,8 @@
 
 import { db } from "./index.js";
 import { users } from "./schema/users.js";
-import { eq } from "drizzle-orm";
-import { addUser, checkLogin, testExistingUser, getUser, addService, removeService, checkService} from '../components/DBactions.js'
+import { eq, sql } from "drizzle-orm";
+import { addUser, checkLogin, testExistingUser, getUser} from '../components/DBactions.js'
 // import { addUser, testExistingUser } from "@/components/DBactions.js";
 import bcrypt from "bcrypt"
 import { getModifiedCookieValues } from "next/dist/server/web/spec-extension/adapters/request-cookies.js";
@@ -52,13 +52,58 @@ const test = await db.select({email: users.email}).from(users).where(eq(users.em
 
 //removeService("test email");
 
+/*
+const values =  await db
+.select({
+    time: sql`time(created_at)` 
+})
+.from(users);
 
-        checkService("test email").then((data) => {
-          if (data)
-            addService("test email", "TEST:tewewfeww");
-        });
+const val2 = await db
+.select({
+    time: sql`time(CURRENT_TIMESTAMP)`
+})
+.from(users)
+.where(eq(users.email, 'gaelg@gmail.com'));
 
-        checkService("test email").then((data) => {
-            if (!data)
-                removeService("test email");
-          });
+let [hour1, min1, sec1] = val2[0].time.split(':')
+let [hour2, min2, sec2] =  values[0].time.split(':')
+
+const difference = sec1 - sec2;
+
+if(difference >= 30)
+{
+    console.log("its greater")
+}
+else
+{
+    console.log("it isnt")
+}
+console.log(values[0].time);
+console.log(val2[0].time);
+console.log(difference)
+
+
+*/
+
+  //eq(history.createdAt, sql`(CURRENT_TIMESTAMP)`)
+  const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(users);
+  const d1 = await db.select({time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, 'test@gmail.com'));
+  const d2 = await db.select({time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, 'test@gmail.com'));
+  console.log(data);
+  console.log(d2);
+  
+  data.forEach(element => {
+    let [h1, m1, s1] = d1[0].time.split(':');
+    let [h2, m2, s2] =  d2[0].time.split(':');
+    let val1 = (m2*60) + s2;
+    let val2 = (m1*60) + s1;
+    let difference = val2-val1;
+    if(d1[0].date == d2[0].date)
+        console.log("IT WORKS")
+    console.log(val1)
+    console.log(val2);
+    console.log(difference)
+  });
+
+

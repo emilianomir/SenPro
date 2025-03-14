@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import { addFavoriteService, checkService, removeFavoriteService } from "./DBactions";
+import { addFavoriteService, checkFavoriteService, removeFavoriteService } from "./DBactions";
 import { useAppContext } from "@/context";
 
 
@@ -16,32 +16,34 @@ function Favorites({service}){
     {
         setStar(!star);
         
-        checkService(service.formattedAddress).then((data) => {
+        checkFavoriteService(service.formattedAddress, sVal).then((data) => {
           if (data)
             addFavoriteService(info.formattedAddress, info, sVal);
         });
 
         if (!star)
         {
-            checkService(service.formattedAddress).then((data) => {
+            checkFavoriteService(service.formattedAddress, sVal).then((data) => {
                 if (!data)
                     removeFavoriteService(info.formattedAddress, sVal);
             });
         }
     }
 
+    /*
     function initialStar()
     {
-        checkService(service.formattedAddress).then((data) => {
+        checkFavoriteService(service.formattedAddress, sVal).then((data) => {
             if (!data)
                 setStar(false);
           });
     }
+          */
 
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-                if(!(await checkService(info.formattedAddress)))
+                if(!(await checkFavoriteService(service.formattedAddress, sVal)))
                     setStar(false);
             } catch(error) {
                 console.error("Error fetching DB:", error);
