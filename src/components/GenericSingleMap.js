@@ -1,8 +1,7 @@
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Script from "next/script";
 
-export default function GenericMap({ address, isLoaded }) {
+export default function GenericMap({ address, isLoaded, mapId }) {
   const mapRef = useRef(null);
   const geocoderRef = useRef(null);
 
@@ -16,7 +15,7 @@ export default function GenericMap({ address, isLoaded }) {
     const { Map } = await window.google.maps.importLibrary("maps");
     geocoderRef.current = new google.maps.Geocoder();
     try {
-      mapRef.current = new Map(document.getElementById("map"), {
+      mapRef.current = new Map(document.getElementById(mapId || "map"), {
         center: { lat: 26.304225, lng: -98.163751 }, //default
         zoom: 13,
       });
@@ -24,13 +23,13 @@ export default function GenericMap({ address, isLoaded }) {
         geocodeTheAddress(address);
       }
     } catch (e) {
-      console.log("mmap didnt load: ", e);
+      console.log("map didn't load: ", e);
     }
   }
 
   async function geocodeTheAddress(userAddress) {
     if (!userAddress || !mapRef.current) {
-      console.log("address didnt go through or bad map");
+      console.log("address didn't go through or bad map");
       return;
     }
 
@@ -67,14 +66,21 @@ export default function GenericMap({ address, isLoaded }) {
     }
   }, [address, isLoaded]); // dependency arr, when this value changes, useeffecthook runs again
 
+  function centerMap() {
+    if (address && mapRef.current) {
+      geocodeTheAddress(address);
+    }
+  }
+
   return (
-    <div>
+    <div className="map-widget">
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`}
         onLoad={() => loadGenericMap()}
         strategy="lazyOnload"
       />
-      <div id="map" style={{ width: "400px", height: "400px" }}></div>
+      <div id={mapId || "map"} style={{ width: "500px", height: "400px" }}></div>
+      <button onClick={centerMap} className="btn btn-primary mt-2">center map</button>
     </div>
   );
 }
