@@ -39,42 +39,34 @@ function Question({theQuestion, current, func, changeLoading}){
         
         const prevQuestion = theQuestion.get(previousResponses[0]); //gets the values from hash map with the previous key
         for (let i of prevQuestion.answer){
-            if (i[0] === previousResponses[1]) { //this is to check if the value has an api value. Used in case the user presses enter on same input
+            if (i[0] === previousResponses[1]) {
+                console.log("INSIDE LOOP")
+                console.log(i[2]) //this is to check if the value has an api value. Used in case the user presses enter on same input
                 setAPIvalue(i[2] ? i[2]: "");    
                 break;
             }
         }
+        console.log("prevValues: ");
         console.log(prevValues);
+        const theUserResponsesAPI = prevValues[prevValues.length-1]; //this is an array of arrays that records user respones that deals with API calls. First index is actual recorded value and second is the textQuery values
         if (previousResponses[1] != "No Preference") { //the values did not change
-            const theUserResponsesAPI = prevValues[prevValues.length-1]; //this is an array of arrays that records user respones that deals with API calls. First index is actual recorded value and second is the textQuery values
-            const previousUserAPI = prevValues[prevValues.length-2]; //Similar to above, but this is to replace current with previous. 
             switch (prevQuestion.question[1]){ //this is the grouping
                 case 0: //if we are here, that means it the first question, which means full reset
-                    theTest.main_category = null; 
-                    theTest.textQuery = null;
+                    theTest.main_category = theUserResponsesAPI[0]; 
+                    theTest.textQuery = theUserResponsesAPI[1];
+                    prevValues.pop();
                     break;
                 case 1: 
-                    if (theTest.types?.includes('_')){ //there are two possible options, either its two types together connected with _ or one type that has at least one _
+                    if (theTest.types != theUserResponsesAPI[0])
+                        theTest.types = theUserResponsesAPI[0]
 
-                        if (theTest.types === theUserResponsesAPI[0]){  //this means it is one word
-                            theTest.types = theTest.types.replace(theUserResponsesAPI[0], "");
-                            if (theTest.types === "") //had to do this because it would replace it with an actual string "null"
-                                theTest.types = null;
-                            theTest.textQuery = theTest.textQuery.replace(theUserResponsesAPI[1], previousUserAPI[1]);
-                        }
-                        else{
-                            theTest.types = theTest.types.replace(theUserResponsesAPI[0] + "_", ""); //this means there are seperate types connected with _
-                            theTest.textQuery = theTest.textQuery.replace(theUserResponsesAPI[1] + " ", ""); //removed the part of string that references the current response
-                        }
-                    }
-                    else { 
-                        theUserResponsesAPI && theUserResponsesAPI[2] == false? null :theTest.types = null; //for the cafe edge case
-                        theTest.textQuery = previousUserAPI[1];
-                    }
+                    if (theTest.textQuery != theUserResponsesAPI[1])
+                        theTest.textQuery = theUserResponsesAPI[1];
                     prevValues.pop();
                     break;
                 case 2: //case 2 only deals with textQuery
-                    theTest.textQuery = theTest.textQuery.replace(theUserResponsesAPI[0] + " ", "");
+                    if (theTest.textQuery != theUserResponsesAPI[0])
+                        theTest.textQuery = theUserResponsesAPI[0]
                     prevValues.pop();
                     break;
                 case 3: //this is an easy reset
@@ -86,7 +78,6 @@ function Question({theQuestion, current, func, changeLoading}){
     
             }
         }
-        console.log(apiValue);
         console.log("After back:")
         console.log(theTest); //debugging
         console.log(mapKey);
@@ -137,43 +128,67 @@ function Question({theQuestion, current, func, changeLoading}){
         if (mapKey == current){ //to show text
             setSearchP(true);
         }
+        console.log("API VALUE:")
+        console.log(apiValue);
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
+                    prevValues.push([theTest.main_category, theTest.textQuery]);
                     theTest.main_category = apiValue === "" ? valueSelect: apiValue; 
                     theTest.textQuery = valueSelect;
-                    prevValues.push([theTest.main_category, theTest.textQuery]);
                     break;
                 case 1:
                     let temp = null;
+                    prevValues.push([theTest.types, theTest.textQuery])
                     //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
                     //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
-                    if (apiValue != ""){
-                        if (apiValue != "No Change"){
-                            temp = apiValue.toLowerCase();
-                            if (theTest.types)
-                                //if a type was added and if not food drink main category, replace the old value with new. Else add to the beginning of the string in API Call format: types_call
-                                theTest.textQuery != "Food and Drink" ? theTest.types = temp : theTest.types = `${temp}_${theTest.types}`;
-                            else 
-                                theTest.types = temp; //this means they are not existing types currently in object. Therefore just add it
+                    if (apiValue[0] != 0) { //0 would mean ignore
+                        let actualAPIvalue;
+                        if (apiValue.length > 1)
+                            actualAPIvalue = apiValue.split(',')[1]; //the tuple turns into a string, the first character is the case, and the second portion is the actual value
+                        temp = actualAPIvalue? actualAPIvalue.toLowerCase(): valueSelect.toLowerCase();
+                        switch (Number(apiValue[0])) {
+                            case 1:
+                                temp = temp.replaceAll(" ", "_");
+                                theTest.types = theTest.types? `${temp}_${theTest.types}`: theTest.types = temp;
+                                theTest.textQuery = `${valueSelect} ${theTest.textQuery}`;
+                                break;
 
+                            case 2:
+                                break
+
+                            case 3:
+                                temp = temp.replaceAll(" ", "_");
+                                theTest.types = temp;
+                                theTest.textQuery = valueSelect;
+                                break;
+                            
+                            case 4:
+                               theTest.textQuery = temp;
+                               break
+
+                            case 5:
+                                temp = temp.replaceAll(" ", "_");
+                                theTest.types = temp;
+                                theTest.textQuery = `${valueSelect} ${theTest.textQuery}`;
+                                break;
                         }
+       
                     }
-                    else {
-                        temp = valueSelect.toLowerCase();
-                        theTest.types ? theTest.types =`${temp}_${theTest.types}`: theTest.types = temp;
-                    }
-                        //if the property has a string, then add to string, otherwise replace it
-
+                   
                     //this is just saying if we are in the food drink category, don't replace, but add unless theText query property is actually the string "Food and Drink"
-                    theTest.main_category === 'Food and Drink' && theTest.textQuery != 'Food and Drink' ? theTest.textQuery = `${valueSelect} ${theTest.textQuery}` : theTest.textQuery = valueSelect;
-                    let makeChange = temp == null ? false : true;
-                    prevValues.push([temp, valueSelect, makeChange]);
+                    // let makeChange = temp == null ? false : true;
+                    // prevValues.push([valueSelect, apiValue[0]]);
                     console.log(prevValues); //debugging
                     break;
                 case 2:
-                    theTest.textQuery ? theTest.textQuery = `${valueSelect} ${theTest.textQuery}`: theTest.textQuery = valueSelect;  
-                    prevValues.push([valueSelect]);
+                    prevValues.push([theTest.textQuery]);
+                    if (apiValue[0] > 1) {
+                        theTest.textQuery ? theTest.textQuery =  `${valueSelect} ${theTest.textQuery}`: theTest.textQuery = valueSelect;  
+                    }
+                    else if (apiValue[0] == 1)
+                        theTest.types = apiValue[1] ? apiValue[1].toLowerCase(): valueSelect.toLowerCase();
+                    // prevValues.push([valueSelect, apiValue[0]]);
                     break;
                 case 3:
                     theTest.priceLevel = "PRICE_LEVEL_"+ valueSelect.toUpperCase();
@@ -187,6 +202,8 @@ function Question({theQuestion, current, func, changeLoading}){
                     break;
             }
         }
+        console.log("prevValues: ");
+        console.log(prevValues);
         console.log("theTest in Question component: ")
         console.log(theTest);
         prevKeys.push([mapKey, valueSelect]);

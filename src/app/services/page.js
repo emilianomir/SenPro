@@ -3,6 +3,7 @@ import "../css/services_page.css"
 import ServiceCard from "@/components/ServiceCard";
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useAppContext } from "@/context";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
@@ -14,9 +15,9 @@ import Favorites from "@/components/Favorites";
 export default function Services(){
     const {userResponses, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
-    const [loading, setLoading] = useState(true);
 
-
+    if (userResponses == null)
+        redirect("/login");
     function changeClick(){
         setClicked(true);
     }
@@ -40,43 +41,45 @@ export default function Services(){
 
 
 
-    useEffect(()=> {
-        let change = true;
+    // useEffect(()=> {
+    //     let change = true;
 
-        const getInfo = async ()=> {
-            try {
-                const response = await fetch('/api/maps/places', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses})
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+    //     const getInfo = async ()=> {
+    //         try {
+    //             const response = await fetch('/api/maps/places', {
+    //                 method: "POST",
+    //                 headers: { "Content-Type": "application/json" },
+    //                 body: JSON.stringify({userResponses})
+    //             });
+    //             if (!response.ok) {
+    //                 throw new Error(`HTTP error! Status: ${response.status}`);
+    //             }
         
-                const {services_result} = await response.json();
-                console.log("Service result in services page: "); //debugging purposes
-                console.log(services_result);
-                if (change){
-                    if (services_result) //only replace if there is at least a service
-                        setAPIServices(services_result);
-                    }
-                    setLoading(false);
+    //             const {services_result} = await response.json();
+    //             console.log("Service result in services page: "); //debugging purposes
+    //             console.log(services_result);
+    //             if (change){
+    //                 if (services_result) //only replace if there is at least a service 
+    //                     setAPIServices(services_result);
+    //                 }
+    //                 setLoading(false);
                 
         
-            }catch (error) {
-                console.error("Error fetching API:", error);
-                alert("There was an issue getting the data.");
-            }
-        }
-        if (!apiServices) //if we already have services from previous call, don't make a new call
-            getInfo();
-        console.log("The apiServices: ") //debugging
-        console.log(apiServices);
-        return () => {
-            change = false;
-            };
-    }, []);
+    //         }catch (error) {
+    //             console.error("Error fetching API:", error);
+    //             alert("There was an issue getting the data.");
+    //         }
+    //     }
+    //     if (!apiServices) //if we already have services from previous call, don't make a new call
+    //         {
+    //             getInfo();
+    //         }
+    //     console.log("The apiServices: ") //debugging
+    //     console.log(apiServices);
+    //     return () => {
+    //         change = false;
+    //         };
+    // }, []);
 
 
  
@@ -85,8 +88,7 @@ export default function Services(){
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />
-            {(!apiServices && loading) && <Loading message = {"Fetching data based on response"}/> } 
-            {(apiServices || !loading) && //this either means we had services stored from previous call or fetch data was finsihed
+            
                 <>
                     <div className="container mt-4 ms-4">
                         <div className="fs-2 text-white fw-bold mb-3">
@@ -130,7 +132,7 @@ export default function Services(){
                         </div>  
                     </div>
                 </>
-            }
+            
  
         </div>
     )

@@ -1,15 +1,16 @@
 "use client"
 import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
+import Image from "next/image";
 import "../css/end_page.css"
 
 export default function End(){
-    const {userServices} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
                                             //add the list to the services here. But remember on every load this code runs
     console.log("The services: ")
     console.log(userServices);
     console.log(userServices.length);
-      
+    console.log(numberPlaces);
     return(
         <div>
             <ServicePageHeading />
@@ -20,7 +21,9 @@ export default function End(){
                         <div className="d-flex justify-content-center align-items-center final_result_text"> 
                             <h3 className="text-center fw-bold p-3 text-wrap">{theService.displayName.text}</h3>
                         </div>
-                        <div className="d-flex justify-content-center"><img className="final_result_photo" src = {theService.photo_image} alt = "Service Photo"/></div>
+                        <div className="d-flex justify-content-center">
+                            <Image className = "final_result_photo" src= {!theService.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": theService.photo_image} width={300} height={300} alt = "Service image" unoptimized = {true} />
+                        </div>
                         <div className="d-flex justify-content-center align-items-center p-3"> 
                             <div className="text-center fs-4 text-wrap">{theService.formattedAddress}</div>
                         </div>
