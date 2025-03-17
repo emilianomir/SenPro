@@ -7,7 +7,7 @@ export async function POST(req){
         const url = "https://places.googleapis.com/v1/places:searchText"
 
         const textBody = {
-            textQuery: `${userResponses.name ? userResponses.name : userResponses.textQuery} near ${address}`,
+            textQuery: `${userResponses.name ? userResponses.name : userResponses.textQuery} near ${userAddress}`,
             openNow: true, //we can change to false to show more services. But then we would need to ask for the business operations of each place to help user see time 
             regionCode: "US",
             languageCode: "en",

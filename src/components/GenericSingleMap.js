@@ -73,13 +73,13 @@ export default function GenericMap({ address, isLoaded, mapId }) {
   }
 
   return (
-    <div className="map-widget">
+    <div className="map-widget h-100 w-100">
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`}
         onLoad={() => loadGenericMap()}
         strategy="lazyOnload"
       />
-      <div id={mapId || "map"} style={{ width: "500px", height: "400px" }}></div>
+      <div id = {mapId || "map"} style = {{width: "100%", height: "100%"}}></div>
       <button onClick={centerMap} className="btn btn-primary mt-2">center map</button>
     </div>
   );

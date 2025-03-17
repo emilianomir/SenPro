@@ -66,6 +66,72 @@ export default function ServiceInfo(){
     }, [wentBack, addServices]
     );
 
+    const handleGoogleMapsClick = () => {
+        // get the current service (the last one in the array)
+        const currentIndex = userServices.length - 1;
+        console.log(currentIndex);
+        const currentService = userServices[currentIndex];
+        console.log(currentService);
+        let originAddress, originLat, originLng;
+        
+        // check if there is a previous service to use as origin
+        if (currentIndex > 0) {
+            const previousService = userServices[currentIndex - 1];
+            originAddress = previousService.formattedAddress;
+            
+            // get origin coordinates from previous service
+            if (previousService.geometry && previousService.geometry.location) {
+                originLat = previousService.geometry.location.lat;
+                originLng = previousService.geometry.location.lng;
+            } else if (previousService.location) {
+                originLat = previousService.location.lat;
+                originLng = previousService.location.lng;
+            } else if (previousService.lat && previousService.lng) {
+                originLat = previousService.lat;
+                originLng = previousService.lng;
+            } else {
+                // default fallback coordinates
+                originLat = 26.304225;
+                originLng = -98.163751;
+            }
+        } else {
+            // no previous service, so use default values
+            originAddress = "Your Location";
+            originLat = 26.304225;
+            originLng = -98.163751;
+        }
+        
+        // get destination coordinates - handle different possible structures
+        let destLat, destLng;
+        
+        // check if the service has geometry.location structure
+        if (currentService.geometry && currentService.geometry.location) {
+            destLat = currentService.geometry.location.lat;
+            destLng = currentService.geometry.location.lng;
+        }
+        // check if it has a location property
+        else if (currentService.location) {
+            destLat = currentService.location.lat;
+            destLng = currentService.location.lng;
+        }
+            // Check if it has lat/lng at the root level
+        else if (currentService.lat && currentService.lng) {
+            destLat = currentService.lat;
+            destLng = currentService.lng;
+        }
+        // fallback to default coordinates if we can't find them in the service object
+        else {
+            console.error("Could not find coors so using defaults");
+            destLat = 26.3017;
+            destLng = -98.1633;
+        }
+        
+        // construct the url with query parameters
+        const routeUrl = `/route?origin=${encodeURIComponent(originAddress)}&destination=${encodeURIComponent(currentService.formattedAddress)}&originLat=${originLat}&originLng=${originLng}&destLat=${destLat}&destLng=${destLng}`;
+        
+        router.push(routeUrl);
+    };
+
     return(
         <div className="full_page bg-secondary">
               <Script
@@ -103,7 +169,12 @@ export default function ServiceInfo(){
                                 <div className="col text-center pt-3 ps-3">
                                     <div className="text-center mt-3 fs-3">Address: {userServices[userServices.length-1].formattedAddress}</div>
                                     <div className="col">
-                                        <button className="fs-3 btn btn-primary w-100 mt-4">Google Maps</button>
+                                        <button 
+                                            onClick={handleGoogleMapsClick} 
+                                            className="fs-3 btn btn-primary w-100 mt-4"
+                                        >
+                                            Google Maps
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="col text-center row row-cols-2 p-0 ps-4">  
