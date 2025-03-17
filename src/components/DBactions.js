@@ -9,7 +9,6 @@ import { services } from "../db/schema/services.js";
 import { favorites } from "../db/schema/favorites.js";
 import { history } from "../db/schema/history.js";
 import bcrypt from "bcryptjs";
-import { Truculenta } from "next/font/google/index.js";
 
 // testing for existing emails in singup
 export async function testExistingUser(email){
@@ -135,128 +134,166 @@ export async function getUser(email) {
   }
 
 
- //change password
- export async function changePass(email, newpass)
- {
-    const pass = await bcrypt.hash(newpass, 10);
+//change password
+export async function changePass(email, newpass)
+{
+  const pass = await bcrypt.hash(newpass, 10);
 
-    await db.update( users )
-    .set({password: pass})
-    .where(eq(users.email, email));
- }
-
-
-
- export async function checkService(primaryKey) {
-  const data = await db.select().from(services).where(eq(services.address, primaryKey));
-  return data.length === 0;
- }
-
- export async function checkFavoriteService(primaryKey, email){
-  const data = await db.select().from(favorites).where(and(eq(favorites.sAddress, primaryKey), eq(favorites.userEmail, email)));
-  return data.length === 0;
- }
-
- export async function checkHistoryService(primaryKey, email, d2) {
-  const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(history).where(and(eq(history.sAddress, primaryKey), eq(history.userEmail, email)));
-  if (data.length == 0){
-    return true
-  }
-  else{
-    data.forEach(element => {
-      if(d2[0].date == element.date)
-      {
-        let [h1, m1, s1] = element.time.split(':');
-        let [h2, m2, s2] =  d2[0].time.split(':');
-        let val1 = ((h1*60)*60) + (m1*60) + s1;
-        let val2 = ((h2*60)*60) + (m2*60) + s2;    
-
-        difference = val1 - val2;
-        if (difference <= 10)
-          return false;
-      }
-    });
-    return true;
-  }
- }
-
-
- export async function addService(primaryKey, info) {
-    try {
-    console.log("adding service to db:", {
-      primaryKey,
-      info,
-    });
-
-    if(await checkService(primaryKey)){
-      await db.insert(services).values({
-        address: primaryKey,
-        info: JSON.stringify(info),
-      });
-    }
-
-  } catch (e) {
-    console.error("error in in service adding:", e);
-    throw e;
-  }
- }
+  await db.update( users )
+  .set({password: pass})
+  .where(eq(users.email, email));
+}
 
 
 
- export async function addFavoriteService(primaryKey, info, email) {
+
+
+
+
+
+
+
+
+
+
+// Service Calls
+  // Check
+export async function checkService(primaryKey) {
+const data = await db.select().from(services).where(eq(services.address, primaryKey));
+return data.length === 0;
+}
+
+  // Add
+export async function addService(primaryKey, info) {
   try {
-    console.log("adding service to db:", {
-      primaryKey,
-      info,
+  console.log("adding service to db:", {
+    primaryKey,
+    info,
+  });
+
+  if(await checkService(primaryKey)){
+    await db.insert(services).values({
+      address: primaryKey,
+      info: JSON.stringify(info),
     });
-
-    if(await checkService(primaryKey)){
-      await db.insert(services).values({
-        address: primaryKey,
-        info: JSON.stringify(info),
-      });
-    }
-    await db.insert(favorites).values({
-      userEmail: email,
-      sAddress:  primaryKey,
-    })
-  } catch (e) {
-    console.error("error in in service adding:", e);
-    throw e;
   }
- }
 
- export async function removeFavoriteService(primaryKey, email) {
-  try {
-    console.log("deleting service to db:", {
-      primaryKey,
+} catch (e) {
+  console.error("error in in service adding:", e);
+  throw e;
+}
+}
+
+
+// Favorite Calls
+  // Check
+export async function checkFavoriteService(primaryKey, email){
+const data = await db.select().from(favorites).where(and(eq(favorites.sAddress, primaryKey), eq(favorites.userEmail, email)));
+return data.length === 0;
+}
+
+  // Add
+export async function addFavoriteService(primaryKey, info, email) {
+try {
+  console.log("adding service to db:", {
+    primaryKey,
+    info,
+  });
+
+  if(await checkService(primaryKey)){
+    await db.insert(services).values({
+      address: primaryKey,
+      info: JSON.stringify(info),
     });
-
-    await db.delete(favorites).where(and(eq(favorites.sAddress, primaryKey), eq(favorites.userEmail, email)));
-  } catch (e) {
-    console.error("error in in service deletion:", e);
-    throw e;
   }
- }
+  await db.insert(favorites).values({
+    userEmail: email,
+    sAddress:  primaryKey,
+  })
+} catch (e) {
+  console.error("error in in service adding:", e);
+  throw e;
+}
+}
 
+  // Remove
+export async function removeFavoriteService(primaryKey, email) {
+try {
+  console.log("deleting service to db:", {
+    primaryKey,
+  });
 
- export async function addHistoryService(services, email) {
+  await db.delete(favorites).where(and(eq(favorites.sAddress, primaryKey), eq(favorites.userEmail, email)));
+} catch (e) {
+  console.error("error in in service deletion:", e);
+  throw e;
+}
+}
+
+  // Get
+export async function getFavorites(email)
+{
   try {
-    console.log("adding service to db:", {
-      services,
+    console.log("getting Favorite services from db given email:", {
       email,
     });
-    const d2 = await db.select({total: sql`(CURRENT_TIMESTAMP)`, time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, email));
-    if(await checkHistoryService(services, email, d2)) {
-    await db.insert(history).values({
-      userEmail: email,
-      sAddress:  JSON.stringify(services),
-      createdAt: d2.total,
-    })
-  }
+
+    const value = await db.select({ info: services.info })
+    .from(services)
+    .fullJoin(favorites, eq(favorites.sAddress, services.address))
+    .where(eq(favorites.userEmail, email));
+
+    return value;
+
   } catch (e) {
-    console.error("error in in service adding:", e);
+    console.error("error in in service selection:", e);
     throw e;
   }
- }
+}
 
+
+// History Calls
+  // Check
+export async function checkHistoryService(primaryKey, email, d2) {
+const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(history).where(and(eq(history.sAddress, primaryKey), eq(history.userEmail, email)));
+if (data.length == 0){
+  return true
+}
+else{
+  data.forEach(element => {
+    if(d2[0].date == element.date)
+    {
+      let [h1, m1, s1] = element.time.split(':');
+      let [h2, m2, s2] =  d2[0].time.split(':');
+      let val1 = ((h1*60)*60) + (m1*60) + s1;
+      let val2 = ((h2*60)*60) + (m2*60) + s2;    
+
+      difference = val1 - val2;
+      if (difference <= 10)
+        return false;
+    }
+  });
+  return true;
+}
+}
+
+  // Add
+export async function addHistoryService(services, email) {
+try {
+  console.log("adding service to db:", {
+    services,
+    email,
+  });
+  const d2 = await db.select({total: sql`(CURRENT_TIMESTAMP)`, time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, email));
+  if(await checkHistoryService(services, email, d2)) {
+  await db.insert(history).values({
+    userEmail: email,
+    sAddress:  JSON.stringify(services),
+    createdAt: d2.total,
+  })
+}
+} catch (e) {
+  console.error("error in in service adding:", e);
+  throw e;
+}
+}

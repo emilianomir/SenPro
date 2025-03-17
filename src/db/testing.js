@@ -1,11 +1,14 @@
 
 import { db } from "./index.js";
-import { users } from "./schema/users.js";
+import { users} from "./schema/users.js";
+import { favorites } from "./schema/favorites.js";
+import { services } from "./schema/services.js";
 import { eq, sql } from "drizzle-orm";
-import { addUser, checkLogin, testExistingUser, getUser} from '../components/DBactions.js'
+import { addUser, checkLogin, testExistingUser, getUser, getFavorites} from '../components/DBactions.js'
 // import { addUser, testExistingUser } from "@/components/DBactions.js";
 import bcrypt from "bcrypt"
 import { getModifiedCookieValues } from "next/dist/server/web/spec-extension/adapters/request-cookies.js";
+
 
 /*
 await db.insert( users ).values({
@@ -86,6 +89,7 @@ console.log(difference)
 
 */
 
+/*
   //eq(history.createdAt, sql`(CURRENT_TIMESTAMP)`)
   const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(users);
   const d1 = await db.select({time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, 'test@gmail.com'));
@@ -106,4 +110,13 @@ console.log(difference)
     console.log(difference)
   });
 
+*/
+
+const val = await getFavorites("test@gmail.com")
+
+const val2 = [];
+val.forEach(element => {
+    const testVal = JSON.parse(element.info);
+    val2.push(testVal)
+})
 
