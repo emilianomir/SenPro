@@ -6,9 +6,16 @@ import Image from "next/image";
 import { useState } from "react";
 
 function ServiceCard({service, userClick}){
-    const {userServices, setServices} = useAppContext();
+    const {userServices, setServices, userResponses} = useAppContext();
     const [error, setError] = useState(false);
-
+    let theFuel = null; 
+    if (service.fuelOptions != undefined && userResponses.fuel_type != null){
+        for (let fuelTypes of service.fuelOptions.fuelPrices){
+            if (fuelTypes.type === userResponses.fuel_type){
+                theFuel = fuelTypes;
+            }
+        }
+    }
     const handleServiceSelect = ()=>{
         userClick(); //this is a function from the services menu page that helps with showing loading UI
         setServices([...userServices, service]); //makes a copy and adds the current service to it only on click
@@ -26,10 +33,17 @@ function ServiceCard({service, userClick}){
                         src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
                         {service.userRatingCount && <div className="fs-4 pb-3 ps-2">{`(${service.userRatingCount})`}</div>}
                     </div>
-  
+                    {theFuel ? 
+                    <div className="card-text fs-5 text-wrap">
+                        <div className="fw-bold">{theFuel.type}</div>
+                        <div>Current Price: <span className="fw-bold">{theFuel.price.currencyCode == "USD" && "$"} {Number(theFuel.price.units) + (theFuel.price.nanos/1000000000)}</span></div>
+                    </div>
+                    :
                     <p className = "card-text fs-4 text-wrap">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
-                                                                 {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
-                                                                 }</p>
+                    {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
+                    }</p>
+                    }
+
                 </div>
             </div>
          </Link>

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
+import Loading from "@/components/Loading";
 
 
 
@@ -24,25 +25,35 @@ export default function ServiceInfo(){
     }
 
     const goToGallery = async ()=>{
-        if (current_service.photoURLs == undefined) {
-            const photoNames = []; 
-            const photos_array = current_service.photos;
-            for (let i = 1; i < photos_array.length; i ++){
-                photoNames.push(photos_array[i].name);
+        setLoading(true);
+        if (current_service.photo_images_urls == undefined) {
+            const temp = [];
+            for (let i = 1; i < current_service.photos.length; i ++) {
+                const response = await fetch('/api/maps/places?thePhoto=' + current_service.photos[i].name);
+                if (response.ok)
+                    temp.push(response.url);
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
-            const queryString = encodeURIComponent(JSON.stringify(photoNames));
-            const response = await fetch(`/api/maps/places?thePhotos=${queryString}`);
-            if (response.ok) {
-                const {photoUrlList} = await response.json();
-                current_service.photoURLs = photoUrlList;
-                router.push(`/services/${current_service.displayName.text}/gallery`)
-            }
-            else {
-                throw new Error(`HTTP error! Status: ${response.status}`);  
-            }
-        }
+            // const photoNames = []; 
+            // const photos_array = current_service.photos;
+            // for (let i = 1; i < photos_array.length; i ++){
+            //     photoNames.push(photos_array[i].name);
+            // }
+            // const queryString = encodeURIComponent(JSON.stringify(photoNames));
+            // const response = await fetch(`/api/maps/places?thePhotos=${queryString}`);
+            // if (response.ok) {
+            //     const {photoUrlList} = await response.json();
+            //     current_service.photoURLs = photoUrlList;
+            //     router.push(`/services/${current_service.displayName.text}/gallery`)
+            // }
+            // else {
+            //     throw new Error(`HTTP error! Status: ${response.status}`);  
+            // }
+        current_service.photo_images_urls = temp;
+        router.push(`/services/${current_service.displayName.text}/gallery`);
+    }
         else 
-            router.push(`${router.pathname}/gallery`)
+            router.push(`/services/${current_service.displayName.text}/gallery`)
     }
 
     const handleEnter = ()=> { 
@@ -60,6 +71,11 @@ export default function ServiceInfo(){
         handleRouteChangeComplete();
     }, [wentBack]
     );
+    if (loading){
+        return (
+            <Loading message={"Fetching services images"} />
+        )
+    }
 
     return(
         <div className="full_page bg-secondary">

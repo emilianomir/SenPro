@@ -3,20 +3,28 @@ import ServicePageHeading from "@/components/ServicePageHeading"
 import { useAppContext } from "@/context"
 import Service_Image from "@/components/Service_Image";
 import { redirect } from "next/navigation";
-import { useState } from "react";
-import Loading from "@/components/Loading";
 export default function Gallery (){
     const {userServices} = useAppContext();
     const current_service = userServices[userServices.length-1];
-    const [theServiceList, setServicesList] = useState([]);
-    (async () => {
-        const temp = [];
-        for (let i of current_service.photoURLs) {
-            await new Promise((resolve) => setTimeout(resolve, 300));
-            temp.push(<Service_Image key = {i} url = {i}/>);
-        }
-        setServicesList(temp);
-    })();
+
+
+    // useEffect(()=>{
+    //     (async () => {
+    //         const temp = [];
+    //         if (current_service.photos == undefined)
+    //             return;
+
+    //         for (let i = 1; i < current_service.photos.length; i ++) {
+    //             current_service.photos[i];
+    //             // const response = await fetch('/api/maps/places?thePhoto=' + current_service.photos[i].name);
+    //             // if (response.ok)
+    //             //     temp.push(response.url);
+    //         }
+    //         // current_service.photo_images_urls = temp;
+    //         // setLoading(true);
+    //     })();
+    // }, [])
+
 
     console.log("Ran");
     return (
@@ -25,9 +33,11 @@ export default function Gallery (){
             <div className="container">
                 <h1 className="text-center fw-bolder text-white">Gallery</h1>
                 <div className="scroll mt-4">
-                    {theServiceList.length > 0 ? 
-                    (theServiceList)
-                    : <Loading message={"Fetching Images"}/>}
+                    {
+                    current_service.photo_images_urls.map((theUrl)=>(
+                        <Service_Image key = {theUrl} url = {theUrl}/>
+                    ))
+                    }
                 </div>
             </div>
         </>

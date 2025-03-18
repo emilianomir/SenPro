@@ -12,6 +12,7 @@ class Responses {
     this.rating = null;
     this.name = null;
     this.textQuery = null;
+    this.fuel_type = null;
   }
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
@@ -75,6 +76,10 @@ function Question({theQuestion, current, func, changeLoading}){
     
                 case 5: //no case 4 since at the moment, it goes instantly after choosing rating
                     theTest.name = null;
+                    break;
+
+                case 6:
+                    theTest.fuel_type = null; 
     
             }
         }
@@ -200,7 +205,9 @@ function Question({theQuestion, current, func, changeLoading}){
                 case 5:
                     theTest.name = valueSelect; 
                     break;
-            }
+                case 6:
+                    theTest.fuel_type = valueSelect;
+            }   
         }
         console.log("prevValues: ");
         console.log(prevValues);

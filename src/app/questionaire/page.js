@@ -24,7 +24,7 @@ function Questionaire(){
 
     
     useEffect(()=> {
-        // let change = true;
+
 
         const getInfo = async ()=> {
             try {
@@ -38,11 +38,17 @@ function Questionaire(){
                 }
         
                 const {services_result} = await response.json();
+                for (let i of services_result) {
+                    const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
+                    if (result.ok)
+                        i.photo_image  = result.url;
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
                 // if (change){
-                    setAPIServices(services_result);
-                    router.push("/services");
+                setAPIServices(services_result);
+                router.push("/services");
                     // }
 
 
@@ -211,8 +217,12 @@ function Questionaire(){
     });   
     questionsList.set("GasQ", {
         question: ["What type of station do would you like?", 1],
-        answer: [["Gas Station", "Price", [3]], ["Electric", "Price" , [3, "Electric Vehicle Charging Station"]]]
+        answer: [["Gas Station", "FuelQ", [3]], ["Electric", "Price" , [3, "Electric Vehicle Charging Station"]]]
     });   
+    questionsList.set("FuelQ", {
+        question: ["What type of fuel do you use?", 6],
+        answer: [["PREMIUM", "Price"], ["MIDGRADE", "Price"], ["REGULAR_UNLEADED", "Price"], ["DIESEL", "Price"]]
+    });  
     questionsList.set("BankQ", {
         question: ["What type of bank would you like?", 1],
         answer: [["Accounting", "Price", [3]], ["Bank", "Rating", [3]], ["ATM", "Rating" , [3]]]
@@ -239,10 +249,6 @@ function Questionaire(){
         answer: [["Bagel", "Price", [1]], ["Chocolate", "Price" , [1]], ["Coffee", "Price" , [1]], ["Dessert", "Price" , [1]], ["Donut", "Price" , [1]], ["Ice Cream", "Price" , [1]], 
         ["Juice", "Price" , [1]], ["Sandwich", "Price" , [1]], ["No Preference", "Price" , [0]]]
     });    
-    questionsList.set("MovieQ", {
-        question: ["What company do you want?", 5], 
-        answer: [["Cinemark", "End"], ["AMC", "End"], ["No Preference", "End"]]}
-    );
     questionsList.set("Rest", {
         question: ["What experience would you like?", 2 ], 
         answer: [["Fast Food", "Price"], ["Dining", "Price"], ["Fine Dining", "Price"], ["No Preference", "Price"]]}
@@ -274,7 +280,7 @@ function Questionaire(){
         answer: [["2.0+", "End"], ["3.0+", "End"], ["3.5+", "End"], ["4.0+", "End"], ["No Preference", "End"]]
     });
     questionsList.set("End",{
-        question: ["Loading", 6],
+        question: ["Loading"],
         answer: [] }
     );
 
