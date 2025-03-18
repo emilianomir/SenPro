@@ -3,6 +3,7 @@ import { db } from "./index.js";
 import { users} from "./schema/users.js";
 import { favorites } from "./schema/favorites.js";
 import { services } from "./schema/services.js";
+import { history } from "./schema/history.js";
 import { eq, sql } from "drizzle-orm";
 import { addUser, checkLogin, testExistingUser, getUser, getFavorites} from '../components/DBactions.js'
 // import { addUser, testExistingUser } from "@/components/DBactions.js";
@@ -112,6 +113,7 @@ console.log(difference)
 
 */
 
+/*
 const val = await getFavorites("test@gmail.com")
 
 const val2 = [];
@@ -120,3 +122,20 @@ val.forEach(element => {
     val2.push(testVal)
 })
 
+*/
+
+const fullArray = []
+const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, "test@gmail.com"));
+for (const element of val1){
+    const val2 = JSON.parse(element.services)
+    const val3 = [];
+    for(const element of val2){
+        let service = await db.select({ info: services.info } ).from(services).where(eq(services.address, element));
+        service = JSON.parse(service[0].info);
+        val3.push(service);
+    }
+    let valMap = { "date": new Date (element.date), "services": val3 };
+    fullArray.push(valMap);
+}
+
+console.log(fullArray)

@@ -185,6 +185,7 @@ export async function addService(primaryKey, info) {
 }
 
 
+
 // Favorite Calls
   // Check
 export async function checkFavoriteService(primaryKey, email){
@@ -296,4 +297,32 @@ try {
   console.error("error in in service adding:", e);
   throw e;
 }
+}
+
+  // Select
+export async function selectHistory(email)
+{
+  try {
+    console.log("selecting History services:", {
+      email,
+    });
+  const fullArray = []
+  const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, "test@gmail.com"));
+  for (const element of val1){
+      const val2 = JSON.parse(element.services)
+      const val3 = [];
+      for(const element of val2){
+          let service = await db.select({ info: services.info } ).from(services).where(eq(services.address, element));
+          service = JSON.parse(service[0].info);
+          val3.push(service);
+      }
+      let valMap = { "date": new Date (element.date), "services": val3 };
+      fullArray.push(valMap);
+  }
+  return fullArray;
+
+  } catch (e) {
+    console.error("error in in service adding:", e);
+    throw e;
+  }
 }
