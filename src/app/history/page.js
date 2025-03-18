@@ -27,6 +27,7 @@ export default function History(){
     const [data, setData] = useState([]); 
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [optionSelect, setOptionSelect] = useState([0, {services: "Select Service"}]);
     // if (userEmail === null)
     //     redirect("/login");
 
@@ -48,12 +49,13 @@ export default function History(){
     data.map((current)=>{
         if (current.date >= current_date)
             upcoming_array.push(current);
-        else 
+        else {
             past_array.push(current);
+        }
     });
-    
-    const [optionSelect, setOptionSelect] = useState([0, {services: "Select Service"}]);
 
+    past_array = past_array.sort((a,b) => a.date-b.date);
+    upcoming_array = upcoming_array.sort((a,b)=>a.date-b.date);
 
     if(isLoading){
         return (<Loading message= "Fetching History"/>)
