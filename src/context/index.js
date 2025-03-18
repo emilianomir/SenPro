@@ -9,6 +9,7 @@ export function AppWrapper ({children}){
     const [userResponses, setResponses] = useState(null);
     const [apiServices, setAPIServices] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
+    const [guestAddress, setGuestAddress] = useState(null);
 
     const contextValues = { //for better practice
         userServices,
@@ -20,7 +21,9 @@ export function AppWrapper ({children}){
         apiServices, 
         setAPIServices,
         userEmail,
-        setUserEmail
+        setUserEmail,
+        guestAddress,
+        setGuestAddress
     }
 
   return (

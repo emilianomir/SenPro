@@ -19,10 +19,10 @@ export default function History(){
     past_array = past_array.sort((a,b) => a.date-b.date);
     upcoming_array = upcoming_array.sort((a,b)=>a.date-b.date);
     const {userEmail} = useAppContext();
-    const [changed, setChanged] = useState([false, false]); 
+    const [changed, setChanged] = useState([true, false]); 
     const [optionSelect, setOptionSelect] = useState([0, past_array[0]]); 
-    // if (userEmail === null)
-    //     redirect("/login");
+    if (userEmail === null)
+        redirect("/login");
     return( 
         <div className="container w-100 vh-100 mt-4">
             <h1 className="text-center text-white fs-1 fw-bolder">History</h1> 
