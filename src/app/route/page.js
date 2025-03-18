@@ -11,26 +11,24 @@ export default function RoutePage() {
   const [destinationCoords, setDestinationCoords] = useState(null);
 
   useEffect(() => {
-    // Get addresses from URL parameters
-    const origin = searchParams.get('origin');
-    const destination = searchParams.get('destination');
-    const originLat = searchParams.get('originLat');
-    const originLng = searchParams.get('originLng');
-    const destLat = searchParams.get('destLat');
-    const destLng = searchParams.get('destLng');
+    // get the addresses from the url parameters
+    const origin = searchParams.get('origin'); // houston, tx 77015
+    const destination = searchParams.get('destination'); // the service address
+    const originLat = searchParams.get('originLat'); // 29.7604
+    const originLng = searchParams.get('originLng'); // -95.3698
+    const destLat = searchParams.get('destLat'); // the service latitude
+    const destLng = searchParams.get('destLng'); // the service longitude
 
-    if (origin) setOriginAddress(origin);
+    if (origin) setOriginAddress(origin); // safe guard to make sure the address is not null
     if (destination) setDestinationAddress(destination);
-    
-    // If coordinates are provided, use them
-    if (originLat && originLng) {
+    if (originLat && originLng) { 
       setOriginCoords({
         lat: parseFloat(originLat),
         lng: parseFloat(originLng)
       });
     }
     
-    if (destLat && destLng) {
+    if (destLat && destLng) { //
       setDestinationCoords({
         lat: parseFloat(destLat),
         lng: parseFloat(destLng)
@@ -57,7 +55,6 @@ export default function RoutePage() {
           </div>
         </div>
         
-        {/* The TravelMode component will show the map with directions */}
         <TravelMode 
           origin={originCoords} 
           destination={destinationCoords}

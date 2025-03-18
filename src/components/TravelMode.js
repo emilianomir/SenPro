@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import '../app/css/TravelMode.css';
 
 const TravelMode = ({ origin, destination, originAddress, destinationAddress }) => {
-    // Default values if props aren't provided
+    // values for edinburg, tx
     const defaultOrigin = {
         lat: 26.304225,
         lng: -98.163751
@@ -16,10 +16,22 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         lng: -98.1633
     };
 
-    const mapRef = useRef(null);
-    const [location, setLocation] = useState(defaultOrigin);
-    const [defaultPlace, setDefaultPlace] = useState(originAddress || "Rio Grande City, TX");
-    const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' });
+    const mapRef = useRef(null); // dom where the map will be rendered
+    const googleMapRef = useRef(null); // ref for the Google Map instance
+    const trafficLayerRef = useRef(null); // erf for the traffic layer instance
+    const [location, setLocation] = useState(defaultOrigin); // location is the origin coordinates
+    const [defaultPlace, setDefaultPlace] = useState(originAddress); // default place is the origin address
+    const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' }); // travel info is the distance and time it will take to travel between the two points
+    const [showTraffic, setShowTraffic] = useState(true); // show traffic is a boolean that determines if the traffic layer is shown with btn
+    const [trafficInfo, setTrafficInfo] = useState({ // dummy data for the traffic info, placeholder for the real data
+        congestion: 'Moderate',
+        congestionPercentage: 65,
+        bestTravelTime: '10:30 AM',
+        worstTravelTime: '5:45 PM',
+        alternativeRouteTime: '',
+        incidents: []
+    });
+    const [directionsResponse, setDirectionsResponse] = useState(null); // State for directions response
 
     useEffect(() => {
         // load the google maps script on top of the page
@@ -41,126 +53,199 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                 center: location,
             });
 
+            googleMapRef.current = map; // Store map instance in ref
+
+            // TRAFFIC LAYER
+            if (showTraffic) {
+                const trafficLayer = new google.maps.TrafficLayer();
+                trafficLayer.setMap(map);
+                trafficLayerRef.current = trafficLayer; // Store traffic layer in ref
+            }
+
             directionsRenderer.setMap(map);
             calculateAndDisplayRoute(directionsService, directionsRenderer);
 
-            document.getElementById("mode").addEventListener("change", () => {
+            document.getElementById("mode").addEventListener("change", () => { // when transport mode changes, calculate and display route
                 calculateAndDisplayRoute(directionsService, directionsRenderer);
             });
         };
 
-        const calculateAndDisplayRoute = (directionsService, directionsRenderer) => {
-            const selectedMode = document.getElementById("mode").value;
+        const calculateAndDisplayRoute = (directionsService, directionsRenderer) => {  // calc according to mode of trans
+            const selectedMode = document.getElementById("mode").value; // what they choose to travel, walk, drive, transit
 
             directionsService
                 .route({
                     origin: location,
                     destination: destination || defaultDestination,
-                    travelMode: google.maps.TravelMode[selectedMode],
+                    travelMode: google.maps.TravelMode[selectedMode],// pass the mode of travel to the google maps api
                 })
                 .then((response) => {
                     directionsRenderer.setDirections(response);
                     const { distance, duration } = response.routes[0].legs[0];
-                    setTravelInfo({ distance: distance.text, duration: duration.text });
+                    setTravelInfo({ distance: distance.text, duration: duration.text }); // set the distance and duration in the travel info state
+                    
+
+                    setDirectionsResponse(response); // Store response in state
                 })
-                .catch((e) => window.alert("Directions request failed due to " + e));
+                .catch((e) => window.alert("directions request failed because ", e));
         };
 
-        const geocodePlace = (place) => {
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ address: place }, (results, status) => {
-                if (status === 'OK') {
-                    const newLocation = results[0].geometry.location;
-                    setLocation({ lat: newLocation.lat(), lng: newLocation.lng() });
-                } else {
-                    window.alert('Geocode was not successful for the following reason: ' + status);
-                }
-            });
-        };
-
-        loadGoogleMapsScript();
-
-        // Set the default value for the input field if it exists
-        const inputElement = document.getElementById('place-input');
-        if (inputElement) {
-            inputElement.value = defaultPlace;
+        //with every prop change, change map ref
+        if (window.google && window.google.maps) {
+            initMap();
+        } else {
+            loadGoogleMapsScript();
         }
+    }, [location, destination, showTraffic]);
 
-        return () => {
-            const script = document.querySelector('script[src*="maps.googleapis.com/maps/api"]');
-            if (script) {
-                script.remove();
+    //if origin changes, change location
+    useEffect(() => {
+        if (origin) {
+            setLocation(origin);
+        }
+    }, [origin]);
+
+    const toggleTraffic = () => {
+        if (googleMapRef.current) {
+            if (showTraffic) {
+                // renew the traffic layer
+                if (trafficLayerRef.current) {
+                    trafficLayerRef.current.setMap(null);
+                }
+            } else {
+                // add the traffic layer if null
+                const trafficLayer = new google.maps.TrafficLayer();
+                trafficLayer.setMap(googleMapRef.current);
+                trafficLayerRef.current = trafficLayer; // store the traffic layer
+                
+                // default traffic info
+                setTrafficInfo({
+                    congestion: 'Moderate',
+                    congestionPercentage: 65,
+                    bestTravelTime: '10:30 AM',
+                    worstTravelTime: '5:45 PM',
+                    alternativeRouteTime: '5 minutes faster',
+                    incidents: [
+                        { type: 'Heavy traffic', location: 'Midway through route', delay: '8 minutes' }
+                    ]
+                });
             }
-        };
-    }, [location, defaultPlace, destination]);
+        }
+        setShowTraffic(!showTraffic);
+    };
+
+
 
     return (
         <div className="container">
-            {/* Map Container */}
-            <div 
-                ref={mapRef} 
-                className="map"
-                role="region"
-            />
+            <div className={`content-wrapper ${showTraffic ? 'with-traffic-panel' : ''}`}>
+                <div className="main-content">
+                    <div 
+                        ref={mapRef} 
+                        className="map"
+                        role="region"
+                    />
 
-            {/* Controls Container */}
-            <div className="controls">
-                {/* Left Column - Travel Mode Selection */}
-                <div className="control-group">
-                    <label className="label">
-                        Travel Mode
-                    </label>
-                    <select 
-                        id="mode"
-                        className="select"
-                    >
-                        <option value="DRIVING">Driving</option>
-                        <option value="WALKING">Walking</option>
-                        <option value="TRANSIT">Transit</option>
-                    </select>
+                    <div className="controls">
+                        <div className="control-group">
+                            <label className="label">
+                                Travel Mode
+                            </label>
+                            <select 
+                                id="mode"
+                                className="select"
+                            >
+                                <option value="DRIVING">Driving</option>
+                                <option value="WALKING">Walking</option>
+                                <option value="TRANSIT">Transit</option>
+                            </select>
+                        </div>
+                        <div className="control-group">
+                            <label className="label">
+                                Traffic
+                            </label>
+                            <button 
+                                onClick={toggleTraffic}
+                                className={`traffic-toggle-btn ${showTraffic ? 'active' : ''}`}
+                            >
+                                {showTraffic ? 'Hide Traffic' : 'Show Traffic'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="info">
+                        <h3 className="info-title">
+                            Travel Information
+                        </h3>
+                        <div className="info-grid">
+                            <div>
+                                <p className="info-label">Distance</p>
+                                <p className="info-value">
+                                    {travelInfo.distance || 'Calculating...'}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="info-label">Duration</p>
+                                <p className="info-value">
+                                    {travelInfo.duration || 'Calculating...'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Right Column - Location Input */}
-                {!originAddress && (
-                    <div className="control-group">
-                        <label className="label">
-                            Enter Location
-                        </label>
-                        <input 
-                            type="text" 
-                            id="place-input"
-                            placeholder="Enter a place" 
-                            className="input"
-                        />
-                        <button 
-                            onClick={() => geocodePlace(document.getElementById('place-input').value)}
-                            className="button"
-                        >
-                            Set Location
-                        </button>
+                {/* New Traffic Information Panel */}
+                {showTraffic && (
+                    <div className="traffic-panel">
+                        <h3 className="panel-title">Traffic Insights</h3>
+                        
+                        <div className="traffic-congestion">
+                            <h4>Current Traffic Congestion</h4>
+                            <div className="congestion-meter">
+                                <div 
+                                    className="congestion-level" 
+                                    style={{width: `${trafficInfo.congestionPercentage}%`}}
+                                ></div>
+                            </div>
+                            <p className="congestion-label">{trafficInfo.congestion} ({trafficInfo.congestionPercentage}%)</p>
+                        </div>
+                        
+                        <div className="traffic-timing">
+                            <h4>Best Times to Travel</h4>
+                            <div className="time-info">
+                                <div>
+                                    <span className="time-label">Best time:</span>
+                                    <span className="time-value">{trafficInfo.bestTravelTime}</span>
+                                </div>
+                                <div>
+                                    <span className="time-label">Worst time:</span>
+                                    <span className="time-value">{trafficInfo.worstTravelTime}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {trafficInfo.alternativeRouteTime && (
+                            <div className="alternative-route">
+                                <h4>Alternative Route</h4>
+                                <p>An alternative route is available that could be {trafficInfo.alternativeRouteTime}.</p>
+                                <button className="alt-route-btn">View Alternative</button>
+                            </div>
+                        )}
+                        
+                        {trafficInfo.incidents.length > 0 && (
+                            <div className="traffic-incidents">
+                                <h4>Traffic Incidents</h4>
+                                {trafficInfo.incidents.map((incident, index) => (
+                                    <div key={index} className="incident">
+                                        <p className="incident-type">{incident.type}</p>
+                                        <p className="incident-location">{incident.location}</p>
+                                        <p className="incident-delay">Expected delay: {incident.delay}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
-            </div>
-
-            {/* Travel Information Card */}
-            <div className="info">
-                <h3 className="info-title">
-                    Travel Information
-                </h3>
-                <div className="info-grid">
-                    <div>
-                        <p className="info-label">Distance</p>
-                        <p className="info-value">
-                            {travelInfo.distance || 'Calculating...'}
-                        </p>
-                    </div>
-                    <div>
-                        <p className="info-label">Duration</p>
-                        <p className="info-value">
-                            {travelInfo.duration || 'Calculating...'}
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
     );

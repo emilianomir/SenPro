@@ -66,31 +66,35 @@ export default function ServiceInfo(){
     }, [wentBack, addServices]
     );
 
+    // new function to handle the google maps click
     const handleGoogleMapsClick = () => {
-        // get the current service (the last one in the array)
+        // get the current service (the last one in the array) of the userServices array
         const currentIndex = userServices.length - 1;
         console.log(currentIndex);
         const currentService = userServices[currentIndex];
         console.log(currentService);
         let originAddress, originLat, originLng;
         
-        // check if there is a previous service to use as origin
+        // check if there is a previous service to use as origin in the userServices array
         if (currentIndex > 0) {
-            const previousService = userServices[currentIndex - 1];
+            //first service, userservice index 0
+            //second service, userservice index 1
+            //third service, userservice index 2 (currentIndex = 2)
+            const previousService = userServices[currentIndex - 1]; // get servie that was selected before current one
             originAddress = previousService.formattedAddress;
             
-            // get origin coordinates from previous service
-            if (previousService.geometry && previousService.geometry.location) {
-                originLat = previousService.geometry.location.lat;
-                originLng = previousService.geometry.location.lng;
-            } else if (previousService.location) {
-                originLat = previousService.location.lat;
+            // get origin coordinates from previous service from google maps api
+            if (previousService.geometry && previousService.geometry.location) { // check if the previous service has geometry.location from google maps api
+                originLat = previousService.geometry.location.lat; // if it does, get the latitude and longitude of the previous service with geometry.location from google maps api
+                originLng = previousService.geometry.location.lng; 
+            } else if (previousService.location) { // check if the previous service has location from google maps api
+                originLat = previousService.location.lat; // get the latitude of the previous service with location from google maps api
                 originLng = previousService.location.lng;
             } else if (previousService.lat && previousService.lng) {
                 originLat = previousService.lat;
                 originLng = previousService.lng;
             } else {
-                // default fallback coordinates
+                // default fallback coordinates, housto
                 originLat = 26.304225;
                 originLng = -98.163751;
             }
@@ -101,7 +105,7 @@ export default function ServiceInfo(){
             originLng = -98.163751;
         }
         
-        // get destination coordinates - handle different possible structures
+        // get destination coordinates from current service from google maps api, now for the current service
         let destLat, destLng;
         
         // check if the service has geometry.location structure
@@ -119,14 +123,14 @@ export default function ServiceInfo(){
             destLat = currentService.lat;
             destLng = currentService.lng;
         }
-        // fallback to default coordinates if we can't find them in the service object
+        // fallback to default houston coordinates
         else {
             console.error("Could not find coors so using defaults");
             destLat = 26.3017;
             destLng = -98.1633;
         }
         
-        // construct the url with query parameters
+        // make the url with query parameters
         const routeUrl = `/route?origin=${encodeURIComponent(originAddress)}&destination=${encodeURIComponent(currentService.formattedAddress)}&originLat=${originLat}&originLng=${originLng}&destLat=${destLat}&destLng=${destLng}`;
         
         router.push(routeUrl);
