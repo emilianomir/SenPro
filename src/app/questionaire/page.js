@@ -40,8 +40,11 @@ function Questionaire(){
                 const {services_result} = await response.json();
                 for (let i of services_result) {
                     const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
-                    if (result.ok)
-                        i.photo_image  = result.url;
+                    if (result.ok) {
+                        const {photoURL }= await result.json();
+                        i.photo_image = photoURL;
+                    }
+                       
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
                 console.log("Service result in services page: "); //debugging purposes
@@ -221,7 +224,7 @@ function Questionaire(){
     });   
     questionsList.set("FuelQ", {
         question: ["What type of fuel do you use?", 6],
-        answer: [["PREMIUM", "Price"], ["MIDGRADE", "Price"], ["REGULAR_UNLEADED", "Price"], ["DIESEL", "Price"]]
+        answer: [["PREMIUM", "Price"], ["MIDGRADE", "Price"], ["REGULAR_UNLEADED", "Price"], ["DIESEL", "Price"], ["E85", "Price"]]
     });  
     questionsList.set("BankQ", {
         question: ["What type of bank would you like?", 1],

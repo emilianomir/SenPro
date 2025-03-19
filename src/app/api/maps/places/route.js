@@ -94,7 +94,7 @@ export async function GET (req) {
         // const photoUrlList = [];
         // await Promise.all(photoList.map(async (theNames) =>{
            
-        const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
+        const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400&skipHttpRedirect=true`;
         const image_response = await fetch(image_url);
         
         if (!image_response.ok) {
@@ -103,9 +103,12 @@ export async function GET (req) {
                 headers: { "Content-Type": "application/json" },
             });
         }
-
-        const theImage = await image_response.arrayBuffer();
-        return new Response(theImage, {
+        console.log("The image responses: ")
+        console.log(image_response)
+        console.log("JSON:")
+        const data = await image_response.json();
+        console.log(data);
+        return new Response(JSON.stringify({photoURL: data.photoUri}), {
             status: 200,
             headers: {
                 "Content-Type":  image_response.headers.get("content-type"),

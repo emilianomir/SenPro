@@ -35,9 +35,14 @@
     transition:opacity 0.3s ease-in-out, visibility 0.2s ease-in-out;
 }
 
-.position-relative:hover .overlay {
+.position-relative.bob:hover .overlay {
     opacity: 1;
     visibility: visible ;
 
+}
+
+.modal.fade .modal-dialog {
+    transform: scale(1);
+    transition: transform .5s ease-in-out;
 }
 

@@ -30,14 +30,24 @@ export default function Gallery (){
     return (
         <>
             <ServicePageHeading />
-            <div className="container">
-                <h1 className="text-center fw-bolder text-white">Gallery</h1>
+            <div className="container vh-100">
+                <h1 className="text-center fw-bolder text-white mt-3 mb-4">Gallery</h1>
+                <div className="h-75">
+                    <div className="row row-cols-5 p-2">
+                        <div className="col bg-white p-2">
+                            <Service_Image url = {current_service.photo_image} />
+                        </div>
+                        {
+                        current_service.photo_images_urls.map((theUrl)=>(
+                            <div className="col bg-white p-2" key = {theUrl}>
+                                <Service_Image  url = {theUrl}/>
+                            </div>
+                        ))
+                        }
+                    </div>
+                </div>
                 <div className="scroll mt-4">
-                    {
-                    current_service.photo_images_urls.map((theUrl)=>(
-                        <Service_Image key = {theUrl} url = {theUrl}/>
-                    ))
-                    }
+
                 </div>
             </div>
         </>
