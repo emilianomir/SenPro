@@ -21,7 +21,6 @@ export default function ServiceInfo(){
     const [loading, setLoading] = useState(false);
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const [onlyFuel, setOnlyFuel] = useState(false);
-    const [showPopUp, setPopUp] = useState(false);
     const current_service = userServices[userServices.length-1];
     const router = useRouter();
 
@@ -33,42 +32,25 @@ export default function ServiceInfo(){
         setOnlyFuel(!onlyFuel);
     }
 
-    const goToGallery = async ()=>{
+    const goToGallery = async ()=>{ //we don't have to worry about checking to see if there are photos in object since the gallery overlay would only show up if there are more than four photos present
         setLoading(true);
-        if (current_service.photo_images_urls == undefined) {
-            const temp = [];
-            for (let i = 1; i < current_service.photos.length; i ++) {
-                const response = await fetch('/api/maps/places?thePhoto=' + current_service.photos[i].name);
+        if (current_service.photo_images_urls == undefined) { //this checks to see if we already made a call and have the photos stored in object
+            const temp = []; 
+            for (let i = 1; i < current_service.photos.length; i ++) { //we start at 1 since we already have cover photo
+                const response = await fetch('/api/maps/places?thePhoto=' + current_service.photos[i].name); //need to make a get request for each photo that is not cover (max: 9)
                 if (response.ok) {
                     const {photoURL} = await response.json();
                     temp.push(photoURL);
                 }
                     
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve => setTimeout(resolve, 300)); //waits for 300 ms until next request (to avoid 429 error)
             }
-            // const photoNames = []; 
-            // const photos_array = current_service.photos;
-            // for (let i = 1; i < photos_array.length; i ++){
-            //     photoNames.push(photos_array[i].name);
-            // }
-            // const queryString = encodeURIComponent(JSON.stringify(photoNames));
-            // const response = await fetch(`/api/maps/places?thePhotos=${queryString}`);
-            // if (response.ok) {
-            //     const {photoUrlList} = await response.json();
-            //     current_service.photoURLs = photoUrlList;
-            //     router.push(`/services/${current_service.displayName.text}/gallery`)
-            // }
-            // else {
-            //     throw new Error(`HTTP error! Status: ${response.status}`);  
-            // }
-        current_service.photo_images_urls = temp;
+        current_service.photo_images_urls = temp; //this holds the array of photos url
         setLoading(false);
-        // router.push(`/services/${current_service.displayName.text}/gallery`);
     }
-        else {
+        else { //this means we already have photos stored
             setLoading(false);
         }
-            // router.push(`/services/${current_service.displayName.text}/gallery`)
     }
 
     const handleEnter = ()=> { 
@@ -96,7 +78,7 @@ export default function ServiceInfo(){
                 strategy="afterInteractive"
             /> */}
             <ServicePageHeading />
-            {userServices.length > 0 && 
+            {current_service && 
             <div className="container mt-5">
                 <div className="row row-cols-2 service_info">
                     <div className="col-4 h-100">
@@ -105,9 +87,9 @@ export default function ServiceInfo(){
                             <div className="bg-white map_place text-center">
                                 Map Placeholder
                             </div>
-                            {/* {userServices[userServices.length-1]?.formattedAddress ? (
+                            {/* {current_service?.formattedAddress ? (
                                 <GenericSingleMap 
-                                    address={userServices[userServices.length-1].formattedAddress}
+                                    address={current_service.formattedAddress}
                                     isLoaded={isScriptLoaded}
                                 />
                             ):(<div className="text-center pt-3">Loading map...</div>)
@@ -123,7 +105,8 @@ export default function ServiceInfo(){
                         <h1 className="fs-1 text-white">Info:</h1>
                         <div className="bg-secondary-subtle h-100 position-relative">
                         {current_service.fuelOptions && <button className="position-absolute fs-4 top-0 end-0 btn btn-primary mt-4 me-3" onClick={handleToggle}>{onlyFuel ? "Info": "Gas Prices"}</button>}
-                        <div className="fs-2 text-center pt-3 fw-bolder">{userServices[userServices.length-1].displayName.text}</div>
+                        
+                        <div className="fs-2 text-center pt-3 fw-bolder">{current_service.displayName.text}</div>
 
                         {onlyFuel ? 
                             <div className="container">
@@ -144,18 +127,17 @@ export default function ServiceInfo(){
                             <div className="row row-cols-2">
                                 <div className="col-5">
                                     <div className="position-relative bob">
-                                        <Image className = "service_images w-100 ms-2 mt-4" src= {!userServices[userServices.length-1].photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": userServices[userServices.length-1].photo_image} width={300} height={300} alt = "Service image" unoptimized = {true} />
-
-                                        {current_service.photo_image && 
-                                            <div onClick={goToGallery} data-bs-toggle = "modal" data-bs-target = "#exampleModal" className="overlay">
+                                        <Image className = "service_images w-100 ms-2 mt-4" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} width={300} height={300} alt = "Service image" unoptimized = {true} />
+                                        {(current_service.photo_image && current_service.photos.length > 4) && //this opens the modal and calls the api in the background
+                                            <div onClick={goToGallery} data-bs-toggle = "modal" data-bs-target = "#galleryModal" className="overlay">
                                                 <div className="ms-2 position-absolute top-0 start-0 w-100 h-100 bg-secondary-subtle opacity-50"></div>
                                                 <div className="position-absolute top-50 start-50 translate-middle fs-3 fw-bold">Gallery</div>
                                             </div>
                                         }
                                     </div>
-                                    {userServices[userServices.length-1].websiteUri != undefined &&
+                                    {current_service.websiteUri != undefined &&
                                         <div className="ms-2 w-100 text-center">
-                                            <a href={userServices[userServices.length-1].websiteUri} target="_blank" rel="noopener">
+                                            <a href={current_service.websiteUri} target="_blank" rel="noopener">
                                             <button className="btn btn-primary w-100 fs-3">Website</button>
                                             </a>
                                         </div>}
@@ -163,16 +145,16 @@ export default function ServiceInfo(){
                                 </div>
                                 <div className="col-7 row row-cols-1 mt-0">
                                     <div className="col text-center ps-3">
-                                        {userServices[userServices.length-1].regularOpeningHours?.weekdayDescriptions &&
+                                        {current_service.regularOpeningHours?.weekdayDescriptions &&
                                         <div className="text-center mt-3">
                                             <div className="fw-bold fs-3">Weekly Operations:</div>
-                                            {userServices[userServices.length-1].regularOpeningHours.weekdayDescriptions.map((desc, index)=>
+                                            {current_service.regularOpeningHours.weekdayDescriptions.map((desc, index)=>
                                                 <div key = {[index, desc]} className="fs-5">{desc}</div>
                                             )}
                                         </div>
                                         }
 
-                                        <div className="text-center mt-2 fs-3"> <b>Address:</b> {userServices[userServices.length-1].formattedAddress}</div>
+                                        <div className="text-center mt-2 fs-3"> <b>Address:</b> {current_service.formattedAddress}</div>
                 
                                     </div>
                                     <div className="col text-center row row-cols-2 p-0 ps-4 mt-2">  
@@ -197,8 +179,8 @@ export default function ServiceInfo(){
                 </div> 
             </div>
     }
-            {current_service!= undefined && 
-            <div className="modal fade" id="exampleModal" tabIndex="-1">
+            {current_service && 
+            <div className="modal fade" id="galleryModal" tabIndex="-1">
                 <div className="modal-dialog modal-xl">
                   <div className="modal-content bg-secondary">
                     <div className="modal-header w-100">
@@ -212,10 +194,10 @@ export default function ServiceInfo(){
                         <div className="h-100">
                             <div className="row row-cols-5 p-2">
                                 <div className="col p-2 bg-white">
-                                    <Service_Image url = {current_service.photo_image} />
+                                    {/* this is the cover image */}
+                                    <Service_Image url = {current_service.photo_image} /> 
                                 </div>
-                                {
-                                current_service.photo_images_urls && current_service.photo_images_urls.map((theUrl)=>(
+                                {current_service.photo_images_urls && current_service.photo_images_urls.map((theUrl)=>(
                                     <div className="col bg-white p-2" key = {theUrl}>
                                         <Service_Image  url = {theUrl}/>
                                     </div>
@@ -227,33 +209,12 @@ export default function ServiceInfo(){
                     </div>
                     <div className="modal-footer">
                       <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        
                     </div>
                   </div>
                 </div>
               </div>
             }
             
-            {/* {showPopUp && (
-                <div className="modal fade show d-block" tabIndex="-1">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">Example Modal</h5>
-                        <button className="btn-close" onClick={() => setPopUp(false)}></button>
-                    </div>
-                    <div className="modal-body">
-                        <p>This is the modal content.</p>
-                    </div>
-                    <div className="modal-footer">
-                        <button className="btn btn-secondary" onClick={() => setPopUp(false)}>
-                        Close
-                        </button>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            )} */}
         </div>
     );
 }

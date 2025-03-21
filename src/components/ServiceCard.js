@@ -5,8 +5,8 @@ import { useAppContext } from "@/context";
 import Image from "next/image";
 import { useState } from "react";
 
-function ServiceCard({service, userClick}){
-    const {userServices, setServices, userResponses} = useAppContext();
+function ServiceCard({service}){
+    const {userServices, userResponses} = useAppContext();
     const [error, setError] = useState(false);
     let theFuel = null; 
     if (service.fuelOptions != undefined && userResponses.fuel_type != null){
@@ -17,8 +17,7 @@ function ServiceCard({service, userClick}){
         }
     }
     const handleServiceSelect = ()=>{
-        userClick(); //this is a function from the services menu page that helps with showing loading UI
-        setServices([...userServices, service]); //makes a copy and adds the current service to it only on click
+        userServices.push(service); //makes a copy and adds the current service to it only on click
     }
 
     return (

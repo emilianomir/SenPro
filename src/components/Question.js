@@ -26,7 +26,7 @@ function Question({theQuestion, current, func, changeLoading}){
     const [mapKey, setKey] = useState(current);
     const ques = theQuestion.get(mapKey); //this is how each question is rendered each time
     const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
-    const [theTest] = useState(new Responses()); //the created object for API calls
+    const [theTest, setTheTest] = useState(new Responses()); //the created object for API calls
     const [nameValue, setNameValue] = useState(''); //for searching service purposes
     const [generalSearchP, setSearchP] = useState(false); //to show and hide the section for general searching
     const [nameSearch, setNameSearch] = useState(false); //to know when the user is ready to search for a service via name
@@ -37,19 +37,20 @@ function Question({theQuestion, current, func, changeLoading}){
         if (prevKeys.length === 0) //this means we are at the first question, leave
             return;
         const previousResponses = prevKeys[prevKeys.length-1]; //this is an array of tuples. It holds the previous question key to go back as well as the user selected option
-        
         const prevQuestion = theQuestion.get(previousResponses[0]); //gets the values from hash map with the previous key
-        for (let i of prevQuestion.answer){
-            if (i[0] === previousResponses[1]) {
-                console.log("INSIDE LOOP")
-                console.log(i[2]) //this is to check if the value has an api value. Used in case the user presses enter on same input
-                setAPIvalue(i[2] ? i[2]: "");    
-                break;
-            }
-        }
+        // for (let i of prevQuestion.answer){
+        //     if (i[0] === previousResponses[1]) {
+        //         console.log("INSIDE LOOP")
+        //         console.log(i[2]) //this is to check if the value has an api value. Used in case the user presses enter on same input
+        //         setAPIvalue(i[2] ? i[2]: "");    
+        //         break;
+        //     }
+        // }
         console.log("prevValues: ");
         console.log(prevValues);
         const theUserResponsesAPI = prevValues[prevValues.length-1]; //this is an array of arrays that records user respones that deals with API calls. First index is actual recorded value and second is the textQuery values
+        if (theUserResponsesAPI[2] != undefined)
+            setAPIvalue(theUserResponsesAPI[2]);
         if (previousResponses[1] != "No Preference") { //the values did not change
             switch (prevQuestion.question[1]){ //this is the grouping
                 case 0: //if we are here, that means it the first question, which means full reset
@@ -65,9 +66,13 @@ function Question({theQuestion, current, func, changeLoading}){
                         theTest.textQuery = theUserResponsesAPI[1];
                     prevValues.pop();
                     break;
+                case 2:
+
                 case 2: //case 2 only deals with textQuery
-                    if (theTest.textQuery != theUserResponsesAPI[0])
-                        theTest.textQuery = theUserResponsesAPI[0]
+                    if (theTest.types != theUserResponsesAPI[0])
+                        theTest.types = theUserResponsesAPI[0]
+                    if (theTest.textQuery != theUserResponsesAPI[1])
+                        theTest.textQuery = theUserResponsesAPI[1]
                     prevValues.pop();
                     break;
                 case 3: //this is an easy reset
@@ -121,6 +126,7 @@ function Question({theQuestion, current, func, changeLoading}){
     }
 
     async function destValue(theEvent){
+        console.log(apiValue);
         theEvent.preventDefault();
         if (prevKeys.length == 0 && wentBack){ //to prevent form submission for the first question (IDK its weird why it does this for only the first option)
             setBack(false);
@@ -133,18 +139,18 @@ function Question({theQuestion, current, func, changeLoading}){
         if (mapKey == current){ //to show text
             setSearchP(true);
         }
-        console.log("API VALUE:")
-        console.log(apiValue);
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
                     prevValues.push([theTest.main_category, theTest.textQuery]);
-                    theTest.main_category = apiValue === "" ? valueSelect: apiValue; 
+                    apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
+                    theTest.main_category = valueSelect; 
                     theTest.textQuery = valueSelect;
                     break;
                 case 1:
                     let temp = null;
-                    prevValues.push([theTest.types, theTest.textQuery])
+                    prevValues.push([theTest.types, theTest.textQuery]);
+                    apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
                     //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
                     //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
                     if (apiValue[0] != 0) { //0 would mean ignore
@@ -160,7 +166,10 @@ function Question({theQuestion, current, func, changeLoading}){
                                 break;
 
                             case 2:
-                                break
+                                temp = temp.replaceAll(" ", "_");
+                                theTest.types = theTest.types? `${temp}_${theTest.types}`: theTest.types = temp;
+                                theTest.textQuery = theTest.types.replaceAll("_", " ");
+                                break;
 
                             case 3:
                                 temp = temp.replaceAll(" ", "_");
@@ -187,12 +196,43 @@ function Question({theQuestion, current, func, changeLoading}){
                     console.log(prevValues); //debugging
                     break;
                 case 2:
-                    prevValues.push([theTest.textQuery]);
-                    if (apiValue[0] > 1) {
-                        theTest.textQuery ? theTest.textQuery =  `${valueSelect} ${theTest.textQuery}`: theTest.textQuery = valueSelect;  
+                    prevValues.push([theTest.types, theTest.textQuery]);
+                    apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
+                    if (apiValue[0] == 2) {  //this only changes the text query
+                        let realValue;
+                        if (apiValue.length > 1) {
+                            realValue = apiValue.split(',')[1];
+                            realValue.includes(theTest.textQuery) ? realValue = realValue.replace(" " + theTest.textQuery, ""): null;
+                        }
+                        else if (valueSelect.includes(theTest.textQuery)){
+                            realValue = valueSelect.replace(" " + theTest.textQuery, "");
+                        }
+                        theTest.textQuery ? theTest.textQuery =  `${realValue ? realValue: valueSelect} ${theTest.textQuery}`: theTest.textQuery = realValue? realValue : valueSelect;  
                     }
-                    else if (apiValue[0] == 1)
-                        theTest.types = apiValue[1] ? apiValue[1].toLowerCase(): valueSelect.toLowerCase();
+                    else if (apiValue[0] == 1) {
+                        let temp;
+                        if (apiValue.length > 1) {
+                            temp = apiValue.split(',')[1].toLowerCase();
+                            temp = temp.replaceAll(" ", "_");
+                        }
+                        else if (valueSelect.includes(" ")) {
+                            temp = valueSelect.replaceAll(" ", "_");
+                        }
+                        theTest.types = temp ? temp: valueSelect.toLowerCase();
+                    }
+                    else if (apiValue[0] == 3){
+                        let temp;
+                        if (apiValue.length > 1) {
+                            temp = apiValue.split(',')[1].toLowerCase();
+                            temp = temp.replaceAll(" ", "_");
+                        }
+                        else if (valueSelect.includes(" ")) {
+                            temp = valueSelect.replaceAll(" ", "_").toLowerCase();
+                        }
+                        theTest.types = temp ? temp: valueSelect.toLowerCase();
+                        theTest.textQuery =  theTest.types.replaceAll("_", " ");
+                    }
+                        
                     // prevValues.push([valueSelect, apiValue[0]]);
                     break;
                 case 3:
@@ -243,8 +283,10 @@ function Question({theQuestion, current, func, changeLoading}){
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
         if (nameSearch){
-            setGeneralSearch(true);
+            setTheTest(new Responses());
             theTest.name = nameValue[0].toUpperCase() + nameValue.substring(1);
+            console.log(theTest);
+            setGeneralSearch(true);
         }
         if (readyGeneralSearch) 
             setResponses(theTest)

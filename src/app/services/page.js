@@ -118,9 +118,9 @@ export default function Services(){
                         <div className="scroll">
                             {apiServices ? apiServices.map((service_object, index)=>(
                                 
-                                <div key ={index} className="d-inline-block me-4">
+                                <div onClick={changeClick} key ={index} className="d-inline-block me-4">
                                     {userEmail != null && <Favorites service={service_object}/>}       
-                                    <ServiceCard service = {service_object} userClick = {changeClick}/> 
+                                    <ServiceCard service = {service_object}/> 
                                 </div>
                             )):    
                             <div className="text-center"> 
