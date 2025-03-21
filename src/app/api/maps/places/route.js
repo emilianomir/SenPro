@@ -53,25 +53,6 @@ export async function POST(req){
             console.log("Error:", response.status, errorText);
         } 
         const data = await response.json();
-        // if (data.places){ //this section is to get the photos to be able to display. Each photo is a get request
-        //     await Promise.all(data.places.map(async (eachService) =>{
-        //         if (eachService.photos){
-        //             const image_url = `https://places.googleapis.com/v1/${eachService.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
-        //             const image_response = await fetch(image_url, {
-        //                 method: "GET",
-        //                 headers: {"Content-Type": "application/json"}
-        //             });
-        //             if (image_response.ok) {
-        //                 const theImage= image_response.url;
-        //                 if (theImage){
-        //                     eachService.photo_image = theImage; //added a new property to data.places objects for easier retrieval
-        //                 }
-        //             }
-        //         }
-        //         await delay(200);
-        //          //these are placeholders photos in case an image can't be retrived. This does not work if a 429 occurs for some reason.
-        //     }));
-        // }
 
     return new Response(JSON.stringify({ services_result: data.places }), {
       status: 200,
@@ -90,9 +71,6 @@ export async function GET (req) {
     const theName = searchParams.get("thePhoto");
     try {
         const api_key = process.env.GOOGLE_API_KEY;
-        // const photoList = thePhotos ? JSON.parse(decodeURIComponent(thePhotos)) : [];
-        // const photoUrlList = [];
-        // await Promise.all(photoList.map(async (theNames) =>{
            
         const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400&skipHttpRedirect=true`;
         const image_response = await fetch(image_url);
@@ -103,10 +81,10 @@ export async function GET (req) {
                 headers: { "Content-Type": "application/json" },
             });
         }
-        console.log("The image responses: ")
-        console.log(image_response)
-        console.log("JSON:")
-        const data = await image_response.json();
+        // console.log("The image responses: ") //debugging
+        // console.log(image_response)
+        // console.log("JSON:")
+        // const data = await image_response.json();
         console.log(data);
         return new Response(JSON.stringify({photoURL: data.photoUri}), {
             status: 200,
@@ -115,9 +93,6 @@ export async function GET (req) {
             }
             });
     
-        
-        //     await delay(1000);
-        // }));
     }catch (error) {
         return new Response(JSON.stringify({ error: "Internal Server Error" }), {
             status: 500,

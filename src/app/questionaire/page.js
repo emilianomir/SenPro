@@ -5,7 +5,6 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
-import { CONFIG_FILES } from "next/dist/shared/lib/constants";
 
 
 function Questionaire(){
@@ -23,11 +22,7 @@ function Questionaire(){
     //     redirect("/login"); 
     // }
 
-    console.log("TESING");
-    console.log(userServices);
     useEffect(()=> {
-
-
         const getInfo = async ()=> {
             try {
                 const response = await fetch('/api/maps/places', {
@@ -70,16 +65,10 @@ function Questionaire(){
                 alert("There was an issue getting the data.");
             }
         }
-        // if (!apiServices) //if we already have services from previous call, don't make a new call
-        //     {
         if (callAPI)
             getInfo();
-            // }
-        console.log("The apiServices: ") //debugging
-        console.log(apiServices);
-        // return () => {
-        //     change = false;
-        //     };
+        // console.log("The apiServices: ") //debugging
+        // console.log(apiServices);
     }, [callAPI]);
 
     // const goToNext = ()=>{
@@ -87,6 +76,7 @@ function Questionaire(){
     //         setAPIServices(null); //reset the copy of services for new services
     //     router.push("/services");
     // }
+
     const goToNext = () => {
         setcallAPI(true);
     }

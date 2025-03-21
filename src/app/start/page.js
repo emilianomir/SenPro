@@ -1,6 +1,5 @@
 "use client"
 import { useAppContext } from '@/context';
-import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { getUser, testExistingUser } from '@/components/DBactions';
@@ -42,8 +41,6 @@ function StartPage(){
     //         fetchProducts();
     //     }, []);
     
-    
-    //userName = userName.toUpperCase();
 
     const formSubmit = (event)=>{
         const userNumber = event.target[0].value;
@@ -52,12 +49,6 @@ function StartPage(){
         router.push("/questionaire")
 
     }
-
-    // if(loading)
-    //     return (<div className='vh-100 vw-100'>
-    //         <Loading message={userEmail == null ? "Setting up" : "Getting account info"} />
-    //     </div>)
-
 
     return (
         <>

@@ -3,7 +3,6 @@ import ServicePageHeading from "@/components/ServicePageHeading";
 import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
-import RouteButton from "@/components/route_button";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import GenericSingleMap from "@/components/GenericSingleMap";
@@ -19,9 +18,10 @@ export default function ServiceInfo(){
     const {userServices, setServices, numberPlaces, userResponses} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
+    const [moreThan1, setMoreThan1] = useState(false);
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-    const [onlyFuel, setOnlyFuel] = useState(false);
-    const current_service = userServices[userServices.length-1];
+    const [onlyFuel, setOnlyFuel] = useState(false); //used for fuel toggle
+    const current_service = userServices[userServices.length-1]; 
     const router = useRouter();
     const [addServices, setYes] = useState(false)
 
@@ -62,8 +62,6 @@ export default function ServiceInfo(){
     }
     useEffect(() => {
         const handleRouteChangeComplete = async () => {
-
-
 
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
                 setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects

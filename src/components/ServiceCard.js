@@ -9,7 +9,7 @@ function ServiceCard({service}){
     const {userServices, userResponses} = useAppContext();
     const [error, setError] = useState(false);
     let theFuel = null; 
-    if (service.fuelOptions != undefined && userResponses.fuel_type != null){
+    if (service.fuelOptions != undefined && userResponses.fuel_type != null){//this checks to see if the user selected a fuel option in questionnaire and the object returned has that fuel type
         for (let fuelTypes of service.fuelOptions.fuelPrices){
             if (fuelTypes.type === userResponses.fuel_type){
                 theFuel = fuelTypes;
@@ -17,7 +17,7 @@ function ServiceCard({service}){
         }
     }
     const handleServiceSelect = ()=>{
-        userServices.push(service); //makes a copy and adds the current service to it only on click
+        userServices.push(service); //adds the current service to it only on click
     }
 
     return (
