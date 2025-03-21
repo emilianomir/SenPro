@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import '../app/css/TravelMode.css';
 
 const TravelMode = ({ origin, destination, originAddress, destinationAddress }) => {
-    // values for edinburg, tx
+    // Only use defaults if no coordinates are provided
     const defaultOrigin = {
         lat: 26.304225,
         lng: -98.163751
@@ -19,8 +19,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     const mapRef = useRef(null); // dom where the map will be rendered
     const googleMapRef = useRef(null); // ref for the Google Map instance
     const trafficLayerRef = useRef(null); // erf for the traffic layer instance
-    const [location, setLocation] = useState(defaultOrigin); // location is the origin coordinates
-    const [defaultPlace, setDefaultPlace] = useState(originAddress); // default place is the origin address
+    const [location, setLocation] = useState(origin || defaultOrigin);
     const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' }); // travel info is the distance and time it will take to travel between the two points
     const [showTraffic, setShowTraffic] = useState(true); // show traffic is a boolean that determines if the traffic layer is shown with btn
     const [trafficInfo, setTrafficInfo] = useState({ // dummy data for the traffic info, placeholder for the real data
@@ -45,7 +44,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         };
 
         const initMap = () => {
-            const directionsRenderer = new google.maps.DirectionsRenderer();
+            const directionsRenderer = new google.maps.DirectionsRenderer(); //
             const directionsService = new google.maps.DirectionsService();
             
             const map = new google.maps.Map(mapRef.current, {
@@ -55,7 +54,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
 
             googleMapRef.current = map; // Store map instance in ref
 
-            // TRAFFIC LAYER
+            // TRAFFIC LAYER and store it in ref by passing the map instance
             if (showTraffic) {
                 const trafficLayer = new google.maps.TrafficLayer();
                 trafficLayer.setMap(map);
@@ -70,24 +69,53 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
             });
         };
 
-        const calculateAndDisplayRoute = (directionsService, directionsRenderer) => {  // calc according to mode of trans
-            const selectedMode = document.getElementById("mode").value; // what they choose to travel, walk, drive, transit
+        // calcluate route between origin and destination useing the directions service and renderer and display it on the map
+        const calculateAndDisplayRoute = async (directionsService, directionsRenderer) => {
+            const selectedMode = document.getElementById("mode").value;
 
-            directionsService
-                .route({
-                    origin: location,
-                    destination: destination || defaultDestination,
-                    travelMode: google.maps.TravelMode[selectedMode],// pass the mode of travel to the google maps api
-                })
-                .then((response) => {
-                    directionsRenderer.setDirections(response);
-                    const { distance, duration } = response.routes[0].legs[0];
-                    setTravelInfo({ distance: distance.text, duration: duration.text }); // set the distance and duration in the travel info state
-                    
+            // Use actual addresses if available, otherwise use coordinates
+            const routeOptions = {
+                travelMode: google.maps.TravelMode[selectedMode], // from the google.maps object from api, set the travel mode to the selected mode
+            };
 
-                    setDirectionsResponse(response); // Store response in state
-                })
-                .catch((e) => window.alert("directions request failed because ", e));
+            //! EXAMPLE OF ROUTE OPTIONS
+            // const routeOptions = {
+            //     travelMode: google.maps.TravelMode.DRIVING,
+            //     origin: "Edinburg, TX",
+            //     destination: "Rio Grande City, TX",
+            //     waypoints: [
+            //         {
+            //             location: "San Antonio, TX",
+            //             stopover: true,
+            //         },
+            //         {
+            //             location: "Austin, TX",
+            //             stopover: true,
+            //         },
+            //     ],
+            // };
+
+
+            //! FALL BACK FOR TEXT ADDRESS OR COORDINATES
+            // in case of text address, not coordinates
+            if (originAddress && destinationAddress) {
+                routeOptions.origin = originAddress;
+                routeOptions.destination = destinationAddress;
+            } else {
+                // if there is no text address, use the coordinates
+                routeOptions.origin = location;
+                routeOptions.destination = destination || defaultDestination;
+            }
+
+            try {
+                const response = await directionsService.route(routeOptions); // request the route from the directions service (google maps api)
+                directionsRenderer.setDirections(response); // render the route on the map
+                const { distance, duration } = response.routes[0].legs[0]; // legs are the route segments between the origin and destination
+                setTravelInfo({ distance: distance.text, duration: duration.text }); // set the distance and duration in the travel info state
+                setDirectionsResponse(response); // Store response in state
+            } catch (e) {
+                window.alert("Directions request failed because " + e);
+            }
         };
 
         //with every prop change, change map ref
@@ -96,7 +124,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         } else {
             loadGoogleMapsScript();
         }
-    }, [location, destination, showTraffic]);
+    }, [location, destination, originAddress, destinationAddress, showTraffic]);
 
     //if origin changes, change location
     useEffect(() => {

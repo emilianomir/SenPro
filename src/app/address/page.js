@@ -29,7 +29,8 @@ function AddressPage(){
         console.log("submitted address:", theInput);
         try {
             await updateUserAddress(search, theInput);
-            router.push(`/start?user=${search}`); // pass user email to start page
+            localStorage.setItem('userAddress', theInput); // store the input in key value pairs with 'userAddress' as the key in local address which will be used in service page
+            router.push(`/start?user=${search}`);
         } catch (error) {
             console.error("error updating user address:", error.message);
         }

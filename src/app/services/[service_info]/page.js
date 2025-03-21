@@ -67,61 +67,98 @@ export default function ServiceInfo(){
     );
 
     // new function to handle the google maps click
-    const handleGoogleMapsClick = () => {
+    const handleGoogleMapsClick = async () => {
         // get the current service (the last one in the array) of the userServices array
         const currentIndex = userServices.length - 1;
-        console.log(currentIndex);
         const currentService = userServices[currentIndex];
-        console.log(currentService);
         let originAddress, originLat, originLng;
         
-        // check if there is a previous service to use as origin in the userServices array
+        // Determine the origin based on whether this is the first service or not
         if (currentIndex > 0) {
-            //first service, userservice index 0
-            //second service, userservice index 1
-            //third service, userservice index 2 (currentIndex = 2)
-            const previousService = userServices[currentIndex - 1]; // get servie that was selected before current one
+            // If not the first service, use the previous service as origin
+            const previousService = userServices[currentIndex - 1];
             originAddress = previousService.formattedAddress;
             
-            // get origin coordinates from previous service from google maps api
-            if (previousService.geometry && previousService.geometry.location) { // check if the previous service has geometry.location from google maps api
-                originLat = previousService.geometry.location.lat; // if it does, get the latitude and longitude of the previous service with geometry.location from google maps api
-                originLng = previousService.geometry.location.lng; 
-            } else if (previousService.location) { // check if the previous service has location from google maps api
-                originLat = previousService.location.lat; // get the latitude of the previous service with location from google maps api
-                originLng = previousService.location.lng;
-            } else if (previousService.lat && previousService.lng) {
-                originLat = previousService.lat;
-                originLng = previousService.lng;
-            } else {
-                // default fallback coordinates, housto
+            try {
+                if (window.google && window.google.maps) { // if there is a google map instance
+                    const geocoder = new google.maps.Geocoder();
+                    
+                    // make it a promise to await for the geocoding to finish else it will not work
+                    const geocodeResult = await new Promise((resolve, reject) => {
+                        geocoder.geocode({ address: originAddress }, (results, status) => {
+                            if (status === 'OK') {
+                                resolve(results);
+                            } else {
+                                reject(new Error(`Geocoding failed with status: ${status}`));
+                            }
+                        });
+                    });
+                    
+                    // now the coors are available
+                    originLat = geocodeResult[0].geometry.location.lat();
+                    originLng = geocodeResult[0].geometry.location.lng();
+                } else {
+                    // if there is no google map instance, use the fallback coors in edinburgh
+                    originLat = 26.304225;
+                    originLng = -98.163751;
+                }
+            } catch (e) {
+                console.error("Geocoding error:", e);
+                // if geocoding fails, use the fallback coors in edinburgh
                 originLat = 26.304225;
                 originLng = -98.163751;
             }
         } else {
-            // no previous service, so use default values
-            originAddress = "Your Location";
-            originLat = 26.304225;
-            originLng = -98.163751;
+            // if this is the first service, use the user's address as origin and run the same geocoding process as above
+            const userAddress = localStorage.getItem('userAddress');
+            if (userAddress) {
+                originAddress = userAddress;
+                
+                // try to get the coors from google maps api
+                try {
+                    if (window.google && window.google.maps) {
+                        const geocoder = new google.maps.Geocoder();
+                        
+                        // make it a promise to await for the geocoding to finish else it will not work
+                        const geocodeResult = await new Promise((resolve, reject) => {
+                            geocoder.geocode({ address: userAddress }, (results, status) => {
+                                if (status === 'OK') {
+                                    resolve(results);
+                                } else {
+                                    reject(new Error(`Geocoding failed with status: ${status}`));
+                                }
+                            });
+                        });
+                        
+                        // now the coors are available
+                        originLat = geocodeResult[0].geometry.location.lat();
+                        originLng = geocodeResult[0].geometry.location.lng();
+                    } else {
+                        // if there is no google map instance, use the fallback coors in edinburgh
+                        originLat = 26.304225;
+                        originLng = -98.163751;
+                    }
+                } catch (error) {
+                    console.error("Geocoding error:", error);
+                    // if geocoding fails, use the fallback coors in edinburgh
+                    originLat = 26.304225;
+                    originLng = -98.163751;
+                }
+            } else {
+                // if there is no user address, use the fallback coors in edinburgh
+                originAddress = "Your Location";
+                originLat = 26.304225;
+                originLng = -98.163751;
+            }
         }
         
         // get destination coordinates from current service from google maps api, now for the current service
         let destLat, destLng;
         
         // check if the service has geometry.location structure
-        if (currentService.geometry && currentService.geometry.location) {
+        if (currentService.geometry && currentService.geometry.location) { // geometry is a property of google maps api geocoding results, this is checking if the current service has a geometry property
             destLat = currentService.geometry.location.lat;
             destLng = currentService.geometry.location.lng;
-        }
-        // check if it has a location property
-        else if (currentService.location) {
-            destLat = currentService.location.lat;
-            destLng = currentService.location.lng;
-        }
-            // Check if it has lat/lng at the root level
-        else if (currentService.lat && currentService.lng) {
-            destLat = currentService.lat;
-            destLng = currentService.lng;
         }
         // fallback to default houston coordinates
         else {
@@ -129,13 +166,11 @@ export default function ServiceInfo(){
             destLat = 26.3017;
             destLng = -98.1633;
         }
-        
-        // make the url with query parameters
+        // create the url with all the parameters
         const routeUrl = `/route?origin=${encodeURIComponent(originAddress)}&destination=${encodeURIComponent(currentService.formattedAddress)}&originLat=${originLat}&originLng=${originLng}&destLat=${destLat}&destLng=${destLng}`;
         
         router.push(routeUrl);
     };
-
     return(
         <div className="full_page bg-secondary">
               <Script
