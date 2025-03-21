@@ -5,13 +5,16 @@ import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import { getFavorites } from '@/components/DBactions';
 import Favorites from "@/components/Favorites";
-import Image from "next/image";
+import Image from "next/image"
+import "../app/css/services_page.css"
+
 
 export default function Favorites_Section ({favoritesList}){
     const {userEmail} = useAppContext();
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+
 
 
 
