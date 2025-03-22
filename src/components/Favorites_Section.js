@@ -7,14 +7,15 @@ import { getFavorites } from '@/components/DBactions';
 import Favorites from "@/components/Favorites";
 import Image from "next/image"
 import "../app/css/services_page.css"
+import Link from "next/link";
 
 
 export default function Favorites_Section ({favoritesList}){
-    const {userEmail} = useAppContext();
+    const {userEmail, userServices} = useAppContext();
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-
+    const [selection, setSelection] = useState(null);
 
 
 
@@ -56,9 +57,14 @@ export default function Favorites_Section ({favoritesList}){
                     {favoritesList.map((service, index) => (
                         <div key ={index} className="d-inline-block me-5">
                             <Favorites service={service}/>
-                            <div className = "card cardAdjust">
+                            {selection === index && 
+                                <Link href={"/start"}>
+                                    <button onClick= {()=>{userServices.push(service)}}  className="btn btn-primary ms-4">Start with this service</button>
+                                </Link>                          
+                            }
+                            <div onClick={() => setSelection(index)} className = {`${selection == index ? "card cardAdjust border-5 border-info": "card cardAdjust" }`} >
                                 <div className ="card-body">
-                                    <Image className = "card-img-top img-fluid fixHeight" src= {error? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photo_image} width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
+                                    <Image className = "card-img-top img-fluid fixHeight" src= {error || !service.photo_image? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photo_image} width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                                     <h4 className = "card-title text-wrap pt-3 titleHeight mb-4">{service.displayName.text}</h4>
                                     <div className="d-flex align-items-center">
                                         <p className = "card-text fs-4"> Rating: {service.rating ? service.rating : "N/A" }</p> 
@@ -70,6 +76,8 @@ export default function Favorites_Section ({favoritesList}){
                                                                                     }</p>
                                 </div>
                             </div>
+                           
+                        
                         </div>  
                     ))
                     }

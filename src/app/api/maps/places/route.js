@@ -1,5 +1,10 @@
+function delay (ms){
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 export async function POST(req){
     const {userResponses} = await req.json();
+
     try {
         const address = "Houston, TX 77015";
         // const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
@@ -32,9 +37,11 @@ export async function POST(req){
         const headers = {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": api_key,
-            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.priceRange"
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.priceRange,places.userRatingCount,places.websiteUri,places.regularOpeningHours"
         };
-        
+        if (textBody.includedType === "gas_station" || textBody.textQuery.toLowerCase().includes("gas station")) //would only ask for a this field if the places the user is looking for is gas station
+            headers["X-Goog-FieldMask"] += ",places.fuelOptions";
+
         const response = await fetch(url, {
             method: "POST",
             headers: headers,
@@ -46,27 +53,6 @@ export async function POST(req){
             console.log("Error:", response.status, errorText);
         } 
         const data = await response.json();
-        if (data.places){ //this section is to get the photos to be able to display. Each photo is a get request
-            await Promise.all(data.places.map(async (eachService) =>{
-                if (eachService.photos){
-                    const image_url = `https://places.googleapis.com/v1/${eachService.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
-                    const image_response = await fetch(image_url, {
-                        method: "GET",
-                        headers: {"Content-Type": "application/json"}
-                    });
-                    if (image_response.ok) {
-                        const theImage= image_response.url;
-                        if (theImage){
-                            eachService.photo_image = theImage; //added a new property to data.places objects for easier retrieval
-                        }
-                    }
-                }
-                 //these are placeholders photos in case an image can't be retrived. This does not work if a 429 occurs for some reason.
-            }));
-        }
-
-
-   
 
     return new Response(JSON.stringify({ services_result: data.places }), {
       status: 200,
@@ -78,4 +64,39 @@ export async function POST(req){
       headers: { "Content-Type": "application/json" },
     });
   }
+}
+
+export async function GET (req) {
+    const {searchParams} = new URL(req.url);
+    const theName = searchParams.get("thePhoto");
+    try {
+        const api_key = process.env.GOOGLE_API_KEY;
+           
+        const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400&skipHttpRedirect=true`;
+        const image_response = await fetch(image_url);
+        
+        if (!image_response.ok) {
+            return new Response(JSON.stringify({ error: "Failed to fetch image" }), {
+                status: image_response.status,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+        // console.log("The image responses: ") //debugging
+        // console.log(image_response)
+        // console.log("JSON:")
+        // const data = await image_response.json();
+        console.log(data);
+        return new Response(JSON.stringify({photoURL: data.photoUri}), {
+            status: 200,
+            headers: {
+                "Content-Type":  image_response.headers.get("content-type"),
+            }
+            });
+    
+    }catch (error) {
+        return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
+    }
 }

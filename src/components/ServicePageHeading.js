@@ -2,7 +2,6 @@
 import Account_Overlay from "./Account_Overlay"
 import "../app/css/service_card.css"
 import { useState } from "react"
-import { useSearchParams } from 'next/navigation'
 import { useAppContext } from "@/context"
 
 export default function ServicePageHeading(){
@@ -20,7 +19,7 @@ export default function ServicePageHeading(){
                 <div className="col-6 text-center pt-2"><h1 className="fs-1 fw-bolder text-white">Services Menu</h1></div>
                 
                 <div className="col-3 pe-5 pt-2 d-flex justify-content-end">
-                    <img onClick={toggleOverlay} width="15%" src = "https://www.shareicon.net/data/256x256/2017/03/14/881194_users_512x512.png" className = "position-relative" alt = "profileIcon" /> 
+                    <img onClick={toggleOverlay} width="15%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "position-relative" alt = "profileIcon" /> 
                     {isVisible && <Account_Overlay />}
                 </div>
             </div>

@@ -10,17 +10,9 @@ function AddressPage(){
     const [theInput, setInput] = useState('');
     const [selectType, setSelect] = useState('');
 
-
-
     const handleChange = (event) => {
         setInput(event.target.value);
     };
-
-    // const handleSubmit = async (event) => {
-    //     event.preventDefault();
-    //     console.log("submitted address:", theInput);
-
-    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();

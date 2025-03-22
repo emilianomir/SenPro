@@ -5,7 +5,7 @@ const AppContext = createContext();
 
 export function AppWrapper ({children}){
     const [userServices, setServices] = useState([]);
-    const [numberPlaces, setNumberPlaces] = useState(1);
+    const [numberPlaces, setNumberPlaces] = useState(0);
     const [userResponses, setResponses] = useState(null);
     const [apiServices, setAPIServices] = useState(null);
     const [userEmail, setUserEmail] = useState(null);

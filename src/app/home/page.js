@@ -11,8 +11,8 @@ export default function Begin(){
         theList.push({name: "Placeholder Service " + i, photo: "https://join.travelmanagers.com.au/wp-content/uploads/2017/09/default-placeholder-300x300.png"})
     }
     const {userEmail} = useAppContext();
-    if (userEmail == null)
-        redirect("/login");
+    // if (userEmail == null)
+    //     redirect("/login");
     return (
         <div className="container">
             <div className="mt-3">

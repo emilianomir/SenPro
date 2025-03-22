@@ -1,15 +1,31 @@
-"use client";
-import "./globals.css";
-import GoogleMap2 from "../components/GoogleMap2";
-import Distance from "../components/Distance";
+import RouteButton from "@/components/route_button";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <>This is root (not groot)</>
-        <div className="flex gap-4 items-center flex-col sm:flex-row"></div>
-      </main>
-    </div>
-  );
+function WelcomePage(){
+    return (
+        <div className="bg-secondary">
+            <div className = "position-relative">
+                <div className = "position-absolute top-0 end-0">
+                    <RouteButton name = "Login" location = "/login"/>
+                </div>
+
+            </div>
+
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                <div className = "container bg-secondary-subtle text-center h-50 row row-cols-1">
+                    <div className="col d-flex justify-content-center pt-4 pb-0">
+                        <h1 className="fs-1 fw-bold text-center w-50">Welcome to your services planner page! </h1>
+                    </div>
+                    <div className="col d-flex justify-content-center">
+                        <div className="w-25" >
+                            <RouteButton name = "Register" location = "/signup" />
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
 }
+
+export default WelcomePage;
