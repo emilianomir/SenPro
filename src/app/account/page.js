@@ -53,7 +53,7 @@ export default function Account(){
 
     // Logout
     const routeClick = () => {
-        router.push("/welcome");
+        router.push("/");
     }
 
 

@@ -5,17 +5,19 @@ import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { addService, addHistoryService } from '@/components/DBactions';
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
 import Loading from "@/components/Loading";
 import { Modal } from 'bootstrap';
 import Service_Image from "@/components/Service_Image";
+import { users } from "@/db/schema/users";
 
 
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
