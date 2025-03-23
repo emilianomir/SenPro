@@ -67,12 +67,13 @@ export async function POST(req){
 }
 
 export async function GET (req) {
+    // const start = Date.now();
     const {searchParams} = new URL(req.url);
     const theName = searchParams.get("thePhoto");
     try {
         const api_key = process.env.GOOGLE_API_KEY;
            
-        const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400&skipHttpRedirect=true`;
+        const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
         const image_response = await fetch(image_url);
         
         if (!image_response.ok) {
@@ -81,17 +82,21 @@ export async function GET (req) {
                 headers: { "Content-Type": "application/json" },
             });
         }
-        // console.log("The image responses: ") //debugging
-        // console.log(image_response)
+        console.log("The image responses: "); //debugging
+        console.log(image_response);
+        const data = await image_response.arrayBuffer();
         // console.log("JSON:")
         // const data = await image_response.json();
         console.log(data);
-        return new Response(JSON.stringify({photoURL: data.photoUri}), {
+        // const end = Date.now();  //debugging
+        // console.log(`API response time: ${end - start}ms`);
+        return new Response( data, {
             status: 200,
             headers: {
                 "Content-Type":  image_response.headers.get("content-type"),
             }
             });
+
     
     }catch (error) {
         return new Response(JSON.stringify({ error: "Internal Server Error" }), {
@@ -99,4 +104,5 @@ export async function GET (req) {
             headers: { "Content-Type": "application/json" },
           });
     }
+
 }

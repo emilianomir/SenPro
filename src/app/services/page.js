@@ -13,7 +13,7 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
 
     if (userResponses == null)
@@ -117,11 +117,16 @@ export default function Services(){
                         </div>               
                         <div className="scroll">
                             {apiServices ? apiServices.map((service_object, index)=>(
-                                
-                                <div onClick={changeClick} key ={index} className="d-inline-block me-4">
-                                    {userEmail != null && <Favorites service={service_object}/>}       
-                                    <ServiceCard service = {service_object}/> 
-                                </div>
+                                <Link key ={index} href={"/services/" + service_object.displayName.text}>
+                                    <div onClick={() => {
+                                        console.log("I ran");
+                                        setClicked(true);
+                                        userServices.push(service_object);
+                                    }} className="d-inline-block me-4">
+                                        {userEmail != null && <Favorites service={service_object}/>}       
+                                        <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                                    </div>
+                                </Link>
                             )):    
                             <div className="text-center"> 
                                 <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>

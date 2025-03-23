@@ -40,8 +40,8 @@ function Questionaire(){
                         if (i.photos) {
                             const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
                             if (result.ok) {
-                                const {photoURL }= await result.json();
-                                i.photo_image = photoURL;
+                                const photoURL= result;
+                                i.photo_image = photoURL.url;
                             }
                                
                             await new Promise(resolve => setTimeout(resolve, 100));

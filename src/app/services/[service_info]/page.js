@@ -42,11 +42,11 @@ export default function ServiceInfo(){
             for (let i = 1; i < current_service.photos.length; i ++) { //we start at 1 since we already have cover photo
                 const response = await fetch('/api/maps/places?thePhoto=' + current_service.photos[i].name); //need to make a get request for each photo that is not cover (max: 9)
                 if (response.ok) {
-                    const {photoURL} = await response.json();
-                    temp.push(photoURL);
+                    const photoURL = response;
+                    temp.push(photoURL.url);
                 }
                     
-                await new Promise(resolve => setTimeout(resolve, 300)); //waits for 300 ms until next request (to avoid 429 error)
+                await new Promise(resolve => setTimeout(resolve, 100)); //waits for 300 ms until next request (to avoid 429 error)
             }
         current_service.photo_images_urls = temp; //this holds the array of photos url
         setLoading(false);
@@ -63,7 +63,7 @@ export default function ServiceInfo(){
             router.push("/questionaire") //checks to see if user reaches decided limit
     }
     useEffect(() => {
-        const handleRouteChangeComplete = async () => {
+        const handleRouteChangeComplete = () => {
 
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
                 setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects
@@ -74,7 +74,7 @@ export default function ServiceInfo(){
         };
 
         const handleAdd = async () => {
-            if (numberPlaces == userServices.length && !moreThan1)
+            if (numberPlaces == userServices.length && !moreThan1 && userEmail)
                 {
                     const addressArr = [];
                     userServices.forEach(element => {
@@ -152,7 +152,7 @@ export default function ServiceInfo(){
 
                             <div className="row row-cols-2">
                                 <div className="col-5">
-                                    <div className="position-relative bob">
+                                    <div className="position-relative gallery">
                                         <Image className = "service_images w-100 ms-2 mt-4" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} width={300} height={300} alt = "Service image" unoptimized = {true} />
                                         {(current_service.photo_image && current_service.photos.length > 4) && //this opens the modal and calls the api in the background
                                             <div onClick={goToGallery} data-bs-toggle = "modal" data-bs-target = "#galleryModal" className="overlay">

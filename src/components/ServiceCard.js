@@ -1,28 +1,28 @@
 "use client"
 import "../app/css/service_card.css"
-import Link from "next/link";
+// import Link from "next/link";
 import { useAppContext } from "@/context";
 import Image from "next/image";
 import { useState } from "react";
 
-function ServiceCard({service}){
-    const {userServices, userResponses} = useAppContext();
+function ServiceCard({service, has_fuel_type}){
+    // const {userServices, userResponses} = useAppContext();
     const [error, setError] = useState(false);
     let theFuel = null; 
-    if (service.fuelOptions != undefined && userResponses.fuel_type != null){//this checks to see if the user selected a fuel option in questionnaire and the object returned has that fuel type
+    if (service.fuelOptions != undefined && has_fuel_type != null){//this checks to see if the user selected a fuel option in questionnaire and the object returned has that fuel type
         for (let fuelTypes of service.fuelOptions.fuelPrices){
-            if (fuelTypes.type === userResponses.fuel_type){
+            if (fuelTypes.type === has_fuel_type){
                 theFuel = fuelTypes;
             }
         }
     }
-    const handleServiceSelect = ()=>{
-        userServices.push(service); //adds the current service to it only on click
-    }
+    // const handleServiceSelect = ()=>{
+    //     userServices.push(service); //adds the current service to it only on click
+    // }
 
     return (
-        <Link href = {"/services/" + service.displayName.text} >
-            <div onClick={handleServiceSelect} className = "card cardAdjust">
+        // <Link href = {"/services/" + service.displayName.text} >
+            <div  className = "card cardAdjust">
                 <div className ="card-body">
                     <Image className = "card-img-top img-fluid fixHeight" src= {error || !service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": service.photo_image} width={300} height={300} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                     <h4 className = "card-title text-wrap pt-3 titleHeight mb-4">{service.displayName.text}</h4>
@@ -45,7 +45,7 @@ function ServiceCard({service}){
 
                 </div>
             </div>
-         </Link>
+        //  </Link>
         
         );
 }
