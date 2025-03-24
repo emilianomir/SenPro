@@ -4,6 +4,7 @@
 // the component will also display the distance and time it will take to travel between the two points in a table
 import { useEffect, useRef, useState } from 'react';
 import '../app/css/TravelMode.css';
+import TrafficCongestionPanel from './TrafficCongestionPanel';
 
 const TravelMode = ({ origin, destination, originAddress, destinationAddress }) => {
     // Only use defaults if no coordinates are provided
@@ -22,15 +23,6 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     const [location, setLocation] = useState(origin || defaultOrigin);
     const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' }); // travel info is the distance and time it will take to travel between the two points
     const [showTraffic, setShowTraffic] = useState(true); // show traffic is a boolean that determines if the traffic layer is shown with btn
-    const [trafficInfo, setTrafficInfo] = useState({ // dummy data for the traffic info, placeholder for the real data
-        congestion: 'Moderate',
-        congestionPercentage: 65,
-        bestTravelTime: '10:30 AM',
-        worstTravelTime: '5:45 PM',
-        alternativeRouteTime: '',
-        incidents: []
-    });
-    const [directionsResponse, setDirectionsResponse] = useState(null); // State for directions response
 
     useEffect(() => {
         // load the google maps script on top of the page
@@ -112,7 +104,6 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                 directionsRenderer.setDirections(response); // render the route on the map
                 const { distance, duration } = response.routes[0].legs[0]; // legs are the route segments between the origin and destination
                 setTravelInfo({ distance: distance.text, duration: duration.text }); // set the distance and duration in the travel info state
-                setDirectionsResponse(response); // Store response in state
             } catch (e) {
                 window.alert("Directions request failed because " + e);
             }
@@ -145,18 +136,6 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                 const trafficLayer = new google.maps.TrafficLayer();
                 trafficLayer.setMap(googleMapRef.current);
                 trafficLayerRef.current = trafficLayer; // store the traffic layer
-                
-                // default traffic info
-                setTrafficInfo({
-                    congestion: 'Moderate',
-                    congestionPercentage: 65,
-                    bestTravelTime: '10:30 AM',
-                    worstTravelTime: '5:45 PM',
-                    alternativeRouteTime: '5 minutes faster',
-                    incidents: [
-                        { type: 'Heavy traffic', location: 'Midway through route', delay: '8 minutes' }
-                    ]
-                });
             }
         }
         setShowTraffic(!showTraffic);
@@ -222,57 +201,12 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                     </div>
                 </div>
 
-                {/* New Traffic Information Panel */}
+                {/* traffic congestion panel */}
                 {showTraffic && (
-                    <div className="traffic-panel">
-                        <h3 className="panel-title">Traffic Insights</h3>
-                        
-                        <div className="traffic-congestion">
-                            <h4>Current Traffic Congestion</h4>
-                            <div className="congestion-meter">
-                                <div 
-                                    className="congestion-level" 
-                                    style={{width: `${trafficInfo.congestionPercentage}%`}}
-                                ></div>
-                            </div>
-                            <p className="congestion-label">{trafficInfo.congestion} ({trafficInfo.congestionPercentage}%)</p>
-                        </div>
-                        
-                        <div className="traffic-timing">
-                            <h4>Best Times to Travel</h4>
-                            <div className="time-info">
-                                <div>
-                                    <span className="time-label">Best time:</span>
-                                    <span className="time-value">{trafficInfo.bestTravelTime}</span>
-                                </div>
-                                <div>
-                                    <span className="time-label">Worst time:</span>
-                                    <span className="time-value">{trafficInfo.worstTravelTime}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {trafficInfo.alternativeRouteTime && (
-                            <div className="alternative-route">
-                                <h4>Alternative Route</h4>
-                                <p>An alternative route is available that could be {trafficInfo.alternativeRouteTime}.</p>
-                                <button className="alt-route-btn">View Alternative</button>
-                            </div>
-                        )}
-                        
-                        {trafficInfo.incidents.length > 0 && (
-                            <div className="traffic-incidents">
-                                <h4>Traffic Incidents</h4>
-                                {trafficInfo.incidents.map((incident, index) => (
-                                    <div key={index} className="incident">
-                                        <p className="incident-type">{incident.type}</p>
-                                        <p className="incident-location">{incident.location}</p>
-                                        <p className="incident-delay">Expected delay: {incident.delay}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <TrafficCongestionPanel 
+                        origin={location}
+                        destination={destination || defaultDestination}
+                    />
                 )}
             </div>
         </div>

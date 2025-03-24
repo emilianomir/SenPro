@@ -1,0 +1,134 @@
+.traffic-panel {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.traffic-congestion {
+    margin-bottom: 16px;
+}
+
+.congestion-meter {
+    background-color: #e0e0e0; 
+    border-radius: 4px;
+    height: 20px; 
+    overflow: hidden;
+    position: relative; 
+    width: 100%;
+}
+
+.congestion-level {
+    height: 100%; 
+    transition: width 0.3s ease;
+    max-width: 100%;
+}
+
+.congestion-level.low {
+    background-color: #4caf50;
+}
+
+.congestion-level.moderate {
+    background-color: #ffeb3b;
+}
+
+.congestion-level.high {
+    background-color: #f44336;
+}
+
+.congestion-label {
+    margin-top: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.incident-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.incident-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.incident-severity {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.incident-severity.low {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.incident-severity.moderate {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.incident-severity.high {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.incident-type {
+    font-weight: 600;
+    color: #333;
+}
+
+.incident-details {
+    font-size: 14px;
+}
+
+.incident-location {
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.incident-delay, .incident-length {
+    color: #444;
+    margin: 4px 0;
+}
+
+.incident-timing {
+    font-size: 12px;
+    color: #666;
+    margin: 8px 0;
+}
+
+.incident-status {
+    font-weight: 500;
+    color: #2196f3;
+    margin-top: 8px;
+}
+
+.road-closure {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.detail-item {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #2196f3;
+}
