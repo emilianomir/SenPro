@@ -9,10 +9,12 @@ import Loading from "@/components/Loading";
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setServices, setResponses, favorites} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setServices, setResponses, favorites, userResponses} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const router = useRouter();
-    if (numberPlaces < userServices.length + 1){ //reset the services list
+
+    if (numberPlaces < userServices.length + 1 && (userResponses.name ? userResponses.name: userResponses.main_category) != "Favorites"){ //reset the services list
+
         setServices([]);
         redirect("/start"); 
         return;
@@ -32,7 +34,6 @@ function Questionaire(){
             console.log(favoritesList)
         })
         setAPIServices(favoritesList);
-        router.push("/services");
     }
   
 
