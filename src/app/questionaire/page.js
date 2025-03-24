@@ -9,7 +9,7 @@ import Loading from "@/components/Loading";
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setServices} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setServices, setResponses, favorites} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const router = useRouter();
     if (numberPlaces < userServices.length + 1){ //reset the services list
@@ -23,6 +23,17 @@ function Questionaire(){
         router.push("/services");
     }
 
+    const fromFavorites = () =>{
+        setResponses({name: "Favorites", main_category: "Favorites_List"});
+        var favoritesList = [];
+        favorites.forEach(element => {
+            const val = JSON.parse(element.info);
+            favoritesList.push(val);
+            console.log(favoritesList)
+        })
+        setAPIServices(favoritesList);
+        router.push("/services");
+    }
   
 
     const loading = () =>{
@@ -85,7 +96,6 @@ function Questionaire(){
         answer: [] }
     );
 
-
     return (
         <div className="bg-secondary full_page">
             {isLoading ? <Loading message= "Saving Responses"/>: 
@@ -95,10 +105,12 @@ function Questionaire(){
                         <h1 className="pt-5 title text-white fw-bold">Place {userServices.length + 1}:</h1>
                     </div>
                 </div>
-                <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading} />
+                <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading} favFunc={fromFavorites} />
             </>
         }
-        </div>
+        </div>  
+
+        
     )
 }
 

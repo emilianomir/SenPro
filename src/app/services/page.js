@@ -39,47 +39,48 @@ export default function Services(){
     */
 
 
+    if(userResponses.name != "Favorites"){
+        useEffect(()=> {
+            let change = true;
 
-    useEffect(()=> {
-        let change = true;
-
-        const getInfo = async ()=> {
-            try {
-                const response = await fetch('/api/maps/places', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses})
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-        
-                const {services_result} = await response.json();
-                console.log("Service result in services page: "); //debugging purposes
-                console.log(services_result);
-                if (change){
-                    if (services_result) //only replace if there is at least a service
-                        setAPIServices(services_result);
+            const getInfo = async ()=> {
+                try {
+                    const response = await fetch('/api/maps/places', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({userResponses})
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
-                    setLoading(false);
-                
-        
-            }catch (error) {
-                console.error("Error fetching API:", error);
-                alert("There was an issue getting the data.");
+            
+                    const {services_result} = await response.json();
+                    console.log("Service result in services page: "); //debugging purposes
+                    console.log(services_result);
+                    if (change){
+                        if (services_result) //only replace if there is at least a service
+                            setAPIServices(services_result);
+                        }
+                        setLoading(false);
+                    
+            
+                }catch (error) {
+                    console.error("Error fetching API:", error);
+                    alert("There was an issue getting the data.");
+                }
             }
-        }
-        if (!apiServices) //if we already have services from previous call, don't make a new call
-            getInfo();
-        console.log("The apiServices: ") //debugging
-        console.log(apiServices);
-        return () => {
-            change = false;
-            };
-    }, []);
+            if (!apiServices) //if we already have services from previous call, don't make a new call
+                getInfo();
+            console.log("The apiServices: ") //debugging
+            console.log(apiServices);
+            return () => {
+                change = false;
+                };
+        }, []);
+}
 
 
- 
+
 
    
     return (

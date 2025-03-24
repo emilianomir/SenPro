@@ -10,8 +10,7 @@ import "../app/css/services_page.css"
 
 
 export default function Favorites_Section ({favoritesList}){
-    const {userEmail} = useAppContext();
-    const [favorites, setFavorites] = useState([]);
+    const {userEmail, favorites, setFavorites} = useAppContext();
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
