@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
-import { testExistingUser, addQuestion } from "./DBactions";
+import { testExistingUser, addQuestion, getUser } from "./DBactions";
 import { useSearchParams } from "next/navigation";
+import SelectFavorites from "@/components/SelectFavorites";
+import Favorites_Section from "./Favorites_Section";
 
 //object to help with Places API calls
 class Responses {
@@ -15,7 +17,7 @@ class Responses {
   }
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
-function Question({theQuestion, current, func, changeLoading}){
+function Question({theQuestion, current, func, changeLoading, favFunc}){
     const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
     const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
@@ -31,6 +33,8 @@ function Question({theQuestion, current, func, changeLoading}){
     const [nameSearch, setNameSearch] = useState(false); //to know when the user is ready to search for a service via name
     const [readyGeneralSearch, setGeneralSearch] = useState(false); //to know when a user is ready to search for a services via general search 
     const [wentBack, setBack] = useState(false); //Forms submits when back button is pressed. This is used to stop that
+
+
 
     function gotoPrev() {
         if (prevKeys.length === 0) //this means we are at the first question, leave
@@ -290,7 +294,12 @@ function Question({theQuestion, current, func, changeLoading}){
                         <button className="btn btn-primary w-25" onClick={generalSearch} type = "button">Done</button>
                     </div>
                 </>
-                }
+            }
+            {!generalSearchP && userEmail != null &&
+            <>
+            <SelectFavorites routingFunc={favFunc}/>
+            </>
+            }
             </div>
         </div>
 

@@ -45,7 +45,7 @@ export default function ServiceInfo(){
         };
 
         const handleAdd = async () => {
-            if (numberPlaces == userServices.length && !moreThan1)
+            if (numberPlaces == userServices.length && !moreThan1 && userEmail != null)
                 {
                     const addressArr = [];
                     userServices.forEach(element => {
