@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TravelMode from '@/components/TravelMode';
 
+// this page is to get data from url paramters and passes it to the travel mode component, the travel mode component is a child of this page
+
 export default function RoutePage() {
   const searchParams = useSearchParams();
   const [originAddress, setOriginAddress] = useState("");
