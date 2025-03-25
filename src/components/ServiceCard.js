@@ -35,7 +35,7 @@ function ServiceCard({service, has_fuel_type}){
                     {theFuel ? 
                     <div className="card-text fs-5 text-wrap">
                         <div className="fw-bold">{theFuel.type}</div>
-                        <div>Current Price: <span className="fw-bold">{theFuel.price.currencyCode == "USD" && "$"} {Number(theFuel.price.units) + (theFuel.price.nanos/1000000000)}</span></div>
+                        <div>Current Price: <span className="fw-bold">{theFuel.price.currencyCode == "USD" && "$"} {Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)}</span></div>
                     </div>
                     :
                     <p className = "card-text fs-4 text-wrap">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 

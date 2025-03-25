@@ -78,6 +78,7 @@ export default function ServiceInfo(){
                 {
                     const addressArr = [];
                     userServices.forEach(element => {
+                        //addService(element.id)
                         addService(element.formattedAddress, element);
                         addressArr.push(element.formattedAddress);
                     });
@@ -194,10 +195,14 @@ export default function ServiceInfo(){
 
                                 </div>
                             </div>
+
                     
                         }
+                        {/* {current_service.attributes &&     
+                        <p className="fs-6 text-wrap">Info by: <a href= {current_service.attributes.providerUri}> {current_service.attributes.provider} </a> </p> }
+                        {current_service.photos && current_service.photos[0].authorAttributions[0] &&     
+                        <p className="fs-6 text-wrap">Image By: <a href= {current_service.photos[0].authorAttributions[0].uri}> {current_service.photos[0].authorAttributions[0].displayName} </a> </p> } */}
 
-  
                         </div> 
                         
 
@@ -222,10 +227,14 @@ export default function ServiceInfo(){
                                 <div className="col p-2 bg-white">
                                     {/* this is the cover image */}
                                     <Service_Image url = {current_service.photo_image} /> 
+                                    {/* {current_service.photos && current_service.photos[0].authorAttributions[0] &&     
+                                    <p className="fs-6 text-wrap">Image By: <a href= {current_service.photos[0].authorAttributions[0].uri}> {current_service.photos[0].authorAttributions[0].displayName} </a> </p> } */}
                                 </div>
-                                {current_service.photo_images_urls && current_service.photo_images_urls.map((theUrl)=>(
+                                {current_service.photo_images_urls && current_service.photo_images_urls.map((theUrl, index)=>(
                                     <div className="col bg-white p-2" key = {theUrl}>
                                         <Service_Image  url = {theUrl}/>
+                                        {/* {current_service.photos && current_service.photos[0].authorAttributions[0] &&     
+                                        <p className="fs-6 text-wrap">Image By: <a href= {current_service.photos[index].authorAttributions[0].uri}> {current_service.photos[index].authorAttributions[0].displayName} </a> </p> } */}
                                     </div>
                                 ))
                                 }

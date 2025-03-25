@@ -11,13 +11,10 @@ import Link from "next/link";
 
 
 export default function Favorites_Section ({favoritesList}){
-    const {userEmail, userServices} = useAppContext();
-    const [favorites, setFavorites] = useState([]);
+    const {userEmail, userServices, favorites, setFavorites} = useAppContext();
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [selection, setSelection] = useState(null);
-
-
 
     useEffect(() => {
         const fetchInfo = async () => {
@@ -54,6 +51,7 @@ export default function Favorites_Section ({favoritesList}){
                 </div>    
                 :
                 <div className="scroll">
+                    {/* {favorites.map((service, index) => ( */}
                     {favoritesList.map((service, index) => (
                         <div key ={index} className="d-inline-block me-5">
                             <Favorites service={service}/>

@@ -4,13 +4,59 @@ import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import Favorites_Section from "@/components/Favorites_Section";
+import { useEffect, useState } from "react";
 
 export default function Begin(){
+    //add setFavorites to context
+    const {userEmail} = useAppContext();
+    const [loading, setLoading] = useState(true);
+
     const theList = [];
     for (let i = 0; i < 5; i ++) {
         theList.push({name: "Placeholder Service " + i, photo: "https://join.travelmanagers.com.au/wp-content/uploads/2017/09/default-placeholder-300x300.png"})
     }
-    const {userEmail} = useAppContext();
+
+    /*    
+    //Use this to replace the favorites. 
+    useEffect(() => {
+        const fetchInfo = async () => {
+            //replace this array with the values given by the database. 
+            const ids = ["ChIJwSkWH4WjQIYRi3iahd-V1OM", "ChIJ5czsQj-kQIYRK6YeTjweipY"];
+            const servicesInformation = [];
+            const servicesCalls = ids.map(async id => {
+                try {
+                    const response = await fetch(`/api/maps/places?id=` + id );
+                    if (response.ok) {
+                        const {service_result} = await response.json();
+                        if (service_result.photos)
+                        try {
+                            const img_response = await fetch(`/api/maps/places?thePhoto=` + service_result.photos[0].name);
+                            if (img_response.ok) {
+                                service_result.photoURL = img_response.url; 
+                            }
+                        }catch(error) {
+                            console.error("Error fetching image for id " + id + ":", error);
+                        }
+                        return service_result;
+                    }
+                }catch(error) {
+                    console.error("Error fetching service " + id + ":", error);
+                }
+            });
+            const waitCalls = await Promise.all(servicesCalls);
+            waitCalls.forEach(result => {
+                if (result) servicesInformation.push(result)
+            });
+            console.log("SERVICES INFO ARRAY")
+            console.log(servicesInformation);
+            setFavorites(servicesInformation);
+            setLoading(false);
+        }
+            fetchInfo();
+        }, []);
+
+    */
+
     // if (userEmail == null)
     //     redirect("/login");
     return (
@@ -40,7 +86,8 @@ export default function Begin(){
                 </div>
             </div>
             <div className="fs-2 text-white text-center fw-bolder mb-3">Your Favorites Section:</div>
-            <Favorites_Section favoritesList = {theList} />
+            <Favorites_Section favoritesList={theList}/>
+            
         </div>
     )
 }

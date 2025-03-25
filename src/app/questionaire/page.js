@@ -9,12 +9,12 @@ import Loading from "@/components/Loading";
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userResponses, userServices, numberPlaces, setServices} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setServices, setResponses, favorites, userResponses} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [callAPI, setcallAPI] = useState(false);
     const router = useRouter();
 
-    // if (numberPlaces != 0 && numberPlaces < userServices.length + 1){ //reset the services list
+    // if (numberPlaces < userServices.length + 1 && (userResponses.name ? userResponses.name: userResponses.main_category) != "Favorites"){ //reset the services list
     //     setServices([]);
     //     redirect("/start")
     // }
@@ -81,6 +81,18 @@ function Questionaire(){
         setcallAPI(true);
     }
 
+
+    // const fromFavorites = () =>{
+    //     setResponses({name: "Favorites", main_category: "Favorites_List"});
+    //     var favoritesList = [];
+    //     favorites.forEach(element => {
+    //         const val = JSON.parse(element.info);
+    //         favoritesList.push(val);
+    //         console.log(favoritesList)
+    //     })
+    //     setAPIServices(favoritesList);
+    // }
+  
 
     const loading = () =>{
         setLoading(true);
@@ -274,7 +286,7 @@ function Questionaire(){
     //Gas Station SubQuestion
     questionsList.set("GasQ", {
         question: ["What type of station do would you like?", 1],
-        answer: [["Gas", "FuelQ", [0]], ["Electric", "Rating" , [3, "Electric Vehicle Charging Station"]]]
+        answer: [["Gas", "FuelQ", [0]], ["Electric Vehicle Charger", "Rating" , [3, "Electric Vehicle Charging Station"]]]
     });  
 
     //Fuel SubQuestion
@@ -320,7 +332,6 @@ function Questionaire(){
         answer: [] }
     );
 
-
     return (
         <div className="bg-secondary full_page">
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 
@@ -330,10 +341,12 @@ function Questionaire(){
                         <h1 className="pt-5 title text-white fw-bold">Place {userServices.length + 1}:</h1>
                     </div>
                 </div>
-                <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading} />
+                <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading}  />
             </>
         }
-        </div>
+        </div>  
+
+        
     )
 }
 

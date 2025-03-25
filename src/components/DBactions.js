@@ -307,7 +307,7 @@ export async function selectHistory(email)
       email,
     });
   const fullArray = []
-  const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, "test@gmail.com"));
+  const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, email));
   for (const element of val1){
       const val2 = JSON.parse(element.services)
       const val3 = [];

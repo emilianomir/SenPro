@@ -13,7 +13,7 @@ export default function End(){
             <div className="container text-center text-white fs-2 mt-3 fw-bold">Here is your services list:</div>
             <div className="container d-flex justify-content-center mt-4 scroll">
                 {userServices.map((theService, index)=>(
-                    <div key = {[theService, index]} className=" bg-secondary-subtle final_result me-3 border border-5 border-white"> 
+                    <div key = {theService.id ? theService.id : index} className=" bg-secondary-subtle final_result me-3 border border-5 border-white"> 
                         <div className="d-flex justify-content-center align-items-center final_result_text"> 
                             <h3 className="text-center fw-bold p-3 text-wrap">{theService.displayName.text}</h3>
                         </div>
@@ -23,6 +23,10 @@ export default function End(){
                         <div className="d-flex justify-content-center align-items-center p-3"> 
                             <div className="text-center fs-4 text-wrap">{theService.formattedAddress}</div>
                         </div>
+                        {/* {theService.attributes &&     
+                        <p className="fs-6 text-wrap">Info by: <a href= {service_object.attributes.providerUri}> {service_object.attributes.provider} </a> </p> }
+                        {theService.photos && service_object.photos[0].authorAttributions[0] &&     
+                        <p className="fs-6 text-wrap card-footer">Image By: <a href= {service_object.photos[0].authorAttributions[0].uri}> {service_object.photos[0].authorAttributions[0].displayName} </a> </p> } */}
                     </div>
                 ))}
             </div>

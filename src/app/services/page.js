@@ -16,11 +16,8 @@ export default function Services(){
     const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
 
-    if (userResponses == null)
-        redirect("/login");
-    function changeClick(){
-        setClicked(true);
-    }
+    // if (userResponses == null)
+    //     redirect("/login");
 
     /*
     {setStars([
@@ -40,6 +37,7 @@ export default function Services(){
     */
 
 
+    // if(userResponses.name != "Favorites"){
 
     // useEffect(()=> {
     //     let change = true;
@@ -82,13 +80,11 @@ export default function Services(){
     // }, []);
 
 
- 
 
    
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />
-            
                 <>
                     <div className="container mt-4 ms-4">
                         <div className="fs-2 text-white fw-bold mb-3">
@@ -117,16 +113,24 @@ export default function Services(){
                         </div>               
                         <div className="scroll">
                             {apiServices ? apiServices.map((service_object, index)=>(
-                                <Link key ={index} href={"/services/" + service_object.displayName.text}>
-                                    <div onClick={() => {
-                                        console.log("I ran");
-                                        setClicked(true);
-                                        userServices.push(service_object);
-                                    }} className="d-inline-block me-4">
-                                        {userEmail != null && <Favorites service={service_object}/>}       
-                                        <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
-                                    </div>
-                                </Link>
+                                <div className="d-inline-block me-4" key ={index}>
+                                    <Link href={"/services/" + service_object.displayName.text}>
+                                        <div onClick={() => {
+                                            setClicked(true);
+                                            userServices.push(service_object);
+                                        }} >
+                                            {userEmail != null && <Favorites service={service_object}/>}       
+                                            <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                                        </div>
+                                    </Link>
+                                    {/* <div className="card-footer">
+                                        {service_object.attributes &&     
+                                        <p className="fs-6 text-wrap">Info by: <a href= {service_object.attributes.providerUri}> {service_object.attributes.provider} </a> </p> }
+                                        {service_object.photos && service_object.photos[0].authorAttributions[0] &&     
+                                        <p className="fs-6 text-wrap">Image By: <a href= {service_object.photos[0].authorAttributions[0].uri}> {service_object.photos[0].authorAttributions[0].displayName} </a> </p> }
+                                    </div> */}
+                                </div>
+                                
                             )):    
                             <div className="text-center"> 
                                 <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>

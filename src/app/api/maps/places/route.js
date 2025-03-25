@@ -37,7 +37,7 @@ export async function POST(req){
         const headers = {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": api_key,
-            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.priceRange,places.userRatingCount,places.websiteUri,places.regularOpeningHours"
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.priceRange,places.userRatingCount,places.websiteUri,places.regularOpeningHours,places.id,places.attributions"
         };
         if (textBody.includedType === "gas_station" || textBody.textQuery.toLowerCase().includes("gas station")) //would only ask for a this field if the places the user is looking for is gas station
             headers["X-Goog-FieldMask"] += ",places.fuelOptions";
@@ -70,9 +70,43 @@ export async function GET (req) {
     // const start = Date.now();
     const {searchParams} = new URL(req.url);
     const theName = searchParams.get("thePhoto");
+    const places_id = searchParams.get("id");
+    const api_key = process.env.GOOGLE_API_KEY;
+    if (places_id) {
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Goog-Api-Key": api_key,
+                "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
+            };
+            const resp = await fetch(`https://places.googleapis.com/v1/places/${places_id}`,{
+                method: "GET",
+                headers: headers
+            });
+            if (!resp.ok) {
+                const errorText = await resp.text(); // Read error message
+                console.log("Error:", resp.status, errorText);
+                return new Response(JSON.stringify({ error: "Failed to fetch image" }), {
+                    status: image_response.status,
+                    headers: { "Content-Type": "application/json" },
+                });
+            }
+            else {
+                const obj_data = await resp.json();
+                return new Response(JSON.stringify({ service_result:  obj_data}), {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" },
+                });
+            }
+
+        }catch {
+            return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+              });
+        }
+    }
     try {
-        const api_key = process.env.GOOGLE_API_KEY;
-           
         const image_url = `https://places.googleapis.com/v1/${theName}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`;
         const image_response = await fetch(image_url);
         
@@ -85,9 +119,9 @@ export async function GET (req) {
         console.log("The image responses: "); //debugging
         console.log(image_response);
         const data = await image_response.arrayBuffer();
+        // console.log(data);
         // console.log("JSON:")
         // const data = await image_response.json();
-        console.log(data);
         // const end = Date.now();  //debugging
         // console.log(`API response time: ${end - start}ms`);
         return new Response( data, {

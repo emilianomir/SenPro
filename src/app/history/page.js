@@ -8,6 +8,7 @@ import Loading from "@/components/Loading";
 import Image from "next/image";
 
 
+
 export default function History(){
     const current_date = new Date();
     const dummyData = [{date: new Date("2025-04-01"), name: "Bob's Burgers Chain"}, {date: new Date("2025-03-09"), name: "Wendy's"}, {date: new Date("2025-02-23"), name: 'Mall'}];
@@ -24,6 +25,7 @@ export default function History(){
     */
     const {userEmail} = useAppContext();
     const [changed, setChanged] = useState([false, false]);
+    const [collapse, setCollapse] = useState(null);
     const [data, setData] = useState([]); 
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -34,8 +36,8 @@ export default function History(){
     useEffect(() => {
         const fetchInfo = async () => {
             try{
-                const history = await selectHistory(userEmail);
-                setData(history);
+                const history = await selectHistory(userEmail[1]);
+                setData(history)
                 } catch(error) {
                     console.error("Error fetching DB:", error);
                     alert("There was an issue getting the data.");
@@ -44,18 +46,32 @@ export default function History(){
                 }
             }
             fetchInfo();
+
         }, []);
 
-    data.map((current)=>{
-        if (current.date >= current_date)
-            upcoming_array.push(current);
-        else {
-            past_array.push(current);
-        }
-    });
-
+        data.map((current)=>{
+            if (current.date >= current_date)
+                upcoming_array.push(current);
+            else {
+                past_array.push(current);
+            }
+        });
+    
     past_array = past_array.sort((a,b) => a.date-b.date);
     upcoming_array = upcoming_array.sort((a,b)=>a.date-b.date);
+    const group_past_array = [];
+    past_array.map((theCurrent) => {
+        const monthAndDay = `${theCurrent.date.getMonth() + 1}/${theCurrent.date.getDate()}`;
+        let arrayMonthAndDay;
+        if (group_past_array.length > 0) {
+            arrayMonthAndDay = `${group_past_array[group_past_array.length-1][0].date.getMonth() + 1}/${group_past_array[group_past_array.length-1][0].date.getDate()}`
+        }
+        if (group_past_array.length != 0 && monthAndDay == arrayMonthAndDay)
+            group_past_array[group_past_array.length-1].push(theCurrent);
+        else 
+            group_past_array.push([theCurrent]);
+    })
+    console.log(group_past_array);
 
     if(isLoading){
         return (<Loading message= "Fetching History"/>)

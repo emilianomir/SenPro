@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
-import { testExistingUser, addQuestion } from "./DBactions";
+import { testExistingUser, addQuestion, getUser } from "./DBactions";
+import { useSearchParams } from "next/navigation";
+import SelectFavorites from "@/components/SelectFavorites";
+import Favorites_Section from "./Favorites_Section";
 
 //object to help with Places API calls
 class Responses {
@@ -31,6 +34,8 @@ function Question({theQuestion, current, func, changeLoading}){
     const [nameSearch, setNameSearch] = useState(false); //to know when the user is ready to search for a service via name
     const [readyGeneralSearch, setGeneralSearch] = useState(false); //to know when a user is ready to search for a services via general search 
     const [wentBack, setBack] = useState(false); //Forms submits when back button is pressed. This is used to stop that
+
+
 
     function gotoPrev() {
         if (prevKeys.length === 0) //this means we are at the first question, leave
@@ -78,8 +83,8 @@ function Question({theQuestion, current, func, changeLoading}){
     
             }
         }
-        // console.log("After back:")
-        // console.log(theTest); //debugging
+        console.log("After back:")
+        console.log(theTest); //debugging
         // console.log(mapKey);
         changeDes(mapKey); //used in case the user wants to go forward with selected response (basically go back then forward)
         setKey(previousResponses[0]); //this is used to show previous questions and answers
@@ -384,7 +389,12 @@ function Question({theQuestion, current, func, changeLoading}){
                         <button className="btn btn-primary w-25" onClick={generalSearch} type = "button">Done</button>
                     </div>
                 </>
-                }
+            }
+            {!generalSearchP && userEmail != null &&
+            <>
+            <SelectFavorites/>
+            </>
+            }
             </div>
         </div>
 

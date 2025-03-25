@@ -33,8 +33,13 @@ function AddressPage(){
             
                 const returnData = await response.json();
                 if (!returnData.isValid) {
-                    if (selectType == "zipCode")
-                        alert("Enter a valid ZIP Code");
+                    if (selectType == "zipCode") {
+                        if (returnData.message)
+                            alert(returnData.message);
+                        else
+                            alert("Enter a valid ZIP Code");
+                    }
+
                     else if (selectType == "address")
                         alert("Enter a valid address");
                 }
