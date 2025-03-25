@@ -18,12 +18,31 @@
 }
 
 .service_info{
-    height: 500px;
+    height: 550px;
+}
+.map_place{
+    height: 90%;
 }
 
 .service_images {
     height: 350px;
     max-height: 350px;
     width:400px;
+}
+.overlay {
+    opacity: 0;
+    visibility: hidden;
+    transition:opacity 0.3s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+.position-relative.gallery:hover .overlay {
+    opacity: 1;
+    visibility: visible ;
+
+}
+
+.modal.fade .modal-dialog {
+    transform: scale(1);
+    transition: transform .5s ease-in-out;
 }
 

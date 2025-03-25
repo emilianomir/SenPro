@@ -10,17 +10,9 @@ function AddressPage(){
     const [theInput, setInput] = useState('');
     const [selectType, setSelect] = useState('');
 
-
-
     const handleChange = (event) => {
         setInput(event.target.value);
     };
-
-    // const handleSubmit = async (event) => {
-    //     event.preventDefault();
-    //     console.log("submitted address:", theInput);
-
-    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -41,8 +33,13 @@ function AddressPage(){
             
                 const returnData = await response.json();
                 if (!returnData.isValid) {
-                    if (selectType == "zipCode")
-                        alert("Enter a valid ZIP Code");
+                    if (selectType == "zipCode") {
+                        if (returnData.message)
+                            alert(returnData.message);
+                        else
+                            alert("Enter a valid ZIP Code");
+                    }
+
                     else if (selectType == "address")
                         alert("Enter a valid address");
                 }

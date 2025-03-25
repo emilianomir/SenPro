@@ -6,7 +6,7 @@ import { Modal } from 'bootstrap';
 
 
 
-export default function SelectFavorites({routingFunc}){
+export default function SelectFavorites(){
     const { favorites } = useAppContext();
     const [clickedService, setClicked] = useState(false);
 
@@ -50,8 +50,8 @@ export default function SelectFavorites({routingFunc}){
                         <div className="scroll">
                                 {favoritesList ? favoritesList.map((service_object, index)=>(
                                     
-                                    <div key ={index} className="d-inline-block me-4" data-bs-dismiss="modal" onClick={routingFunc}>     
-                                        <ServiceCard service = {service_object} userClick = {changeClick}/> 
+                                    <div key ={index} className="d-inline-block me-4" data-bs-dismiss="modal">     
+                                        <ServiceCard service = {service_object} has_fuel_type={null}/> 
                                     </div>
                                 )):    
                                 <div className="text-center"> 

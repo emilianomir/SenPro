@@ -53,14 +53,14 @@ function SignUpPage() {
   return (
     <div className="fullPage bg-secondary">
       <div className="container">
-        <div className="row row-col-1 mb-5">
+        <div className="row row-col-1">
           <div className="col title position-relative">
             <div className="position-absolute title_heading">
               <h1 className="text-white title_text">Sign In</h1>
             </div>
           </div>
         </div>
-        <div className="container bg-secondary-subtle ms-0 mt-5 sign_form_content">
+        <div className="container bg-secondary-subtle ms-0 sign_form_content">
           <form onSubmit={submitForm}>
             <div className="mb-3">
               <label htmlFor="inputEmail" className="form-label fs-3 mt-3">
