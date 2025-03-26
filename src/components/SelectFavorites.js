@@ -3,24 +3,15 @@ import { useEffect, useState } from "react";
 import ServiceCard from "@/components/ServiceCard";
 import { useRouter } from "next/navigation";
 import { Modal } from 'bootstrap';
-
+import Link from "next/link";
 
 
 export default function SelectFavorites(){
-    const { favorites } = useAppContext();
+    const { favorites, userServices} = useAppContext();
     const [clickedService, setClicked] = useState(false);
 
 
-    var favoritesList = [];
-    favorites.forEach(element => {
-        const val = JSON.parse(element.info);
-        favoritesList.push(val);
-        console.log(favoritesList)
-    })
 
-    function changeClick(){
-        setClicked(true);
-    }
 
 
     return (
@@ -48,10 +39,16 @@ export default function SelectFavorites(){
                             </span>
                             }
                         <div className="scroll">
-                                {favoritesList ? favoritesList.map((service_object, index)=>(
-                                    
-                                    <div key ={index} className="d-inline-block me-4" data-bs-dismiss="modal">     
+                                {favorites ? favorites.map((service_object, index)=>(
+                                    <div key ={index} className="d-inline-block me-4" >
+                                        <Link href={"/services/" + service_object.displayName.text}> 
+                                        <div onClick={() => {
+                                            setClicked(true);
+                                            userServices.push(service_object);
+                                            }} data-bs-dismiss="modal">   
                                         <ServiceCard service = {service_object} has_fuel_type={null}/> 
+                                        </div>
+                                        </Link> 
                                     </div>
                                 )):    
                                 <div className="text-center"> 
