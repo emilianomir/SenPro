@@ -20,7 +20,7 @@ export default function Favorites_Section ({favoritesList}){
         const fetchInfo = async () => {
             try{
                 const fav = await getFavorites(userEmail[1]);
-                setFavorites(fav);
+                setFavorites(fav.map(element => JSON.parse(element.info)));
                 } catch(error) {
                     console.error("Error fetching DB:", error);
                     alert("There was an issue getting the data.");
@@ -31,12 +31,14 @@ export default function Favorites_Section ({favoritesList}){
             fetchInfo();
         }, []);
 
+        /*
         favoritesList.length = 0;
         favorites.forEach(element => {
             const val = JSON.parse(element.info);
             favoritesList.push(val);
             console.log(favoritesList)
         })
+        */
 
     if(isLoading){
         return (<Loading message= "Fetching Favorites"/>)
@@ -52,7 +54,7 @@ export default function Favorites_Section ({favoritesList}){
                 :
                 <div className="scroll">
                     {/* {favorites.map((service, index) => ( */}
-                    {favoritesList.map((service, index) => (
+                    {favorites.map((service, index) => (
                         <div key ={index} className="d-inline-block me-5">
                             <Favorites service={service}/>
                             {selection === index && 
