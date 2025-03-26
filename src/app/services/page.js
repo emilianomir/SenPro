@@ -3,11 +3,12 @@ import "../css/services_page.css"
 import ServiceCard from "@/components/ServiceCard";
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useAppContext } from "@/context";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
+import Router from "next/navigation";
 
 
 
@@ -15,7 +16,30 @@ import Favorites from "@/components/Favorites";
 export default function Services(){
     const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
+    const router = useRouter();
 
+    const getMoreInfo = async (index) =>{
+        const desired_service = apiServices[index];
+        if (!desired_service.hasFullInfo) {
+            setClicked(true);
+            try {
+                const response = await fetch(`/api/maps/places?id=` + desired_service.id + "&partial=true");
+                if (response.ok) {
+                    const {service_result} = await response.json();
+                    for (const [key, value] of Object.entries(service_result)){
+                        desired_service[key] = value;
+                    desired_service.hasFullInfo = true;
+                    console.log(apiServices[index]);
+                    }
+                }
+            }catch(error) {
+                console.error("Error fetching service " + desired_service.id + ":", error);
+            }
+
+        }
+        userServices.push(desired_service);
+        router.push("/services/" + desired_service.displayName.text);
+    }
     // if (userResponses == null)
     //     redirect("/login");
 
@@ -114,15 +138,15 @@ export default function Services(){
                         <div className="scroll">
                             {apiServices ? apiServices.map((service_object, index)=>(
                                 <div className="d-inline-block me-4" key ={index}>
-                                    <Link href={"/services/" + service_object.displayName.text}>
-                                        <div onClick={() => {
-                                            setClicked(true);
-                                            userServices.push(service_object);
-                                        }} >
+                                    {/* <Link href={"/services/" + service_object.displayName.text}> */}
+                                        <div onClick={() => getMoreInfo(index)
+                                            // setClicked(true);
+                                            // userServices.push(service_object);
+                                        } >
                                             {userEmail != null && <Favorites service={service_object}/>}       
                                             <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
                                         </div>
-                                    </Link>
+                                    
                                     {/* <div className="card-footer">
                                         {service_object.attributes &&     
                                         <p className="fs-6 text-wrap">Info by: <a href= {service_object.attributes.providerUri}> {service_object.attributes.provider} </a> </p> }
