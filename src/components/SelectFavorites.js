@@ -9,9 +9,29 @@ import Link from "next/link";
 export default function SelectFavorites(){
     const { favorites, userServices} = useAppContext();
     const [clickedService, setClicked] = useState(false);
+    const router = useRouter();
+    const getMoreInfo = async (index) =>{
+        const desired_service = favorites[index];
+        if (!desired_service.hasFullInfo) {
+            setClicked(true);
+            try {
+                const response = await fetch(`/api/maps/places?id=` + desired_service.id + "&partial=true");
+                if (response.ok) {
+                    const {service_result} = await response.json();
+                    for (const [key, value] of Object.entries(service_result)){
+                        desired_service[key] = value;
+                    desired_service.hasFullInfo = true;
+                    console.log(favorites[index]);
+                    }
+                }
+            }catch(error) {
+                console.error("Error fetching service " + desired_service.id + ":", error);
+            }
 
-
-
+        }
+        userServices.push(desired_service);
+        router.push("/services/" + desired_service.displayName.text);
+    }
 
 
     return (
@@ -19,9 +39,6 @@ export default function SelectFavorites(){
             <div className="container">
             <button className='btn btn-primary w-25' data-bs-toggle="modal" data-bs-target="#reg-modal">View Favorites</button>
             </div>
-
-
-
             <div className="modal fade modal-xl" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -41,14 +58,10 @@ export default function SelectFavorites(){
                         <div className="scroll">
                                 {favorites ? favorites.map((service_object, index)=>(
                                     <div key ={index} className="d-inline-block me-4" >
-                                        <Link href={"/services/" + service_object.displayName.text}> 
-                                        <div onClick={() => {
-                                            setClicked(true);
-                                            userServices.push(service_object);
-                                            }} data-bs-dismiss="modal">   
-                                        <ServiceCard service = {service_object} has_fuel_type={null}/> 
+                                        <div onClick={() => getMoreInfo(index)} data-bs-dismiss="modal">   
+                                            <ServiceCard service = {service_object} has_fuel_type={null}/> 
                                         </div>
-                                        </Link> 
+                                        
                                     </div>
                                 )):    
                                 <div className="text-center"> 
