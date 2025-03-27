@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { selectHistory } from "@/components/DBactions";
 import Loading from "@/components/Loading";
 import Image from "next/image";
-import { CONFIG_FILES } from "next/dist/shared/lib/constants";
 
 
 
