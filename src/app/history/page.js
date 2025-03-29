@@ -126,7 +126,7 @@ export default function History(){
                                     <div className="d-flex justify-content-center align-items-center final_result_text"> 
                                         <h3 className="text-center fw-bold p-3 text-wrap">{theService.displayName.text}</h3>
                                     </div>
-                                    <div className="d-flex justify-content-center"><img className="final_result_photo" src = {theService.photo_image} alt = "Service Photo"/></div>
+                                    <div className="d-flex justify-content-center"><img className="final_result_photo" src = {theService.photoURL} alt = "Service Photo"/></div>
                                     <div className="d-flex justify-content-center align-items-center p-3"> 
                                         <div className="text-center fs-4 text-wrap">{theService.formattedAddress}</div>
                                     </div>

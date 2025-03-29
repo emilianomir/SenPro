@@ -148,6 +148,45 @@ export async function changePass(email, newpass)
 
 
 
+// API Call
+async function getAPI(id) {
+  try{
+    const api_key = process.env.GOOGLE_API_KEY;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": api_key,
+      "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
+    };
+    const response = await fetch(`https://places.googleapis.com/v1/places/${id}`,{
+        method: "GET",
+        headers: headers
+    });
+    
+    if (response.ok) {
+
+      var temp = new Response(JSON.stringify({ service_result:  await response.json()}), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }); 
+      const {service_result} = await temp.json();
+      if (service_result.photos)
+      try {
+          const image_url = `https://places.googleapis.com/v1/${service_result.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`; //(`/api/maps/places?thePhoto=` + service_result.photos[0].name);
+          const image_response = await fetch(image_url);
+          service_result.photoURL = image_response.url;
+          
+      }catch(error) {
+          console.error("Error fetching image for id " + id + ":", error);
+      }
+      service_result.id = id;
+      return service_result;
+    }
+  }catch(error) {
+    console.error("Error fetching service " + id + ":", error);
+  }
+}
+
+
 
 
 
@@ -239,7 +278,7 @@ export async function getFavorites(email)
       email,
     });
 
-    const value = await db.select({ info: services.info })
+    const value = await db.select({ info: services.address, response: services.info })
     .from(services)
     .fullJoin(favorites, eq(favorites.sAddress, services.address))
     .where(eq(favorites.userEmail, email));
@@ -312,8 +351,8 @@ export async function selectHistory(email)
       const val2 = JSON.parse(element.services)
       const val3 = [];
       for(const element of val2){
-          let service = await db.select({ info: services.info } ).from(services).where(eq(services.address, element));
-          service = JSON.parse(service[0].info);
+          let service = await db.select({ info: services.address } ).from(services).where(eq(services.address, element));
+          service =  await getAPI(service[0].info);
           val3.push(service);
       }
       let valMap = { "date": new Date (element.date), "services": val3 };

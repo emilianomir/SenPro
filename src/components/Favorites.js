@@ -4,28 +4,30 @@ import { addFavoriteService, checkFavoriteService, removeFavoriteService } from 
 import { useAppContext } from "@/context";
 
 
-function Favorites({service}){
+function Favorites({service, responses}){
     const {userEmail} = useAppContext();
     const [sVal, setSearch] = useState(userEmail[1]);
     // Stars
     const [star, setStar] = useState(true);
     const [info, setInfo] = useState(service);
+    const [response, setResponses] = useState(responses);
     const [loading, setLoading] = useState(true);
 
     function changeStar()
     {
         setStar(!star);
         
-        checkFavoriteService(service.formattedAddress, sVal).then((data) => {
+        checkFavoriteService(service.id, sVal).then((data) => {
           if (data)
-            addFavoriteService(info.formattedAddress, info, sVal);
+            addFavoriteService(info.id, JSON.stringify(response), sVal);
         });
 
         if (!star)
         {
-            checkFavoriteService(service.formattedAddress, sVal).then((data) => {
-                if (!data)
-                    removeFavoriteService(info.formattedAddress, sVal);
+            checkFavoriteService(service.id, sVal).then((data) => {
+                if (!data){    
+                    removeFavoriteService(info.id, sVal);
+                }
             });
         }
     }
@@ -33,7 +35,7 @@ function Favorites({service}){
     /*
     function initialStar()
     {
-        checkFavoriteService(service.formattedAddress, sVal).then((data) => {
+        checkFavoriteService(service.id, sVal).then((data) => {
             if (!data)
                 setStar(false);
           });
@@ -43,7 +45,7 @@ function Favorites({service}){
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-                if(!(await checkFavoriteService(service.formattedAddress, sVal)))
+                if(!(await checkFavoriteService(service.id, sVal)))
                     setStar(false);
             } catch(error) {
                 console.error("Error fetching DB:", error);

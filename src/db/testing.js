@@ -5,7 +5,7 @@ import { favorites } from "./schema/favorites.js";
 import { services } from "./schema/services.js";
 import { history } from "./schema/history.js";
 import { eq, sql } from "drizzle-orm";
-import { addUser, checkLogin, testExistingUser, getUser, getFavorites} from '../components/DBactions.js'
+import { addUser, checkLogin, testExistingUser, getUser, getFavorites, selectHistory} from '../components/DBactions.js'
 // import { addUser, testExistingUser } from "@/components/DBactions.js";
 import bcrypt from "bcrypt"
 import { getModifiedCookieValues } from "next/dist/server/web/spec-extension/adapters/request-cookies.js";
@@ -123,7 +123,7 @@ val.forEach(element => {
 })
 
 */
-
+/*
 const fullArray = []
 const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, "test@gmail.com"));
 for (const element of val1){
@@ -139,3 +139,9 @@ for (const element of val1){
 }
 
 console.log(fullArray)
+*/
+
+//console.log(await getFavorites("test@gmail.com"))
+const val = await selectHistory("test@gmail.com")
+console.log(val[0].services);
+
