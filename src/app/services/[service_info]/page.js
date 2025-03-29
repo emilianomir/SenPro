@@ -27,6 +27,12 @@ export default function ServiceInfo(){
     const router = useRouter();
     const [addServices, setYes] = useState(false)
 
+
+    if( userServices.length > 0){
+        if(current_service.photoURL)
+            current_service.photo_image = current_service.photoURL;
+    }
+
     const handleBack = ()=>{
         setBack(true);
     }
@@ -64,7 +70,6 @@ export default function ServiceInfo(){
     }
     useEffect(() => {
         const handleRouteChangeComplete = () => {
-
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
                 setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects
             if (wentBack){
@@ -79,8 +84,8 @@ export default function ServiceInfo(){
                     const addressArr = [];
                     userServices.forEach(element => {
                         //addService(element.id)
-                        addService(element.formattedAddress, element);
-                        addressArr.push(element.formattedAddress);
+                        addService(element.id, JSON.stringify(userResponses));
+                        addressArr.push(element.id);
                     });
                     await addHistoryService(addressArr, userEmail[1]);
                     setMoreThan1(true);

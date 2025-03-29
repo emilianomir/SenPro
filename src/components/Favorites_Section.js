@@ -16,6 +16,57 @@ export default function Favorites_Section ({favoritesList}){
     const [error, setError] = useState(false);
     const [selection, setSelection] = useState(null);
 
+
+    useEffect(() => {
+        const fetchInfo = async () => {
+            //replace this array with the values given by the database. 
+            const ids = await getFavorites(userEmail[1]);
+            const servicesInformation = [];
+            const servicesCalls = ids.map(async id => {
+                try {
+                    const response = await fetch(`/api/maps/places?id=` + id.info );
+                    if (response.ok) {
+                        const {service_result} = await response.json();
+                        if (service_result.photos)
+                        try {
+                            const img_response = await fetch(`/api/maps/places?thePhoto=` + service_result.photos[0].name);
+                            if (img_response.ok) {
+                                service_result.photoURL = img_response.url; 
+                            }
+                        }catch(error) {
+                            console.error("Error fetching image for id " + id.info + ":", error);
+                        }
+                        service_result.id = id.info;
+                        service_result.responses = id.response;
+                        return service_result;
+                    }
+                }catch(error) {
+                    console.error("Error fetching service " + id.info + ":", error);
+                }
+            });
+            const waitCalls = await Promise.all(servicesCalls);
+            waitCalls.forEach(result => { 
+                if (result) servicesInformation.push(result)
+            });
+            console.log("SERVICES INFO ARRAY")
+            console.log(servicesInformation);
+            setFavorites(servicesInformation);
+            setLoading(false);
+        }
+            fetchInfo();
+        }, []);
+
+
+
+
+
+
+
+
+
+
+
+/*
     useEffect(() => {
         const fetchInfo = async () => {
             try{
@@ -30,6 +81,9 @@ export default function Favorites_Section ({favoritesList}){
             }
             fetchInfo();
         }, []);
+
+*/
+
 
         /*
         favoritesList.length = 0;
@@ -56,7 +110,7 @@ export default function Favorites_Section ({favoritesList}){
                     {/* {favorites.map((service, index) => ( */}
                     {favorites.map((service, index) => (
                         <div key ={index} className="d-inline-block me-5">
-                            <Favorites service={service}/>
+                            <Favorites service={service} responses={service.responses}/>
                             {selection === index && 
                                 <Link href={"/start"}>
                                     <button onClick= {()=>{userServices.push(service)}}  className="btn btn-primary ms-4">Start with this service</button>
@@ -64,7 +118,7 @@ export default function Favorites_Section ({favoritesList}){
                             }
                             <div onClick={() => setSelection(index)} className = {`${selection == index ? "card cardAdjust border-5 border-info": "card cardAdjust" }`} >
                                 <div className ="card-body">
-                                    <Image className = "card-img-top img-fluid fixHeight" src= {error || !service.photo_image? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photo_image} width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
+                                    <Image className = "card-img-top img-fluid fixHeight" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                                     <h4 className = "card-title text-wrap pt-3 titleHeight mb-4">{service.displayName.text}</h4>
                                     <div className="d-flex align-items-center">
                                         <p className = "card-text fs-4"> Rating: {service.rating ? service.rating : "N/A" }</p> 
