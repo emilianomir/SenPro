@@ -52,7 +52,7 @@ function StartPage(){
 
     return (
         <>
-        <div className = "bg-secondary-subtle m-0" >
+        <div className = "" >
             <div className = "text-center">
                 <h1 className='fs-2 fw-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
             </div>

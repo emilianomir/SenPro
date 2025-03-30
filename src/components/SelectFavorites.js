@@ -50,10 +50,16 @@ export default function SelectFavorites(){
                                         </div>
                                         </Link> 
                                     </div>
-                                )):    
-                                <div className="text-center"> 
-                                    <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
-                                </div>
+                                )):
+                                <div>
+                                    <div className="text-center">
+                                        ★
+                                    </div>
+                                    <div className="text-center"> 
+                                        <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
+                                    </div>
+                                </div>    
+
                                 }
         
                             </div> 
