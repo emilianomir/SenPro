@@ -1,19 +1,24 @@
 "use client";
 
-import { checkLogin } from "@/components/DBactions";
+import { checkLogin, createSession, getUser} from "@/components/DBactions";
 import "../css/login_page.css";
 import RouteButton from "@/components/route_button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "@/context";
+import Loading from "@/components/Loading";
+import { check } from "drizzle-orm/mysql-core";
 
 function LoginPage() {
   const {setUserEmail} = useAppContext();
+  const [yes, setYes] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [formData, changeFormData] = useState({
     inputEmail: "",
     inputPass: "",
   });
+
 
 
   const changeData = (event) => {
@@ -24,20 +29,58 @@ function LoginPage() {
     }));
   };
 
+
+
+
     const submitForm = (event) => {
+
       event.preventDefault();
-      // Checking Login Credentials
+      setYes(true);
+      /*
       checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
         if (!data) {
           alert("Invalid email or pass");
           return;
         } else {
-          let userName = formData.inputEmail.split('@')[0].toUpperCase();
-          setUserEmail([userName, formData.inputEmail]);
-          router.push("/home");
+
         }
       });
+      */
     };
+    
+    useEffect(() => {
+      const fetchProducts = async () => {
+        if (yes){
+          try{
+              setYes(false);
+              setLoading(true);
+              if(await checkLogin(formData.inputEmail, formData.inputPass)){
+                await createSession(formData.inputEmail);
+                let userName = await getUser(formData.inputEmail);
+                setUserEmail([userName[0].username, userName[0].email]);
+                router.push("/home");
+              }
+              else
+              {
+                alert("Invalid email or pass");
+                return;
+              }
+          } catch(error) {
+              console.error("Error fetching DB:", error);
+              alert("There was an issue getting the data.");
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+      fetchProducts();
+    }, [yes, formData]);
+
+    
+
+      if(loading){
+        return (<Loading message= "Logging In"/>)
+    }
 
     return (
       <div className="bg-secondary full_content">

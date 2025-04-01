@@ -5,7 +5,7 @@ import { favorites } from "./schema/favorites.js";
 import { services } from "./schema/services.js";
 import { history } from "./schema/history.js";
 import { eq, sql } from "drizzle-orm";
-import { addUser, checkLogin, testExistingUser, getUser, getFavorites, selectHistory} from '../components/DBactions.js'
+import { addUser, checkLogin, testExistingUser, getUser, getFavorites, selectHistory, createSession, getSession} from '../components/DBactions.js'
 // import { addUser, testExistingUser } from "@/components/DBactions.js";
 import bcrypt from "bcrypt"
 import { getModifiedCookieValues } from "next/dist/server/web/spec-extension/adapters/request-cookies.js";
@@ -142,6 +142,8 @@ console.log(fullArray)
 */
 
 //console.log(await getFavorites("test@gmail.com"))
-const val = await selectHistory("test@gmail.com")
-console.log(val[0].services);
+//const val = await selectHistory("test@gmail.com")
+//console.log(val[0].services);
 
+//await createSession("test@gmail.com");
+//console.log(await getSession());
