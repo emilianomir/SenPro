@@ -23,7 +23,27 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     const [location, setLocation] = useState(origin || defaultOrigin);
     const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' }); // travel info is the distance and time it will take to travel between the two points
     const [showTraffic, setShowTraffic] = useState(true); // show traffic is a boolean that determines if the traffic layer is shown with btn
+    
+    // create state for addresses that can be swapped
+    const [addresses, setAddresses] = useState({
+        origin: originAddress, 
+        destination: destinationAddress,
+        originCoords: origin || defaultOrigin,
+        destCoords: destination || defaultDestination
+    });
 
+    useEffect(() => {
+        // Update addresses state when props change
+        setAddresses({
+            origin: originAddress,
+            destination: destinationAddress,
+            originCoords: origin || defaultOrigin,
+            destCoords: destination || defaultDestination
+        });
+    }, [origin, destination, originAddress, destinationAddress]);
+
+    //! ------------------------------------------------------------------------------------------------ 
+    //! load the google maps script and initialize the map
     useEffect(() => {
         // load the google maps script on top of the page
         const loadGoogleMapsScript = () => {
@@ -41,7 +61,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
             
             const map = new google.maps.Map(mapRef.current, {
                 zoom: 14,
-                center: location,
+                center: addresses.originCoords,
             });
 
             googleMapRef.current = map; // Store map instance in ref
@@ -65,47 +85,81 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         const calculateAndDisplayRoute = async (directionsService, directionsRenderer) => {
             const selectedMode = document.getElementById("mode").value;
 
-            // Use actual addresses if available, otherwise use coordinates
-            const routeOptions = {
-                travelMode: google.maps.TravelMode[selectedMode], // from the google.maps object from api, set the travel mode to the selected mode
-            };
-
-            //! EXAMPLE OF ROUTE OPTIONS
-            // const routeOptions = {
-            //     travelMode: google.maps.TravelMode.DRIVING,
-            //     origin: "Edinburg, TX",
-            //     destination: "Rio Grande City, TX",
-            //     waypoints: [
-            //         {
-            //             location: "San Antonio, TX",
-            //             stopover: true,
-            //         },
-            //         {
-            //             location: "Austin, TX",
-            //             stopover: true,
-            //         },
-            //     ],
-            // };
+            // create a geocoder instance
+            const geocoder = new google.maps.Geocoder();
 
 
-            //! FALL BACK FOR TEXT ADDRESS OR COORDINATES
-            // in case of text address, not coordinates
-            if (originAddress && destinationAddress) {
-                routeOptions.origin = originAddress;
-                routeOptions.destination = destinationAddress;
-            } else {
-                // if there is no text address, use the coordinates
-                routeOptions.origin = location;
-                routeOptions.destination = destination || defaultDestination;
-            }
+            //! this is the function to get a latlng object from an address which is used in the calculateAndDisplayRoute function by checking if the address is a string or a coordinates object
+            const geocodeAddress = (address) => {
+                return new Promise((resolve, reject) => { // return a promise so that the function can be used in the calculateAndDisplayRoute function
+                    console.log('geocoding address input:', address);
+                    
+                    // if address is coordinates object
+                    if (address && typeof address === 'object' && 'lat' in address && 'lng' in address) { // check if the address is a coordinates object
+                        console.log('using coordinates directly:', address);
+                        const latLng = new google.maps.LatLng(address.lat, address.lng); // create a latlng object
+                        resolve(latLng); // resolve the promise with the latlng object
+                    }
+                    // if address is a string
+                    else if (typeof address === 'string' && address !== "Starting Point" && address !== "Destination") {
+                        console.log('geocoding string address:', address);
+                        geocoder.geocode({ address }, (results, status) => { // geocode the address which is a string
+                            if (status === 'OK') {
+                                console.log('geocoding successful:', results[0].formatted_address);
+                                resolve(results[0].formatted_address); // resolve the promise with the formatted address
+                            } else {
+                                // don't reject if we have coordinates as fallback
+                                console.log('geocoding failed for:', address, 'Status:', status);
+                                if (addresses.originCoords || addresses.destCoords) {
+                                    console.log('using fallback coordinates');
+                                    resolve(addresses.originCoords || addresses.destCoords);
+                                } else {
+                                    reject(new Error(`Could not geocode address: ${address}`));
+                                }
+                            }
+                        });
+                    }
+                    // if we have coordinates as fallback
+                    else if (addresses.originCoords || addresses.destCoords) {
+                        console.log('using fallback coordinates for invalid string address');
+                        resolve(addresses.originCoords || addresses.destCoords);
+                    }
+                    // if neither, reject
+                    else {
+                        reject(new Error('Invalid address format and no coordinates available'));
+                    }
+                });
+            }; //! end of geocoding function
 
             try {
-                const response = await directionsService.route(routeOptions); // request the route from the directions service (google maps api)
-                directionsRenderer.setDirections(response); // render the route on the map
-                const { distance, duration } = response.routes[0].legs[0]; // legs are the route segments between the origin and destination
-                setTravelInfo({ distance: distance.text, duration: duration.text }); // set the distance and duration in the travel info state
+                // determine which value to use for origin and destination
+                const originToUse = addresses.origin !== "Starting Point" ? addresses.origin : addresses.originCoords;
+                const destinationToUse = addresses.destination !== "Destination" ? addresses.destination : addresses.destCoords;
+
+                console.log('Processing route from:', originToUse, 'to:', destinationToUse);
+
+                // validate both addresses
+                const validatedOrigin = await geocodeAddress(originToUse);
+                const validatedDestination = await geocodeAddress(destinationToUse);
+
+                console.log('validated addresses:', { origin: validatedOrigin, destination: validatedDestination });
+
+                const routeOptions = {
+                    origin: validatedOrigin,
+                    destination: validatedDestination,
+                    travelMode: google.maps.TravelMode[selectedMode],
+                };
+
+                const response = await directionsService.route(routeOptions);
+                directionsRenderer.setDirections(response);
+                const { distance, duration } = response.routes[0].legs[0];
+                setTravelInfo({ distance: distance.text, duration: duration.text });
             } catch (e) {
-                window.alert("Directions request failed because " + e);
+                console.error("directions error:", e);
+                // only show alert if the route actually failed
+                if (!directionsRenderer.getDirections()) {
+                    window.alert("directions request failed: " + e.message + "\nplease ensure both addresses are valid and specific enough.\nlook at the geocoding function in TravelMode.js");
+                }
             }
         };
 
@@ -115,15 +169,11 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         } else {
             loadGoogleMapsScript();
         }
-    }, [location, destination, originAddress, destinationAddress, showTraffic]);
+    }, [addresses, showTraffic]); // add addresses to the dependency array
 
-    //if origin changes, change location
-    useEffect(() => {
-        if (origin) {
-            setLocation(origin);
-        }
-    }, [origin]);
+    //! ------------------------------------------------------------------------------------------------
 
+    //! toggle traffic layer
     const toggleTraffic = () => {
         if (googleMapRef.current) {
             if (showTraffic) {
@@ -141,10 +191,44 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         setShowTraffic(!showTraffic);
     };
 
-
+    //! swap origin and destination locations
+    const swapLocations = () => {
+        setAddresses(prev => ({
+            origin: prev.destination,
+            destination: prev.origin,
+            originCoords: prev.destCoords,
+            destCoords: prev.originCoords
+        }));
+    };
 
     return (
         <div className="container">
+            <div className="route-header">
+                <h2 className="route-title">Route Directions</h2>
+                <div className="addresses-container">
+                    <div className="address-card">
+                        <div className="address-marker">A</div>
+                        <div className="address-content">
+                            <div className="address-label">From:</div>
+                            <div className="address-value">{addresses.origin}</div>
+                        </div>
+                    </div>
+                    <div className="route-connector">
+                        <div className="connector-line"></div>
+                        <button className="swap-button" onClick={swapLocations} title="Swap locations">
+                            <span className="swap-icon">⇄</span>
+                        </button>
+                    </div>
+                    <div className="address-card">
+                        <div className="address-marker">B</div>
+                        <div className="address-content">
+                            <div className="address-label">To:</div>
+                            <div className="address-value">{addresses.destination}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className={`content-wrapper ${showTraffic ? 'with-traffic-panel' : ''}`}>
                 <div className="main-content">
                     <div 
@@ -201,12 +285,22 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                     </div>
                 </div>
 
-                {/* traffic congestion panel */}
+                {/* traffic insights panel will fully replace the map */}
                 {showTraffic && (
-                    <TrafficCongestionPanel 
-                        origin={location}
-                        destination={destination || defaultDestination}
-                    />
+                    <div className="traffic-container">
+                        <div className="back-to-map">
+                            <button 
+                                onClick={toggleTraffic}
+                                className="back-button"
+                            >
+                                Back to Map
+                            </button>
+                        </div>
+                        <TrafficCongestionPanel 
+                            origin={addresses.originCoords}
+                            destination={addresses.destCoords}
+                        />
+                    </div>
                 )}
             </div>
         </div>

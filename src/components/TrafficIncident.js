@@ -3,6 +3,9 @@ import '../app/css/TrafficIncident.css';
 // this is for each incident card, the incident card is a child of the traffic congestion panel
 // so for each incident, there will be an card
 const TrafficIncident = ({ incident }) => {
+  // convert km to miles
+  const kmToMiles = (km) => (km * 0.621371).toFixed(1);
+  
   return (
     <div className="incident-card">
       <div className="incident-header">
@@ -17,7 +20,7 @@ const TrafficIncident = ({ incident }) => {
           Delay: {Math.round(incident.delay / 60)} minutes
         </p>
         <p className="incident-length">
-          Affected Area: {incident.length.toFixed(1)} km
+          Affected Area: {kmToMiles(incident.length)} miles
         </p>
         <div className="incident-timing">
           <p>Start: {incident.startTime}</p>
