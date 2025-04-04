@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
 import { testExistingUser, addQuestion, getUser } from "./DBactions";
 import { useSearchParams } from "next/navigation";
-import SelectFavorites from "@/components/SelectFavorites";
+// import SelectFavorites from "@/components/SelectFavorites";
 import Favorites_Section from "./Favorites_Section";
+
 
 //object to help with Places API calls
 class Responses {
@@ -19,14 +20,15 @@ class Responses {
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
 function Question({theQuestion, current, func, changeLoading}){
+    const [start, SetStart] = useState(false);
     const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
-    const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
-    const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
-    const [destSelect, changeDes] = useState(''); //destination for map purposes
+    // const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
+    // const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
+    const [destSelect, changeDes] = useState("Begin"); //destination for map purposes
     const [prevKeys] = useState([]); //will store the map key and the user selected values as the user goes through questions
     const [prevValues] = useState([]); //an array of arrays that will store in following order: types, textQuery values, api value for navigation through map
-    const [mapKey, setKey] = useState(current);
-    const ques = theQuestion.get(mapKey); //this is how each question is rendered each time
+    // const [mapKey, setKey] = useState(current);
+    const ques = theQuestion.get(destSelect); //this is how each question is rendered each time
     const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
     const [theTest, setTheTest] = useState(new Responses()); //the created object for API calls
     const [nameValue, setNameValue] = useState(''); //for searching service purposes
@@ -45,8 +47,8 @@ function Question({theQuestion, current, func, changeLoading}){
         // console.log("prevValues: "); //debugging
         // console.log(prevValues);
         const theUserResponsesAPI = prevValues[prevValues.length-1]; //this is an array of arrays that records user respones that deals with API calls.
-        if (theUserResponsesAPI[2] != undefined) //this checks to see if the user previous selected value has an api value. Used for when the user clicks enter without selecting the option again
-            setAPIvalue(theUserResponsesAPI[2]);  
+        // if (theUserResponsesAPI[2] != undefined) //this checks to see if the user previous selected value has an api value. Used for when the user clicks enter without selecting the option again
+        //     setAPIvalue(theUserResponsesAPI[2]);  
         if (previousResponses[1] != "No Preference") { //the values did not change
             switch (prevQuestion.question[1]){ //this is the grouping
                 case 0: //if we are here, that means it the first question, which means full reset
@@ -86,9 +88,10 @@ function Question({theQuestion, current, func, changeLoading}){
         console.log("After back:")
         console.log(theTest); //debugging
         // console.log(mapKey);
-        changeDes(mapKey); //used in case the user wants to go forward with selected response (basically go back then forward)
-        setKey(previousResponses[0]); //this is used to show previous questions and answers
-        valueSelected(previousResponses[1]); //sets the value to be the previous user selected option
+        console.log(previousResponses);
+        changeDes(previousResponses[0]); //used in case the user wants to go forward with selected response (basically go back then forward)
+        // setKey(previousResponses[0]); //this is used to show previous questions and answers
+        // valueSelected(previousResponses[1]); //sets the value to be the previous user selected option
         prevKeys.pop();
         if (prevKeys.length == 0)
             setSearchP(false); //hides the text
@@ -120,32 +123,33 @@ function Question({theQuestion, current, func, changeLoading}){
         setAPIvalue(selectedAPIValue);
     }
 
-    async function destValue(theEvent){
-        
-        theEvent.preventDefault();
-        if (prevKeys.length == 0 && wentBack){ //to prevent form submission for the first question (IDK its weird why it does this for only the first option)
-            setBack(false);
-            return;
-        }
-        if (valueSelect == '') { //to prevent default value of select box to be selected
-            alert("Please choose an option")
-            return;
-        }
-        if (mapKey == current){ //to show text
+    async function destValue(valueSelect, mapKey, apiValue){
+        console.log(mapKey);
+        console.log("RAN");
+        // theEvent.preventDefault();
+        // if (prevKeys.length == 0 && wentBack){ //to prevent form submission for the first question (IDK its weird why it does this for only the first option)
+        //     setBack(false);
+        //     return;
+        // }
+        // if (valueSelect == '') { //to prevent default value of select box to be selected
+        //     alert("Please choose an option")
+        //     return;
+        // }
+        if (destSelect == current){ //to show text
             setSearchP(true);
         }
         if (valueSelect != "No Preference") { //we do not need to change or update values if no preference
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
                     prevValues.push([theTest.main_category, theTest.textQuery]); //stores the previous values before change
-                    apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null; //only add to the array if there is an api value 
+                    // apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null; //only add to the array if there is an api value 
                     theTest.main_category = valueSelect; 
                     theTest.textQuery = valueSelect;
                     break;
                 case 1: //this focuses on types changes and sometimes textQuery
                     let temp = null;
                     prevValues.push([theTest.types, theTest.textQuery]); //we push the previous values first
-                    apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
+                    // apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
                     
                     //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
                     //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
@@ -192,10 +196,10 @@ function Question({theQuestion, current, func, changeLoading}){
 
                     if (apiValue[0] != 0) { //0 would mean ignore
                         let actualAPIvalue;
-                        if (apiValue.length > 1)
-                            actualAPIvalue = apiValue.split(',')[1]; //the tuple turns into a string, the first character is the case, and the second portion is the actual value
+                        if (apiValue[1])
+                            actualAPIvalue = apiValue[1]; //the tuple turns into a string, the first character is the case, and the second portion is the actual value
                         temp = actualAPIvalue? actualAPIvalue.toLowerCase(): valueSelect.toLowerCase();
-                        switch (Number(apiValue[0])) {
+                        switch (apiValue[0]) {
                             case 1:
                                 temp = temp.replaceAll(" ", "_");
                                 theTest.types = theTest.types? `${temp}_${theTest.types}`: theTest.types = temp;
@@ -229,11 +233,11 @@ function Question({theQuestion, current, func, changeLoading}){
                     break;
                 case 2:
                     prevValues.push([theTest.types, theTest.textQuery]);
-                    apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
+                    // apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
                     if (apiValue[0] == 1) {
                         let temp;
-                        if (apiValue.length > 1) {
-                            temp = apiValue.split(',')[1].toLowerCase();
+                        if (apiValue[1]) {
+                            temp = apiValue[1].toLowerCase();
                             temp = temp.replaceAll(" ", "_");
                         }
                         else if (valueSelect.includes(" ")) {
@@ -244,8 +248,8 @@ function Question({theQuestion, current, func, changeLoading}){
   
                     else if (apiValue[0] == 2) {  //this only changes the text query
                         let realValue;
-                        if (apiValue.length > 1) {
-                            realValue = apiValue.split(',')[1];
+                        if (apiValue[1]) {
+                            realValue = apiValue[1];
                             realValue.includes(theTest.textQuery) ? realValue = realValue.replace(" " + theTest.textQuery, ""): null;
                         }
                         else if (valueSelect.includes(theTest.textQuery)){
@@ -256,8 +260,8 @@ function Question({theQuestion, current, func, changeLoading}){
 
                     else if (apiValue[0] == 3){
                         let temp;
-                        if (apiValue.length > 1) {
-                            temp = apiValue.split(',')[1].toLowerCase();
+                        if (apiValue[1]) {
+                            temp = apiValue[1].toLowerCase();
                             temp = temp.replaceAll(" ", "_");
                         }
                         else if (valueSelect.includes(" ")) {
@@ -286,9 +290,9 @@ function Question({theQuestion, current, func, changeLoading}){
         // console.log(prevValues);
         console.log("theTest in Question component: ")
         console.log(theTest);
-        prevKeys.push([mapKey, valueSelect]);
-        setKey(destSelect);
-        valueSelected('');
+        prevKeys.push([destSelect, valueSelect]);
+        changeDes(mapKey);
+        // valueSelected('');
       
         if (userEmail != null) {
             try {
@@ -303,12 +307,11 @@ function Question({theQuestion, current, func, changeLoading}){
             }
         }
 
-        if (apiValue != '') //if there was an api value, reset it for next time
-            setAPIvalue('');
-        if (destSelect == "End") { 
+        // if (apiValue != '') //if there was an api value, reset it for next time
+        //     setAPIvalue('');
+        if (mapKey == "End") { 
             setResponses(theTest);//to have the object in mulitple pages
             setFinished(true);
-
         }
     
   }
@@ -316,7 +319,7 @@ function Question({theQuestion, current, func, changeLoading}){
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
         if (nameSearch){
-            setTheTest(new Responses()); //here, I do a fully reset on the object because the types the user currently selected and the name of the service might not be connected. 
+            setTheTest(new Responses()); //here, I do a full reset on the object because the types the user currently selected and the name of the service might not be connected. 
                                             // Like the user can select food as type, but then search Academy, which would lead to no services showing up due to strict type searching.
             theTest.name = nameValue[0].toUpperCase() + nameValue.substring(1);
             setResponses(theTest)
@@ -328,88 +331,78 @@ function Question({theQuestion, current, func, changeLoading}){
             changeLoading();
             func();// this is a function call from the questionaire page that just routes to services menu
         }
-      }, [destSelect, finished, nameSearch, readyGeneralSearch]);
+      }, [finished, nameSearch, readyGeneralSearch]);
 
     return (
-    <>
-        <div className="container mt-4 mb-5">
-            <div>
-                <div className="mb-4">
-                    <div className = "container">
-                        <div className = "text-center text-white">
-                            <h1 className="fs-3">{ques.question[0]}</h1>
+
+        <div className="grid grid-cols-2 h-full">
+            <div className="w-full h-2/3">
+                <div className="flex flex-col justify-center items-center h-full p-3">
+                    {start ? 
+                    <div className="w-full">
+                        <h1 className="text-5xl text-center font-extrabold">{ques.question[0]}</h1>
+                        {prevKeys.length > 0 &&
+                        <div className="text-center">
+                            <button onClick = {gotoPrev} className="outline outline-2 mt-10 w-1/2 text-xl p-3">Go To Previous Question</button>
                         </div>
-                        <form onSubmit={destValue}>
-                            <div className="row row-cols-3">
-                                {prevKeys.length > 0 ? 
-                                //this part has the button that allows the user to go back
-                                <>
-                                    <div className="col-10"> 
-                                        <select className="form-select" value = {valueSelect} onChange={changeValue}>
-                                            <option value="" disabled>Select</option>
-                                            {ques.answer.map((answer_array, index) => (
-                                            <option key = {`${index} ${answer_array[0]}`} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
-                                            )
-                                            )}
-                                        </select>
-                                    </div>
-                                    <div className="col-1 d-flex align-items-top">
-                                        <button type="button" onClick={gotoPrev} className="btn btn-primary w-100">Back</button> 
-                                    </div>
-                                    <div className="col-1">
-                                        <button  type="submit" className="btn btn-primary w-100">Next</button>
-                                    </div>
-                                </>: 
-                                <>
-                                    <div className="col-11"> 
-                                        <select className="form-select" value = {valueSelect} onChange={changeValue}>
-                                            <option value="" disabled>Select</option>
-                                            {ques.answer.map((answer_array, index) => (
-                                            <option key = {`${index} ${answer_array[0]}`} value = {answer_array[0]} data-valueforapi = {answer_array[2] ? answer_array[2] : ""} data-destination = {answer_array[1]}>{answer_array[0]}</option>
-                                            )
-                                            )}
-                                        </select>
-                                    </div>
-                                    <div className="col-1">
-                                        <button  type="submit" className="btn btn-primary w-100">Next</button>
-                                    </div>
-                                </>
-                                }
+                        }
+                        {generalSearchP &&
+                        <div className="mt-10 text-2xl text-center">
+                            <div className="text-white mb-3 text-2xl">Ready to search for places?</div> 
+                            <div className="text-white mb-3 font-bold">Click below :</div>
+                            <div className="">
+                                <button className="outline outline-2 w-1/2 p-2" onClick={generalSearch} type = "button">Done</button>
                             </div>
-                        </form>
+                        </div>
+                        }
                     </div>
+                    :
+                    <div className="px-5">
+                        <div className="text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
+                        <div className="mt-5 w-full"> 
+                            <form onSubmit={changeSpecLoc}>
+                                <input className="w-3/4 text-center border-b-1 mr-2 text-2xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
+                                <button className="outline outline-1 text-2xl p-1 w-1/5" type= "submit">Enter</button>
+                            </form>
+                        </div>
+                    </div>
+                    }
+
                 </div>
+                
             </div>
-            <div className="text-center">
-                {generalSearchP && 
+            <div className="w-19/20 p-10 bg-slate-800/85 h-9/10 rounded-lg">
+                <div className="flex flex-col justify-center items-center h-full text-center">
+                {start ?
+                <div className="w-full grid grid-cols-2 gap-5 h-full">
+                    {ques.answer.map((answer_array, index)=> (
+                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-3/4 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
+                        let temp = answer_array[2] ? answer_array[2] : ""
+                        destValue(answer_array[0], answer_array[1], temp);
+                    }}>
+                        <div className="text-3xl text-black font-bold">
+                            {answer_array[0]}
+                        </div>
+                    </div>))}
+                </div>
+                :
                 <>
-                    <div className="fs-3 text-white">Ready to search for places?(Note: this does not include current response)</div> 
-                    <div className="w-100">
-                        <div className="fs-3 text-white">Click here :</div>
-                        <button className="btn btn-primary w-25" onClick={generalSearch} type = "button">Done</button>
+                    <div className="text-3xl/10">
+                        <p>Need help deciding what service you would like? Try our questionnaire to create a search with you are looking for!
+                        <span className="font-bold block mt-3">Click Start to begin! </span></p>
+                    </div>
+                    <div className="mt-4 w-full text-3xl">
+                        <button onClick={()=> SetStart(true)} className="outline outline-2 w-1/2">Start</button>
                     </div>
                 </>
-            }
-            {!generalSearchP && userEmail != null &&
-            <>
-            <SelectFavorites/>
-            </>
-            }
+                }
+
+                </div>
             </div>
         </div>
 
-        <div className="container text-center">
-        <div className="fs-4 text-white">Have a specific location in mind?</div>
-            <div>
-                <form onSubmit={changeSpecLoc}>
-                    <input className="w-50 text-center" placeholder="Enter your location here" value ={nameValue} onChange={changeNameValue} required></input>
-                    <button className="btn btn-primary" type= "submit">Enter</button>
-                </form>
-            </div>
-        </div>
-
-    </>
-
+       
+        
     );
     //answer_array indexes values are :
     //0: The response string. EX: "Museum", "Food and Drink", etc
@@ -418,3 +411,60 @@ function Question({theQuestion, current, func, changeLoading}){
 }
 
 export default Question;
+
+ {/* 
+            
+            
+
+        <div className="grid grid-cols-2 h-full">
+            <div className="w-full h-2/3">
+                <div className="flex flex-col justify-center items-center h-full p-3">
+                    {start ? 
+                    <div>
+                        <h1 className="text-4xl text-center font-extrabold">{ques.question[0]}</h1>
+                    </div>
+                    :
+                    <>
+                        <div className="text-2xl text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
+                        <div className="mt-5 w-full"> 
+                            <form onSubmit={changeSpecLoc}>
+                                <input className="w-3/4 text-center border-b-1 mr-2 text-xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
+                                <button className="outline outline-1" type= "submit">Enter</button>
+                            </form>
+                        </div>
+                    </>
+                    }
+
+                </div>
+                
+            </div>
+            <div className="w-full p-10 bg-slate-800 h-full rounded-lg">
+                <div className="flex flex-col justify-center items-center h-full text-center">
+                {start ?
+                <div className="w-full grid grid-cols-2 gap-5 h-full">
+                    {ques.answer.map((answer_array, index)=> (
+                    <div key = {`${index} ${answer_array[0]}`} className="text-center h-3/4 bg-gray-300 flex justify-center items-center rounded-lg">
+                        <div className="text-2xl text-black font-bold" onClick={ () => {
+                            let temp = answer_array[2] ? answer_array[2] : ""
+                            destValue(answer_array[0], answer_array[1], temp);
+                        }}>
+                            {answer_array[0]}
+                        </div>
+                    </div>))}
+                </div>
+                :
+                <>
+                    <div>
+                        <p>Need help deciding what service you would like? Try our questionnaire to create a search with you are looking for!
+                        <span className="font-bold block mt-3">Click Start to begin! </span></p>
+                    </div>
+                    <div className="mt-4 w-full">
+                        <button onClick={()=> SetStart(true)} className="outline outline-2 w-1/2">Start</button>
+                    </div>
+                </>
+                }
+
+                </div>
+            </div>
+        </div>
+                */}

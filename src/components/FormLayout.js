@@ -1,13 +1,17 @@
 "use client"
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
-import { checkLogin, addUser, testExistingUser } from "@/components/DBactions";
+import { checkLogin, createSession, getUser } from "@/components/DBactions";
+import Loading from "@/components/Loading";
+import { check } from "drizzle-orm/mysql-core";
 
 export default function FormLayout ({typeForm}){
     const router = useRouter();
-    const {setUserEmail} = useAppContext()
+    const {setUserEmail} = useAppContext();
+    const [yes, setYes] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [formData, changeFormData] = useState(()=>
     {
         const formDefault = {
@@ -38,43 +42,46 @@ export default function FormLayout ({typeForm}){
             if (formData.inputPass != formData.confirmPass) {
                 alert("Passwords are not the same");
                 return;
-            }
-        
-            //enter logic here for database searching of existing user
-            testExistingUser(formData.inputEmail).then((data) => {
-                if (data) {
-                alert("Email already in use");
-                return;
-                } else {
-                // getting username from email (username should be later provided)
-                let userName;
-                let other;
-                [userName, other] = formData.inputEmail.split("@");
-                userName = userName.toUpperCase();
-        
-                    addUser(formData.inputEmail, userName,formData.inputPass, formData.inputAddress);
-                    router.push("/address?user=" + formData.inputEmail);
-                }
-            });
+          }
+
         }
         else {
             if (!formData.inputEmail || !formData.inputPass) {
                 alert("Please fill out all fields");
                 return;
             }
-            checkLogin(formData.inputEmail, formData.inputPass).then((data) => {
-            if (!data) {
+            
+        }
+        setYes(true);
+    };
+
+    useEffect(() => {
+      const fetchProducts = async () => {
+        if (yes){
+          try{
+              setYes(false);
+              setLoading(true);
+              if(await checkLogin(formData.inputEmail, formData.inputPass)){
+                await createSession(formData.inputEmail);
+                let userName = await getUser(formData.inputEmail);
+                setUserEmail([userName[0].username, userName[0].email]);
+                router.push("/home");
+              }
+              else
+              {
                 alert("Invalid email or pass");
                 return;
-            } else {
-                let userName = formData.inputEmail.split('@')[0].toUpperCase();
-                setUserEmail([userName, formData.inputEmail]);
-                router.push("/home");
-            }
-            });
+              }
+          } catch(error) {
+              console.error("Error fetching DB:", error);
+              alert("There was an issue getting the data.");
+          } finally {
+            setLoading(false);
+          }
         }
-
-    };
+      }
+      fetchProducts();
+    }, [yes, formData]);
 
 
 

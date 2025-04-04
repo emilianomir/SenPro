@@ -15,6 +15,14 @@ function AddressPage(){
         setInput(event.target.value);
     };
 
+    const formSubmit = (event)=>{
+        const userNumber = event.target[0].value;
+        setNumberPlaces(userNumber);
+        event.preventDefault();
+        router.push("/questionaire")
+
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (selectType == '')
@@ -47,7 +55,7 @@ function AddressPage(){
                 else {
                     if (userEmail == null){
                         setGuestAddress(theInput);
-                        router.push('/start');
+                        router.push("/start");
                     }
                     else {
                         try {
@@ -100,6 +108,23 @@ function AddressPage(){
                                     </div>
                                 </div>
                             </form>
+
+                            {userEmail &&
+                            <form onSubmit={formSubmit}>
+                                <div className="text-gray-500">
+                                    Please enter the number of services you want to plan for. Max is 5 and mininum is 1.
+                                </div>
+                                <div className="col  row row-cols-1" >
+                                    <div className="col d-flex justify-content-center">
+                                        <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" min = "1" max = "5" required/>
+                                    </div>
+                                    <div className="col">
+                                        <button type="submit" className="btn btn-primary w-25">Enter</button>
+                                    </div>
+                                </div>
+                            </form>
+                            }
+                            
                     </div>
                 </div>
             </div>

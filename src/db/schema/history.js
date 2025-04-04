@@ -1,4 +1,4 @@
-// Favorites(userEmail: String, ServiceAddress: String)
+// History(userEmail: string, ServiceAddress: string, createdAt:date)
 import { sql, Table } from "drizzle-orm";
 import { text, primaryKey, sqliteTable, integer} from "drizzle-orm/sqlite-core";
 import { users } from "./users.js"; // reference to users table

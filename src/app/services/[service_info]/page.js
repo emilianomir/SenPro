@@ -9,7 +9,7 @@ import { addService, addHistoryService } from '@/components/DBactions';
 import GenericSingleMap from "@/components/GenericSingleMap";
 import Script from "next/script";
 import Loading from "@/components/Loading";
-import { Modal } from 'bootstrap';
+// import { Modal } from 'bootstrap';
 import Service_Image from "@/components/Service_Image";
 import { users } from "@/db/schema/users";
 
@@ -26,6 +26,12 @@ export default function ServiceInfo(){
     const current_service = userServices[userServices.length-1]; 
     const router = useRouter();
     const [addServices, setYes] = useState(false)
+
+
+    if( userServices.length > 0){
+        if(current_service.photoURL)
+            current_service.photo_image = current_service.photoURL;
+    }
 
     const handleBack = ()=>{
         setBack(true);
@@ -64,7 +70,6 @@ export default function ServiceInfo(){
     }
     useEffect(() => {
         const handleRouteChangeComplete = () => {
-
             if ((window.history.state && window.history.state.navigationDirection == "back") || wentBack)
                 setServices(userServices.slice(0, userServices.length -1)); //goal is to remove current services from list of services that user selects
             if (wentBack){
@@ -79,8 +84,8 @@ export default function ServiceInfo(){
                     const addressArr = [];
                     userServices.forEach(element => {
                         //addService(element.id)
-                        addService(element.formattedAddress, element);
-                        addressArr.push(element.formattedAddress);
+                        addService(element.id, JSON.stringify(userResponses));
+                        addressArr.push(element.id);
                     });
                     await addHistoryService(addressArr, userEmail[1]);
                     setMoreThan1(true);
@@ -98,7 +103,7 @@ export default function ServiceInfo(){
 
 
     return(
-        <div className="full_page bg-secondary">
+        <div className="">
               {/* <Script
                 src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
                 onLoad={() => setIsScriptLoaded(true)}
@@ -156,7 +161,8 @@ export default function ServiceInfo(){
                                     <div className="position-relative gallery">
                                         <Image className = "service_images w-100 ms-2 mt-4" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} width={300} height={300} alt = "Service image" unoptimized = {true} />
                                         {(current_service.photo_image && current_service.photos.length > 4) && //this opens the modal and calls the api in the background
-                                            <div onClick={goToGallery} data-bs-toggle = "modal" data-bs-target = "#galleryModal" className="overlay">
+                                            // <div onClick={goToGallery} data-bs-toggle = "modal" data-bs-target = "#galleryModal" className="overlay">
+                                            <div className="overlay">
                                                 <div className="ms-2 position-absolute top-0 start-0 w-100 h-100 bg-secondary-subtle opacity-50"></div>
                                                 <div className="position-absolute top-50 start-50 translate-middle fs-3 fw-bold">Gallery</div>
                                             </div>
@@ -210,45 +216,7 @@ export default function ServiceInfo(){
                 </div> 
             </div>
     }
-            {current_service && 
-            <div className="modal fade" id="galleryModal" tabIndex="-1">
-                <div className="modal-dialog modal-xl">
-                  <div className="modal-content bg-secondary">
-                    <div className="modal-header w-100">
-                      <h1 className="modal-title fs-2 fw-bold text-white w-100 text-center">Gallery</h1>
-                      <button type="button" className="btn-close" data-bs-dismiss="modal" ></button>
-                    </div>
-                    <div className="modal-body">
-                    {loading ? 
-                        <Loading message={"Fetching additional images"} />
-                        :
-                        <div className="h-100">
-                            <div className="row row-cols-5 p-2">
-                                <div className="col p-2 bg-white">
-                                    {/* this is the cover image */}
-                                    <Service_Image url = {current_service.photo_image} /> 
-                                    {/* {current_service.photos && current_service.photos[0].authorAttributions[0] &&     
-                                    <p className="fs-6 text-wrap">Image By: <a href= {current_service.photos[0].authorAttributions[0].uri}> {current_service.photos[0].authorAttributions[0].displayName} </a> </p> } */}
-                                </div>
-                                {current_service.photo_images_urls && current_service.photo_images_urls.map((theUrl, index)=>(
-                                    <div className="col bg-white p-2" key = {theUrl}>
-                                        <Service_Image  url = {theUrl}/>
-                                        {/* {current_service.photos && current_service.photos[0].authorAttributions[0] &&     
-                                        <p className="fs-6 text-wrap">Image By: <a href= {current_service.photos[index].authorAttributions[0].uri}> {current_service.photos[index].authorAttributions[0].displayName} </a> </p> } */}
-                                    </div>
-                                ))
-                                }
-                            </div>
-                        </div>
-                      }
-                    </div>
-                    <div className="modal-footer">
-                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
+           
             
         </div>
     );

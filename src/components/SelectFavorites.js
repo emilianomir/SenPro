@@ -2,7 +2,6 @@ import { useAppContext } from "@/context"
 import { useEffect, useState } from "react";
 import ServiceCard from "@/components/ServiceCard";
 import { useRouter } from "next/navigation";
-import { Modal } from 'bootstrap';
 import Link from "next/link";
 
 
@@ -51,14 +50,12 @@ export default function SelectFavorites(){
                                         </Link> 
                                     </div>
                                 )):
-                                <div>
-                                    <div className="text-center">
-                                        ★
-                                    </div>
-                                    <div className="text-center"> 
-                                        <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
-                                    </div>
-                                </div>    
+                            
+
+                                <div className="text-center"> 
+                                    <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
+                                </div>
+                                    
 
                                 }
         

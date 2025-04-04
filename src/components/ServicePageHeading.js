@@ -17,9 +17,9 @@ export default function ServicePageHeading(){
     }
 
     return (
-        <div>
+        <div className="rounded-t-lg bg-slate-900">
             {userEmail != null ? 
-            <div className = "row row-cols-3 h-25 border_design pb-2">
+            <div className = "pb-2">
 
                 <div className = "col-3 ps-5 pt-2" onClick={resetUserServices} ><Link href={"/home"}><img  width = "15%" src ="https://www.nicepng.com/png/full/17-178841_home-png-home-icon-free.png" alt = "home icon"/></Link></div> 
 
@@ -31,9 +31,13 @@ export default function ServicePageHeading(){
                 </div>
             </div>
             :
-            <div className="text-center pt-2 border_design">
-                <h1 className="fs-1 fw-bolder text-white">Services Menu</h1>
-            </div>
+            <>
+                <div className="text-center pt-5 pb-8">
+                    <h1 className="text-4xl font-extrabold text-white">Services Menu</h1>
+                </div>
+                <div className="h-2 bg-gray-500"/>
+            </>
+
             }
 
 

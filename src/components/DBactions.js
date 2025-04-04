@@ -4,11 +4,19 @@ import { users } from "../db/schema/users.js";
 import { eq, and, sql} from "drizzle-orm";
 
 import { userAgentFromString } from "next/server.js";
+
+// databases
 import { questions } from "../db/schema/questions.js";
 import { services } from "../db/schema/services.js";
 import { favorites } from "../db/schema/favorites.js";
 import { history } from "../db/schema/history.js";
+import { sessions } from "../db/schema/sessions.js";
+
+// encryption
 import bcrypt from "bcryptjs";
+import { SignJWT, jwtVerify } from "jose";
+// Sessions
+import { cookies } from "next/headers.js";
 
 // testing for existing emails in singup
 export async function testExistingUser(email){
@@ -148,6 +156,45 @@ export async function changePass(email, newpass)
 
 
 
+// API Call
+async function getAPI(id) {
+  try{
+    const api_key = process.env.GOOGLE_API_KEY;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": api_key,
+      "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
+    };
+    const response = await fetch(`https://places.googleapis.com/v1/places/${id}`,{
+        method: "GET",
+        headers: headers
+    });
+    
+    if (response.ok) {
+
+      var temp = new Response(JSON.stringify({ service_result:  await response.json()}), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }); 
+      const {service_result} = await temp.json();
+      if (service_result.photos)
+      try {
+          const image_url = `https://places.googleapis.com/v1/${service_result.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`; //(`/api/maps/places?thePhoto=` + service_result.photos[0].name);
+          const image_response = await fetch(image_url);
+          service_result.photoURL = image_response.url;
+          
+      }catch(error) {
+          console.error("Error fetching image for id " + id + ":", error);
+      }
+      service_result.id = id;
+      return service_result;
+    }
+  }catch(error) {
+    console.error("Error fetching service " + id + ":", error);
+  }
+}
+
+
 
 
 
@@ -239,7 +286,7 @@ export async function getFavorites(email)
       email,
     });
 
-    const value = await db.select({ info: services.info })
+    const value = await db.select({ info: services.address, response: services.info })
     .from(services)
     .fullJoin(favorites, eq(favorites.sAddress, services.address))
     .where(eq(favorites.userEmail, email));
@@ -312,8 +359,8 @@ export async function selectHistory(email)
       const val2 = JSON.parse(element.services)
       const val3 = [];
       for(const element of val2){
-          let service = await db.select({ info: services.info } ).from(services).where(eq(services.address, element));
-          service = JSON.parse(service[0].info);
+          let service = await db.select({ info: services.address } ).from(services).where(eq(services.address, element));
+          service =  await getAPI(service[0].info);
           val3.push(service);
       }
       let valMap = { "date": new Date (element.date), "services": val3 };
@@ -325,4 +372,103 @@ export async function selectHistory(email)
     console.error("error in in service adding:", e);
     throw e;
   }
+}
+
+
+
+const secretKey = '12345'; // will be a random env variable later: For ease of use.
+const encodedKey = new TextEncoder().encode(secretKey);
+
+
+
+
+// Sessions
+  // Encryption : Decryption
+export async function encrypt(payload){
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(encodedKey)
+}
+export async function decrypt(session) {
+  try {
+    const { payload } = await jwtVerify(session, encodedKey, {
+      algorithms: ['HS256'],
+    })
+    return payload
+  } catch (error) {
+    console.log('Failed to verify session')
+  }
+}
+
+// Deleting a Session
+export async function deleteSession() {
+  const cookieStore = await cookies()
+  cookieStore.delete('session')
+}
+
+
+// Testing if in session
+export async function hasSession(email)
+{
+  let data = await db.select().from(sessions).where(eq(sessions.userEmail, email));
+  return !(data.length == 0);
+}
+
+// Creating Sessions
+export async function createSession (id) {
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Holds for 30 minutes
+
+  // inserting sessions into the DB
+  try {
+    console.log("adding session to the DB:", {
+      id,
+      expiresAt,
+    });
+    const idval = await bcrypt.hash(id, 5);
+    if(await getUser(id)){
+      if(await hasSession(id))
+      {
+        await db.delete(sessions).where(eq(sessions.userEmail, id))
+      }
+
+      await db.insert(sessions).values({
+        userEmail: id,
+        expiresAt: expiresAt,
+        id: idval,
+      });
+    }
+    const session = await encrypt({idval, expiresAt});
+
+    const cookieStore = await cookies()
+    cookieStore.set('session', session, {
+      httpOnly: true,
+      secure: true,
+      expires: expiresAt,
+      sameSite: 'lax',
+      path: '/',
+    })
+
+  } catch (e) {
+    console.error("error adding session: ", e);
+    throw e;
+  }
+}
+
+
+// Getting Session 
+export async function getSession(){
+  const theCookie = await cookies();
+  const session = theCookie.get('session')?.value;
+  if(!session) return null;
+  return await decrypt(session);
+}
+
+// getting User from session
+export async function getUserFS(hashedEmail) {
+  return await db.select({email: users.email })
+  .from(users)
+  .fullJoin(sessions, eq(users.email,sessions.userEmail))
+  .where(eq(sessions.id, hashedEmail));
 }

@@ -5,13 +5,43 @@ import { redirect } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState } from "react";
 import Home_Squares from "@/components/Home_Squares";
+import ServiceCard from "@/components/ServiceCard";
 
+import { getSession, getUserFS, getUser} from "@/components/DBactions";
+import Loading from "@/components/Loading";
 
 export default function Begin(){
     //add setFavorites to context
-    const {userEmail} = useAppContext();
+    const {userEmail, setUserEmail} = useAppContext();
     const [loading, setLoading] = useState(true);
+    const [yes, setyes] = useState(true);
 
+
+    // Gets the session
+    useEffect(() => {
+      const fetchProducts = async () => {
+        if (yes){
+          try{
+            setyes(false);
+            let session = await getSession();
+            let value = await getUserFS(session.idval);
+            let userName = await getUser(value[0].email);
+            setUserEmail([userName[0].username, value[0].email]);
+          } catch(error) {
+              console.error("Error fetching DB:", error);
+              alert("There was an issue getting the data.");
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+      fetchProducts();
+    }, [yes]);
+    const [isOpen, setIsOpen] = useState(false);
+
+    const dummyService = {photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "This is a really long test. How can a service have this much text? A service does not exist like this. Right?"}, rating: 4.2} 
+    // priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}
+    //photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg"
     const theList = [];
     for (let i = 0; i < 5; i ++) {
         theList.push({name: "Placeholder Service " + i, photo: "https://join.travelmanagers.com.au/wp-content/uploads/2017/09/default-placeholder-300x300.png"})
@@ -60,6 +90,10 @@ export default function Begin(){
 
     // if (userEmail == null)
     //     redirect("/login");
+
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <div className="h-350">
             <div className="container w-full h-full mt-5 flex justify-center">
@@ -87,41 +121,38 @@ export default function Begin(){
                             <div className="mt-2 w-full flex justify-center">
                                 <div className="w-4/5 bg-white/50 h-1"/>
                             </div>
+                            <ServiceCard service={dummyService} />
                         </div>
                     </div>
                 </div>
             </div>
 
+        <div className="p-4">
+            <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => setIsOpen(true)}
+            >
+                Open Modal
+            </button>
+                <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>
+                    <h2 className="text-xl font-bold text-black">Modal Title</h2>
+                    <p className="mt-2 text-black">Testing</p>
+                    <button
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => setIsOpen(false)}
+                    >
+                    Close
+                    </button>
+                </div>
+                </div>
+            
+            
+        </div>
+         
+
+
         </div>
 
-        // <div className="container">
-        //     <div className="mt-3">
-        //         <h1 className="fs-1 text-white text-center fw-bolder">Welcome {userEmail[0]} </h1>
-        //         <div className="fs-2 text-white text-center mt-3">What are you planning to do today?</div>
-        //     </div>
-        //     <div className="container mt-4 squares">
-        //         <div className="row row-col-2 h-100 mt-5">
-                    // <div className="col w-100 h-75 bg-secondary-subtle me-4">
-                    //     <h2 className="text-center fw-bolder mt-3 pt-4 fs-1">Plan Trip</h2>
-                    //     <div className="d-flex justify-content-center mt-5"> 
-                    //         <div className="w-50">
-                    //             <RouteButton name = {"GO!"} location = {"/start"} />
-                    //         </div>
-                    //     </div>
-                    // </div>
-                    // <div className="col w-100 h-75 bg-secondary-subtle">
-                    //     <h2 className="text-center fw-bolder mt-3 pt-4 fs-1">View Past Trips</h2>
-                    //     <div className="d-flex justify-content-center mt-5"> 
-                    //         <div className="w-50">
-                    //             <RouteButton name = {"GO!"} location = {"/history"} />
-                    //         </div>
-                    //     </div>
-                    // </div>
-        //         </div>
-        //     </div>
-        //     <div className="fs-2 text-white text-center fw-bolder mb-3">Your Favorites Section:</div>
-        //     <Favorites_Section favoritesList={theList}/>
-            
-        // </div>
     )
 }
