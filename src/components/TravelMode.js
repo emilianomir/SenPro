@@ -23,6 +23,26 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     const [location, setLocation] = useState(origin || defaultOrigin);
     const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' }); // travel info is the distance and time it will take to travel between the two points
     const [showTraffic, setShowTraffic] = useState(true); // show traffic is a boolean that determines if the traffic layer is shown with btn
+    const [showWeather, setShowWeather] = useState(false); // show weather is a boolean that determines if weather info is shown
+    
+    // wind alert button is a boolean that determines if the wind alert modal is shown with btn
+    const [showWindAlert, setShowWindAlert] = useState(false);
+    const [windAlertInfo, setWindAlertInfo] = useState({
+        level: '',
+        speed: '',
+        description: '',
+        advice: '',
+        className: ''
+    });
+    
+    // ice alert button is a boolean that determines if the ice alert modal is shown with btn
+    const [showIceAlert, setShowIceAlert] = useState(false);
+    const [iceAlertInfo, setIceAlertInfo] = useState({
+        level: '',
+        description: '',
+        advice: '',
+        className: ''
+    });
     
     // create state for addresses that can be swapped
     const [addresses, setAddresses] = useState({
@@ -32,8 +52,8 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         destCoords: destination || defaultDestination
     });
 
+    const [weatherInfo, setWeatherInfo] = useState(null);
     useEffect(() => {
-        // Update addresses state when props change
         setAddresses({
             origin: originAddress,
             destination: destinationAddress,
@@ -191,6 +211,16 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         setShowTraffic(!showTraffic);
     };
 
+    //! toggle weather information
+    const toggleWeather = () => {
+        setShowWeather(!showWeather);
+        
+        // if toggling on and we don't have weather data yet, fetch it
+        if (!showWeather && !weatherInfo && addresses.destCoords) {
+            fetchWeatherData(addresses.destCoords.lat, addresses.destCoords.lng);
+        }
+    };
+
     //! swap origin and destination locations
     const swapLocations = () => {
         setAddresses(prev => ({
@@ -200,6 +230,217 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
             destCoords: prev.originCoords
         }));
     };
+
+    //! WEATHER DATA FETCHING ______________________________________________________________________________
+    const fetchWeatherData = async (lat, lng) => {
+        try {
+            const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current_weather=true&timezone=auto`);
+            const data = await response.json();
+            setWeatherInfo({
+                current: data.current_weather,
+                daily: data.daily
+            });
+        } catch (error) {
+            console.error('Error fetching weather data:', error);
+        }
+    };
+    //! END OF WEATHER DATA FETCHING ______________________________________________________________________________
+
+
+    useEffect(() => { // only fetch weather data when weather is visible and we change destination
+        if (showWeather && addresses.destCoords) {
+            fetchWeatherData(addresses.destCoords.lat, addresses.destCoords.lng);
+        }
+    }, [addresses.destCoords, showWeather]);
+
+    //! WEATHER DESCRIPTION AND ICON ______________________________________________________________________________
+    const getWeatherDescription = (code) => { // takes in a weather code and returns a description of the weather
+        if ([0, 1].includes(code)) return "Clear";
+        if ([2, 3].includes(code)) return "Cloudy";
+        if ([45, 48].includes(code)) return "Foggy";
+        if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Rainy";
+        if ([71, 73, 75, 77, 85, 86].includes(code)) return "Snowy";
+        if ([95, 96, 99].includes(code)) return "Stormy";
+        return "Unknown";
+    };
+
+    const getWeatherIcon = (code, isDay) => { // takes in a weather code and returns an icon of the weather
+        if ([0, 1].includes(code)) return isDay ? "☀️" : "🌙"; // isDay checks from api is_day, 1 is daytime, 0 is nighttime
+        if ([2, 3].includes(code)) return "☁️";
+        if ([45, 48].includes(code)) return "🌫️";
+        if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "🌧️";
+        if ([71, 73, 75, 77, 85, 86].includes(code)) return "❄️";
+        if ([95, 96, 99].includes(code)) return "⛈️";
+        return;
+    };
+
+
+    // 0 - North (N)
+    // 90 - East (E)
+    // 180 - South (S)
+    // 270 - West (W)
+    // 45 - Northeast (NE)
+    // 135 - Southeast (SE)
+    // 225 - Southwest (SW)
+    // 315 - Northwest (NW)
+
+    //! WIND STUFF ===========================================================================================================================
+    const getWindDirection = (degrees) => { // takes in a degree which is from API and returns the direction of the wind
+        const directions = [
+            'N', 'NNE', 'NE', 'ENE', 
+            'E', 'ESE', 'SE', 'SSE', 
+            'S', 'SSW', 'SW', 'WSW', 
+            'W', 'WNW', 'NW', 'NNW'
+        ];
+        const index = Math.round(degrees / 22.5) % 16; // rounds to the nearest 22.5 degrees and returns the direction of the wind
+        return directions[index];
+    };
+
+    const kmhToMph = (kmh) => { // convert to mph
+        return (kmh * 0.621371).toFixed(1);
+    };
+
+    const getWindSpeedClass = (speedMph) => { // arbritary danger levels for wind speed
+        if (speedMph < 10) return 'wind-safe';
+        if (speedMph < 20) return 'wind-moderate';
+        if (speedMph < 30) return 'wind-warning';
+        if (speedMph < 40) return 'wind-danger';
+        return 'wind-severe';
+    };
+
+    const getWindSpeedDescription = (speedMph) => {
+        if (speedMph < 10) return 'Safe driving conditions';
+        if (speedMph < 20) return 'Use caution while driving';
+        if (speedMph < 30) return 'Potential difficulty for high-profile vehicles';
+        if (speedMph < 40) return 'Dangerous for high-profile vehicles';
+        return 'Extremely dangerous, travel not recommended';
+    };
+
+    const getWindAlertLevel = (speedMph) => {
+        if (speedMph < 10) return 'Safe';
+        if (speedMph < 20) return 'Caution';
+        if (speedMph < 30) return 'Warning';
+        if (speedMph < 40) return 'Danger';
+        return 'Severe';
+    };
+
+    const getWindAdvice = (speedMph) => {
+        if (speedMph < 10) {
+            return 'No special precautions needed. Safe for all vehicles.';
+        }
+        if (speedMph < 20) {
+            return 'Be aware of occasional gusts. Drive normally but stay alert, especially in open areas.';
+        }
+        if (speedMph < 30) {
+            return 'Reduced stability for high-sided vehicles. Maintain a firm grip on the steering wheel and reduce speed on bridges and open highways.';
+        }
+        if (speedMph < 40) {
+            return 'Difficult driving conditions for high-sided vehicles. Consider using alternative routes that are less exposed. Reduce speed and maintain extra distance from other vehicles.';
+        }
+        return 'Extremely hazardous driving conditions. Travel not recommended. Risk of vehicles being blown over.';
+    };
+
+    const openWindAlert = (speedMph) => {
+        const speed = parseFloat(speedMph);
+        const level = getWindAlertLevel(speed);
+        const description = getWindSpeedDescription(speed);
+        const advice = getWindAdvice(speed);
+        const className = getWindSpeedClass(speed);
+        
+        setWindAlertInfo({
+            level,
+            speed,
+            description,
+            advice,
+            className
+        });
+        
+        setShowWindAlert(true);
+    };
+
+    // toggle for wind ui
+    const closeWindAlert = () => {
+        setShowWindAlert(false);
+    };
+
+    const celsiusToFahrenheit = (celsius) => (celsius * 9/5) + 32;
+
+    //! FOG STUFF ===========================================================================================================================
+    const getFogDescription = (code) => {
+        if ([45, 48].includes(code)) return 'Foggy conditions, reduce speed and use headlights.';
+        return 'Clear visibility';
+    };
+
+    const getFogCautionLevel = (code) => {
+        if ([45, 48].includes(code)) return 'Caution';
+        return 'Safe';
+    };
+
+    //! ICE STUFF ===========================================================================================================================
+    const getIceRiskLevel = (code, tempF) => {
+        const precipCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99];
+        
+        if ([56, 57, 66, 67].includes(code)) return 'High';
+        if (tempF <= 36 && precipCodes.includes(code)) return 'Moderate';
+        if (tempF <= 32) return 'Moderate';
+        return 'Low';
+    };
+
+    const getIceDescription = (riskLevel) => {
+        switch (riskLevel) {
+            case 'High':
+                return 'High risk of ice on roads. Extreme caution advised.';
+            case 'Moderate':
+                return 'Possible icy patches on roads, especially bridges and overpasses.';
+            case 'Low':
+            default:
+                return 'Low risk of ice on roads.';
+        }
+    };
+
+    const getIceCautionClass = (riskLevel) => {
+        switch (riskLevel) {
+            case 'High':
+                return 'ice-high';
+            case 'Moderate':
+                return 'ice-moderate';
+            case 'Low':
+            default:
+                return 'ice-low';
+        }
+    };
+    const getIceAdvice = (riskLevel) => {
+        switch (riskLevel) {
+            case 'High':
+                return 'Caution required. Avoid travel if possible. If you must drive, significantly reduce speed, and avoid sudden braking or turns.';
+            case 'Moderate':
+                return 'Drive with caution. Reduce speed, leave extra space between vehicles, and be alert for black ice on road.';
+            case 'Low':
+            default:
+                return 'Normal driving conditios, but remain alert for isolated icy spots. Maintain regular following distance and normal speeds.';
+        }
+    };
+
+    const openIceAlert = (riskLevel) => {
+        const level = riskLevel;
+        const description = getIceDescription(riskLevel);
+        const advice = getIceAdvice(riskLevel);
+        const className = getIceCautionClass(riskLevel);
+        
+        setIceAlertInfo({
+            level,
+            description,
+            advice,
+            className
+        });
+        
+        setShowIceAlert(true);
+    };
+
+    // close ice ui
+    const closeIceAlert = () => {
+        setShowIceAlert(false);
+    }; //! END OF ICE UI
 
     return (
         <div className="container">
@@ -229,7 +470,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                 </div>
             </div>
 
-            <div className={`content-wrapper ${showTraffic ? 'with-traffic-panel' : ''}`}>
+            <div className={`content-wrapper ${showTraffic ? 'with-traffic-panel' : ''} ${showWeather ? 'with-weather-panel' : ''}`}>
                 <div className="main-content">
                     <div 
                         ref={mapRef} 
@@ -253,14 +494,22 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         </div>
                         <div className="control-group">
                             <label className="label">
-                                Traffic
+                                Display Options
                             </label>
-                            <button 
-                                onClick={toggleTraffic}
-                                className={`traffic-toggle-btn ${showTraffic ? 'active' : ''}`}
-                            >
-                                {showTraffic ? 'Hide Traffic' : 'Show Traffic'}
-                            </button>
+                            <div className="button-group">
+                                <button 
+                                    onClick={toggleTraffic}
+                                    className={`toggle-btn ${showTraffic ? 'active' : ''}`}
+                                >
+                                    {showTraffic ? 'Hide Traffic' : 'Show Traffic'}
+                                </button>
+                                <button 
+                                    onClick={toggleWeather}
+                                    className={`toggle-btn ${showWeather ? 'active' : ''}`}
+                                >
+                                    {showWeather ? 'Hide Weather' : 'Show Weather'}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -300,6 +549,208 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                             origin={addresses.originCoords}
                             destination={addresses.destCoords}
                         />
+                    </div>
+                )}
+
+                {/* Weather panel will replace the map when shown */}
+                {showWeather && (
+                    <div className="weather-container-panel">
+                        <div className="back-to-map">
+                            <button 
+                                onClick={toggleWeather}
+                                className="back-button"
+                            >
+                                Back to Map
+                            </button>
+                        </div>
+                        <h3 className="panel-title">Weather at Destination</h3>
+                        
+                        {weatherInfo ? (
+                            <div className="weather-content">
+                                {/* current weather ui */}
+                                <div className="weather-header">
+                                    <div className="weather-icon">
+                                        {getWeatherIcon(weatherInfo.current.weathercode, weatherInfo.current.is_day === 1)} {/* takes in a weather code and returns an icon of the weather, 1 is daytime, 0 is nighttime */}
+                                    </div>
+                                    <div className="weather-main">
+                                        <div className="weather-temp">{Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))}°F</div>
+                                        <div className="weather-desc">{getWeatherDescription(weatherInfo.current.weathercode)}</div>
+                                    </div>
+                                </div>
+                                <div className="weather-details-grid">
+                                    <div className="weather-detail-item">
+                                        <span className="weather-detail-label" title="The current wind speed at destination location">
+                                            Wind Speed
+                                            <span className="tooltip-icon">ⓘ</span>
+                                        </span>
+                                        <div className="wind-speed-container">
+                                            <span className={`weather-detail-value ${getWindSpeedClass(kmhToMph(weatherInfo.current.windspeed))}`} 
+                                                title={getWindSpeedDescription(kmhToMph(weatherInfo.current.windspeed))}>
+                                                {kmhToMph(weatherInfo.current.windspeed)} mph
+                                            </span>
+                                            <div 
+                                                className={`wind-alert-badge ${getWindSpeedClass(kmhToMph(weatherInfo.current.windspeed))}`}
+                                                onClick={() => openWindAlert(kmhToMph(weatherInfo.current.windspeed))}
+                                                role="button"
+                                                tabIndex={0}
+                                                aria-label={`Wind alert: ${getWindAlertLevel(kmhToMph(weatherInfo.current.windspeed))}`}
+                                            >
+                                                {getWindAlertLevel(kmhToMph(weatherInfo.current.windspeed))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="weather-detail-item">
+                                        <span className="weather-detail-label" title="The direction from which the wind is blowing">
+                                            Wind Direction
+                                            <span className="tooltip-icon">ⓘ</span>
+                                        </span>
+                                        <span className="weather-detail-value">
+                                            {getWindDirection(weatherInfo.current.winddirection)} ({weatherInfo.current.winddirection}°) {/* takes in a degree and returns the direction of the wind */}
+                                        </span>
+                                    </div>
+                                    <div className="weather-detail-item">
+                                        <span className="weather-detail-label" title="Fog conditions at destination location">
+                                            Fog Conditions
+                                            <span className="tooltip-icon">ⓘ</span>
+                                        </span>
+                                        <div className="fog-condition-container">
+                                            <span className="weather-detail-value" 
+                                                title={getFogDescription(weatherInfo.current.weathercode)}>
+                                                {getFogCautionLevel(weatherInfo.current.weathercode)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="weather-detail-item">
+                                        <span className="weather-detail-label" title="Risk of ice on roads at destination location">
+                                            Ice Risk
+                                            <span className="tooltip-icon">ⓘ</span>
+                                        </span>
+                                        <div className="ice-risk-container">
+                                            <span 
+                                                className={`weather-detail-value ${getIceCautionClass(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}`}
+                                                title={getIceDescription(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}
+                                            >
+                                                {getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature)))}
+                                            </span>
+                                            <div 
+                                                className={`ice-alert-badge ${getIceCautionClass(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}`}
+                                                onClick={() => openIceAlert(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}
+                                                role="button"
+                                                tabIndex={0}
+                                                aria-label={`Ice Risk: ${getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature)))}`}
+                                            >
+                                                {getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature)))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Daily Forecast */}
+                                <h4 className="forecast-title">3-Day Forecast</h4>
+                                <div className="forecast-container">
+                                    {weatherInfo.daily.time.slice(0, 3).map((date, index) => (
+                                        <div key={date} className="forecast-day">
+                                            <div className="forecast-date">
+                                                {new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                            </div>
+                                            <div className="forecast-icon">
+                                                {getWeatherIcon(weatherInfo.daily.weathercode[index], true)}
+                                            </div>
+                                            <div className="forecast-temp">
+                                                <span className="forecast-temp-max">{Math.round(celsiusToFahrenheit(weatherInfo.daily.temperature_2m_max[index]))}°F</span>
+                                                <span className="forecast-temp-min">{Math.round(celsiusToFahrenheit(weatherInfo.daily.temperature_2m_min[index]))}°F</span>
+                                            </div>
+                                            <div className="forecast-precip">
+                                                <span className="forecast-precip-prob">{weatherInfo.daily.precipitation_probability_max[index]}%</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="loading-weather">
+                                <p>Loading weather information...</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Wind Alert Modal */}
+                {showWindAlert && (
+                    <div className="wind-alert-modal-overlay" onClick={closeWindAlert}>
+                        <div className="wind-alert-modal" onClick={e => e.stopPropagation()}>
+                            <div className={`wind-alert-modal-header ${windAlertInfo.className}`}>
+                                <h3 className="wind-alert-modal-title">
+                                    Wind Alert: {windAlertInfo.level}
+                                </h3>
+                                <button className="wind-alert-close-btn" onClick={closeWindAlert} aria-label="Close">
+                                    &times;
+                                </button>
+                            </div>
+                            
+                            <div className="wind-alert-modal-content">
+                                <div className="wind-alert-info-row">
+                                    <span className="wind-alert-info-label">Current Wind Speed:</span>
+                                    <span className={`wind-alert-info-value ${windAlertInfo.className}`}>
+                                        {windAlertInfo.speed} mph
+                                    </span>
+                                </div>
+                                
+                                <div className="wind-alert-info-row">
+                                    <span className="wind-alert-info-label">Conditions:</span>
+                                    <span className="wind-alert-info-value">
+                                        {windAlertInfo.description}
+                                    </span>
+                                </div>
+                                
+                                <div className="wind-alert-advice">
+                                    <h4 className="wind-alert-advice-title">Driving Recommendations:</h4>
+                                    <p className="wind-alert-advice-text">{windAlertInfo.advice}</p>
+                                </div>
+                                
+                                <div className="wind-alert-footer">
+                                    <button className="wind-alert-action-btn" onClick={closeWindAlert}>
+                                        Got it
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ice alert ui */}
+                {showIceAlert && (
+                    <div className="alert-modal-overlay" onClick={closeIceAlert}>
+                        <div className="alert-modal" onClick={e => e.stopPropagation()}>
+                            <div className={`alert-modal-header ${iceAlertInfo.className}`}>
+                                <h3 className="alert-modal-title">
+                                    Ice Risk: {iceAlertInfo.level}
+                                </h3>
+                                <button className="alert-close-btn" onClick={closeIceAlert} aria-label="Close">
+                                    &times;
+                                </button>
+                            </div>
+                            
+                            <div className="alert-modal-content">
+                                <div className="alert-info-row">
+                                    <span className="alert-info-label">Road Conditions:</span>
+                                    <span className={`alert-info-value ${iceAlertInfo.className}`}>
+                                        {iceAlertInfo.description}
+                                    </span>
+                                </div>
+                                
+                                <div className="alert-advice">
+                                    <h4 className="alert-advice-title">Driving Recommendations:</h4>
+                                    <p className="alert-advice-text">{iceAlertInfo.advice}</p>
+                                </div>
+                                
+                                <div className="alert-footer">
+                                    <button className="alert-action-btn" onClick={closeIceAlert}>
+                                        Got it
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
