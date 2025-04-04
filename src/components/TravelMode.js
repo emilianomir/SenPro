@@ -551,8 +551,6 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         />
                     </div>
                 )}
-
-                {/* Weather panel will replace the map when shown */}
                 {showWeather && (
                     <div className="weather-container-panel">
                         <div className="back-to-map">
@@ -644,8 +642,6 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                                         </div>
                                     </div>
                                 </div>
-                                
-                                {/* Daily Forecast */}
                                 <h4 className="forecast-title">3-Day Forecast</h4>
                                 <div className="forecast-container">
                                     {weatherInfo.daily.time.slice(0, 3).map((date, index) => (
@@ -674,8 +670,6 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         )}
                     </div>
                 )}
-
-                {/* Wind Alert Modal */}
                 {showWindAlert && (
                     <div className="wind-alert-modal-overlay" onClick={closeWindAlert}>
                         <div className="wind-alert-modal" onClick={e => e.stopPropagation()}>
