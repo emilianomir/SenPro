@@ -114,12 +114,13 @@ export default function Services(){
                         <div className="scroll">
                             {apiServices ? apiServices.map((service_object, index)=>(
                                 <div className="d-inline-block me-4" key ={index}>
+                                    {userEmail != null && <Favorites service={service_object} responses={userResponses}/>} 
                                     <Link href={"/services/" + service_object.displayName.text}>
                                         <div onClick={() => {
                                             setClicked(true);
                                             userServices.push(service_object);
                                         }} >
-                                            {userEmail != null && <Favorites service={service_object}/>}       
+                                                  
                                             <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
                                         </div>
                                     </Link>
