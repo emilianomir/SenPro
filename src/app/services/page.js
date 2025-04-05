@@ -13,14 +13,18 @@ import Favorites from "@/components/Favorites";
 
 
 
+
 export default function Services(){
     const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
+    const [sortValue, setSortValue] = useState("Distance");
+    const [currentServices, setCurrentServices] = useState(apiServices);
 
     const router = useRouter();
+    console.log("Ran")
 
     const getMoreInfo = async (index) =>{
         const desired_service = apiServices[index];
@@ -44,7 +48,7 @@ export default function Services(){
         router.push("/services/" + desired_service.displayName.text);
     }
 
-    const referencePoint = [31.0000, -100.0000];
+    const referencePoint = [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
         const earthR = 3959; //Miles
         const convertRadius = angle => angle * Math.PI / 180;
@@ -58,113 +62,56 @@ export default function Services(){
 
     }
 
-    let dummyArray = [
-            {lat: 22.6750660, long: 14.5356228, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 201, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: -26.1287716, long: 14.5356228, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 21, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: 22.6750660, long: 28.2454652, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 13, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: 22.6750660, long: 159.9461722, displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 10, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: -9.4324878, long: 14.5356228, displayName: {text: "Bob's Food"}, rating: 4.1, userRatingCount: 2001, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: 49.6246541, long: 14.5356228, displayName: {text: "Bob's Food"}, rating: 4.6, userRatingCount: 10100001, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: 22.6750660, long: 6.1084164 ,displayName: {text: "Bob's Food"}, rating: 5.0, userRatingCount: 11, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-            {lat: 4.7335833, long: 114.6989328 ,displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 1, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    ];
-    let sortValue = "Distance";
+
+    // let dummyArray = [
+    //         {lat: 22.6750660, long: 14.5356228, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 201, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: -26.1287716, long: 14.5356228, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 21, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: 22.6750660, long: 28.2454652, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 13, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: 22.6750660, long: 159.9461722, displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 10, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: -9.4324878, long: 14.5356228, displayName: {text: "Bob's Food"}, rating: 4.1, userRatingCount: 2001, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: 49.6246541, long: 14.5356228, displayName: {text: "Bob's Food"}, rating: 4.6, userRatingCount: 10100001, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: 22.6750660, long: 6.1084164 ,displayName: {text: "Bob's Food"}, rating: 5.0, userRatingCount: 11, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    //         {lat: 4.7335833, long: 114.6989328 ,displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 1, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
+    // ];
+
 
     const theSort = (array, property) => {
-        return array.sort((a,b) => a[property] ? b[property] ? asc ? a[property]- b[property]: b[property] - a[property] : a[property]- 0: 0 - b[property]? b[property]: 0)
+        return [...array].sort((a,b) => a[property] ? b[property] ? asc ? a[property]- b[property]: b[property] - a[property] : a[property]- 0: 0 - b[property]? b[property]: 0)
     }
     
-    dummyArray = dummyArray.map(obj => ({...obj, miles : "Miles: " + Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.lat, obj.long))}));
-
-    switch(sort) {
-        case 0:
-            if (asc){
-                dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
-            }
-            else {
-                dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long) - distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long));    
-            }
-            break;
-        case 1:
-            dummyArray = theSort(dummyArray, "rating");
-            sortValue = "Rating"
-            break;
-        case 2:
-            dummyArray = theSort(dummyArray, "userRatingCount");
-            sortValue = "Rating Count"
-            break;
-        default:
-            break;
-    }
-
-
-    
-
-    
-
-    // if (userResponses == null)
-    //     redirect("/login");
-
-    /*
-    {setStars([
-        ...stars,
-        {id: {index}, name: "false"}
-    ])}
-
-
-            console.log(apiServices);
-        apiServices.map((service_object, index)=>( 
-            setStars([
-                ...stars,
-                {id: index, name: 'false'}
-            ])
-        ))
-
-    */
-
-
-    // if(userResponses.name != "Favorites"){
-
-    // useEffect(()=> {
-    //     let change = true;
-
-    //     const getInfo = async ()=> {
-    //         try {
-    //             const response = await fetch('/api/maps/places', {
-    //                 method: "POST",
-    //                 headers: { "Content-Type": "application/json" },
-    //                 body: JSON.stringify({userResponses})
-    //             });
-    //             if (!response.ok) {
-    //                 throw new Error(`HTTP error! Status: ${response.status}`);
-    //             }
+    //dummyArray = dummyArray.map(obj => ({...obj, miles : "Miles: " + Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.lat, obj.long))}));
+    useEffect(() => {
+        const dropdownSet = () => {
+            switch(sort) {
+                case 0:
+                    // if (asc){
+                    //     //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
+                    //     setAPIServices(apiServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.location.latitude, a.location.longitude) -  distanceCalculate(referencePoint[0], referencePoint[1], b.location.latitude, b.location.longitude)));
         
-    //             const {services_result} = await response.json();
-    //             console.log("Service result in services page: "); //debugging purposes
-    //             console.log(services_result);
-    //             if (change){
-    //                 if (services_result) //only replace if there is at least a service 
-    //                     setAPIServices(services_result);
-    //                 }
-    //                 setLoading(false);
-                
+                    // }
+                    // else {
+                    //     setAPIServices(apiServices = apiServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b.location.latitude, b.location.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a.location.latitude, a.location.longitude)));    
+                    // }
+                    setSortValue("Distance")
+                    break;
+                case 1:
+                    //dummyArray = theSort(dummyArray, "rating");
+                    setCurrentServices(theSort(currentServices, "rating"));
+                    setSortValue("Rating")
+                    break;
+                case 2:
+                    setCurrentServices(theSort(currentServices, "userRatingCount"));
+                    setSortValue("Rating Count")
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (sort < 4)
+            dropdownSet();
         
-    //         }catch (error) {
-    //             console.error("Error fetching API:", error);
-    //             alert("There was an issue getting the data.");
-    //         }
-    //     }
-    //     if (!apiServices) //if we already have services from previous call, don't make a new call
-    //         {
-    //             getInfo();
-    //         }
-    //     console.log("The apiServices: ") //debugging
-    //     console.log(apiServices);
-    //     return () => {
-    //         change = false;
-    //         };
-    // }, []);
 
+    },[sort, asc] );
 
 
    
@@ -173,7 +120,7 @@ export default function Services(){
             <ServicePageHeading />
                 <div className="">
                     <div className="w-full flex justify-end">
-                        <div className="text-2xl flex mr-20 mt-3">
+                        {currentServices && <div className="text-2xl flex mr-20 mt-3">
                             <div>
                                 Sort By: 
                             </div>
@@ -214,7 +161,7 @@ export default function Services(){
                                 </div>
 
                             </div>
-                        </div>
+                        </div>}
                         <div className="">
                             <div className="" >
                                 <div className="">
@@ -226,7 +173,7 @@ export default function Services(){
                         </div>
 
                     </div>
-                    <div className="mt-5 bg-slate-800/10">
+                    <div className="mt-5 bg-slate-800/10 h-screen">
                         <div className="text-center text-3xl py-4 font-bold">
                             Choose your service:
                             {clickedService && 
@@ -241,20 +188,18 @@ export default function Services(){
                         </div>
          
                         <div className="scroll ml-3 mt-3">
-                            {/* {apiServices ? apiServices.map((service_object, index)=>( */}
-                            {dummyArray ? dummyArray.map((service_object, index) => ( 
+                            
+                            {/* {dummyArray ? dummyArray.map((service_object, index) => (  */}
+                            {currentServices ? currentServices.map((service_object, index)=>(
                                 <div className="inline-block mr-7" key ={index}>
-                                    <Link href={"/services/" + service_object.displayName.text}>
-                                        <div onClick={() => {
-                                            setClicked(true);
-                                            userServices.push(service_object);
-                                        }} >
+                                    
+                                        <div onClick={() => getMoreInfo(index)} >
                                             {userEmail != null && <Favorites service={service_object}/>}    
-                                            <div>{service_object.miles ? service_object.miles : 0 }</div>   
+                                            {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
                                             {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}
                                             <ServiceCard service = {service_object} /> 
                                         </div>
-                                    </Link>
+                                   
                                     {/* <div className="card-footer">
                                         {service_object.attributes &&     
                                         <p className="fs-6 text-wrap">Info by: <a href= {service_object.attributes.providerUri}> {service_object.attributes.provider} </a> </p> }
@@ -264,9 +209,9 @@ export default function Services(){
                                 </div>
                                 
                             )):    
-                            <div className="text-center"> 
-                                <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
-                                <Link href={"/questionaire"}><button className="btn btn-primary">Retry</button></Link>
+                            <div className="text-center flex flex-col justify-center items-center h-100"> 
+                                <div className="text-4xl mb-5 ">No services avaiable based on response. Try to search again </div>
+                                <Link href={"/questionaire"}><button className="outline outline-2 text-3xl px-3 py-2 hover:bg-gray-500">Retry</button></Link>
                             </div>
                             }
      

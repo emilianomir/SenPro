@@ -20,6 +20,9 @@ export default function SelectFavorites(){
             </div>
 
 
+            
+
+
 
             <div className="modal fade modal-xl" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
                 <div className="modal-dialog">

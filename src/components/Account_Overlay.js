@@ -11,13 +11,17 @@ export default function Account_Overlay(){
 
     
     return(
-        <div className="position-absolute top-20 end-5 w-25 h-40 d-flex justify-content-end">
-            <div className="bg-secondary-subtle w-25 h-100 text-center row row-cols-1 border border-white border-4 rounded">
-                <div className="col ">Hi, {userEmail != null ? userEmail[0]: "User"}</div>
-                <button onClick={routeClick} className = "btn btn-primary w-100">
-                    <div className="col">Account Settings</div>
-                </button>
-                <div className="col">Sign Out</div>
+        <div className="absolute top-25 w-2/15 right-20 z-20 rounded-lg bg-gray-800">
+            <div className="grid grid-cols-1 text-gray-200 text-lg text-center py-3 flex">
+                <div className="mb-3 pb-1 border-b-2 border-gray-300">Hi, {userEmail != null ? userEmail[0]: "User"}</div>
+                
+                <div className="w-full flex justify-center">
+                    <div onClick={()=>router.push("/account")} className="mb-3 w-9/10 hover:rounded-lg hover:bg-gray-500">Account Settings</div>
+                </div>
+                <div className="w-full flex justify-center">
+                    <div className="w-9/10 rounded-lg bg-gray-600 hover:bg-gray-700">Sign Out</div>
+                </div>
+
             </div>
 
         </div>

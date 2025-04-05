@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${geistMono.variable}`}>
 
 
-      <body className="bg-secondary">
+      <body className="">
         <AppWrapper>
           {children}
         </AppWrapper>
