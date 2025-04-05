@@ -4,9 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { useAppContext } from '@/context';
 import { getUser, testExistingUser } from '@/components/DBactions';
-import { checkLogin, changePass } from '@/components/DBactions';
-
-
+import Account_Modal from '@/components/Modals/Account_Modal';
 
 
 
@@ -19,20 +17,6 @@ export default function Account(){
     const [sVal, setSearch] = useState(userEmail[1]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [oldPass, changeOldPass] = useState("");
-    const [newPass, changeNewPass] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
-
-
-    // OnChange Events
-    function oldPassChange(event)
-    {
-        changeOldPass(event.target.value);
-    }
-    function newPassChange(event)
-    {
-        changeNewPass(event.target.value);
-    }
 
 
     // Using effect to pull necessary data from the db
@@ -57,43 +41,6 @@ export default function Account(){
     const routeClick = () => {
         router.push("/");
     }
-
-
-
-    function Reset(){
-        changeOldPass("");
-        changeNewPass("");
-    }
-    // Form submission
-    const submitForm = (event)=> {
-        event.preventDefault();
-         if (!oldPass || !newPass){
-                    alert("Please fill out all fields");
-                    return;
-                }   
-                if (oldPass === newPass){
-                    alert("The new password should be different");
-                    return;
-                }
-
-        // checking if initial password is correct
-        checkLogin(search, oldPass).then((data) =>
-            {
-                if(!data){
-                    alert("Invalid password");
-                    return;
-                }
-                else 
-                {   
-                    changePass(search, newPass);
-                    alert("Password has been changed!");
-                    return;
-                }
-            }) 
-
-    }
-
-
 
 
     if(loading)
@@ -126,12 +73,8 @@ export default function Account(){
                                     UserName: {products[0].username}
                                 </div>
 
-                                <div className="col ps-5 fs-2 mt-4 text-info">
 
-                                    <button className='btn btn-danger w-30 fs-3 h-100' onClick={()=>{Reset();
-                                                                                                    setIsOpen(true)}}>Change Password</button>
-                                </div>
-                            
+                                <Account_Modal email={products[0].email}/>
                                 <div className="col ps-5 fs-2 mt-4">
                                     Email: {products[0].email}
                                 </div>
@@ -148,59 +91,6 @@ export default function Account(){
                 </div>
             </div>
 
-            <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
-                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-gray-700 p-6 rounded-lg shadow-lg w-3/4 h-100`}>
-                    <h2 className="text-4xl font-bold border-b-2 border-gray-200 pb-2 mb-6">Change your password</h2>
-                    <div>
-                        <form onSubmit={submitForm}>
-                        <div className='grid grid-cols-1'>
-                            <div className="mb-5">
-                                <label htmlFor="current-password" id ="current" className="text-2xl">Current Password:</label>
-                                <input value={oldPass} type="password" onChange={oldPassChange} className="border-b-2 border-gray-200 text-xl ml-3" id="current-password"/>
-                            </div>
-                            <div className='mb-5'>
-                                <label htmlFor="new-password" className="text-2xl">New Password:</label>
-                                <input value={newPass} type="password" onChange={newPassChange} className="border-b-2 border-gray-200 text-xl ml-3" id="new-password2"/>
-                            </div> 
-                            <div>
-                                <button type = "submit" className="outline outline-2 outline-gray-200 px-3 py-2 text-2xl hover:bg-gray-500">Submit</button>
-                            </div>
-                        </div>
-                        </form>
-                    </div>
-                    <button
-                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
-                    onClick={() => setIsOpen(false)}
-                    >
-                    Close
-                    </button>
-                </div>
-            </div>
- 
-
-            {/* <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="modal-title">Change your password</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <form onSubmit={submitForm}>
-                        <div className="modal-body">
-                            <label htmlFor="modal-password" className="form-label">Current Password:</label>
-                            <input value={oldPass} type="password" onChange={oldPassChange} className="form-control" id="modal-password"/>
-                            <label htmlFor="modal-password2" className="form-label">New Password:</label>
-                            <input value={newPass} type="password" onChange={newPassChange} className="form-control" id="modal-password2"/>
-                        </div>  
-                        <div className="modal-footer">
-                            <button type = "submit" className="btn btn-primary">Submit</button>
-                        </div>
-                        </form>
-
-                    </div>
-                </div>
-            </div> */}
         </div>
 
 

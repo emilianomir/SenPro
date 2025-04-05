@@ -12,15 +12,6 @@ import Image from "next/image";
 
 export default function History(){
     const current_date = new Date();
-    const dummyData = [{date: new Date("2025-04-01"), name: "Bob's Burgers Chain"}, {date: new Date("2025-03-09"), name: "Wendy's"}, {date: new Date("2025-02-23"), name: 'Mall'}];
-    /*
-    dummyData.map((current)=>{
-        if (current.date > current_date)
-            upcoming_array.push(current);
-        else 
-            past_array.push(current);
-    });
-    */
     const {userEmail} = useAppContext();
     const [changed, setChanged] = useState([false, false]);
     const [collapse, setCollapse] = useState(null);
@@ -122,20 +113,6 @@ export default function History(){
                                         </div>
                                     </div>)}
 
-
-
-                                    {/* {collapse[0] && 
-                                        
-                                    }  */}
-                                    {/* {collapse.map((show, index) => {
-                                        console.log(show);
-                      
-                                    })} */}
-                                    {/* {past_array.map((ptHistory, index) => (
-                                        <div align = "left" className={` ${optionSelect[0] === index ? "d-flex p-1 bd-highlight bg-info" : " d-flex p-1 bd-highlight bg-white"} fs-4 text-end border border-2 pe-3`} key = {`${index}-${ptHistory.services.formattedAddress}`}
-                                        onClick={()=>{setOptionSelect([index, ptHistory])}}> {`${ptHistory.date.getMonth() + 1}/${ptHistory.date.getDate()} ~ ${ptHistory.date.toLocaleString([], {hour: "2-digit", minute: "2-digit"})}`}
-                                        </div>
-                                    ))}  */}
                                 </div> 
                                 }
                                 <div className="col bg-primary" onClick={() => setChanged([changed[0], !changed[1]])}>

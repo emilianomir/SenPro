@@ -16,7 +16,7 @@ export async function POST(req){
             openNow: true, //we can change to false to show more services. But then we would need to ask for the business operations of each place to help user see time 
             regionCode: "US",
             languageCode: "en",
-            pageSize: 7, //this is to limit the max services sent by response. High numbers causing images not to load due to many requests 
+            pageSize: 10, //this is to limit the max services sent by response. High numbers causing images not to load due to many requests 
             rankPreference: "DISTANCE"
             //enter the location restriction inside here for the API calls
         }
@@ -37,7 +37,7 @@ export async function POST(req){
         const headers = {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": api_key,
-            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.userRatingCount,places.id,places.attributions"
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.photos,places.userRatingCount,places.id,places.attributions,places.location"
         };
         if (textBody.includedType === "gas_station" || textBody.textQuery.toLowerCase().includes("gas station")) //would only ask for a this field if the places the user is looking for is gas station
             headers["X-Goog-FieldMask"] += ",places.fuelOptions";

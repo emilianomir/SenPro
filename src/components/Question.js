@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
 import { testExistingUser, addQuestion, getUser } from "./DBactions";
 import { useSearchParams } from "next/navigation";
-// import SelectFavorites from "@/components/SelectFavorites";
+import SelectFavorites from "@/components/SelectFavorites";
 import Favorites_Section from "./Favorites_Section";
 
 
@@ -125,7 +125,6 @@ function Question({theQuestion, current, func, changeLoading}){
 
     async function destValue(valueSelect, mapKey, apiValue){
         console.log(mapKey);
-        console.log("RAN");
         // theEvent.preventDefault();
         // if (prevKeys.length == 0 && wentBack){ //to prevent form submission for the first question (IDK its weird why it does this for only the first option)
         //     setBack(false);
@@ -365,6 +364,12 @@ function Question({theQuestion, current, func, changeLoading}){
                                 <button className="outline outline-1 text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
+                        {(!generalSearchP && userEmail != null) &&
+                        <>
+                            <div className="text-3xl text-white mt-20">Or select from one of your favorites to continue: </div>
+                            <SelectFavorites/>
+                        </>
+                        }
                     </div>
                     }
 

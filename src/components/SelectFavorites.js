@@ -7,69 +7,48 @@ import Link from "next/link";
 
 export default function SelectFavorites(){
     const { favorites, userServices} = useAppContext();
-    const [clickedService, setClicked] = useState(false);
-
-
-
-
+    const [isOpen, setIsOpen] = useState(false);
+    console.log(favorites);
 
     return (
-        <div className="container">
-            <div className="container">
-            <button className='btn btn-primary w-25' data-bs-toggle="modal" data-bs-target="#reg-modal">View Favorites</button>
-            </div>
-
-
+        <div className="mt-10 w-full flex justify-center">
+            <button className="outline outline-2 text-2xl py-2 px-3" onClick={()=>setIsOpen(true)}>View Favorites</button>
             
-
-
-
-            <div className="modal fade modal-xl" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <div className="modal-title" id="modal-title">
-                            Choose your service:
-                            </div> 
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div className="modal-body">
-                        {clickedService && 
-                            <span className="justify-content-center position-absolute start-50 translate-middle-x">
-                                <span className="text-center">Loading...</span>
-                            </span>
-                            }
-                        <div className="scroll">
-                                {favorites ? favorites.map((service_object, index)=>(
-                                    <div key ={index} className="d-inline-block me-4" >
-                                        <Link href={"/services/" + service_object.displayName.text}> 
-                                        <div onClick={() => {
-                                            setClicked(true);
-                                            userServices.push(service_object);
-                                            }} data-bs-dismiss="modal">   
-                                        <ServiceCard service = {service_object} has_fuel_type={null}/> 
-                                        </div>
-                                        </Link> 
-                                    </div>
-                                )):
+            <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>
+                    <h2 className="text-3xl font-bold text-black">Choose your service:</h2>
+                    <div className="scroll">
+                        {favorites && favorites.length > 0 ? favorites.map((service_object, index)=>(
+                        <div className="inline-block mr-7" key ={index}>
                             
-
-                                <div className="text-center"> 
-                                    <div className="fs-1 text-white loadingSection">No services avaiable based on response. Try to search again </div>
-                                </div>
-                                    
-
-                                }
-        
-                            </div> 
-                        </div>  
-                        <div className="modal-footer">
+                            <div onClick={() => getMoreInfo(index)} > 
+                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                            </div>
+                            
+                            {/* <div className="card-footer">
+                                {service_object.attributes &&     
+                                <p className="fs-6 text-wrap">Info by: <a href= {service_object.attributes.providerUri}> {service_object.attributes.provider} </a> </p> }
+                                {service_object.photos && service_object.photos[0].authorAttributions[0] &&     
+                                <p className="fs-6 text-wrap">Image By: <a href= {service_object.photos[0].authorAttributions[0].uri}> {service_object.photos[0].authorAttributions[0].displayName} </a> </p> }
+                            </div> */}
                         </div>
-
-                    </div>
+                            
+                        )):    
+                        <div className="text-center mt-4"> 
+                            <div className="text-xl mb-5 text-black">No favorites yet</div>
+                        </div>
+                        }
+        
+                    </div> 
+                    <button
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => setIsOpen(false)}
+                    >
+                    Close
+                    </button>
                 </div>
             </div>
+
         </div>
 
 

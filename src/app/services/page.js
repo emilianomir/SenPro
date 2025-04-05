@@ -26,8 +26,8 @@ export default function Services(){
     const router = useRouter();
     console.log("Ran")
 
-    const getMoreInfo = async (index) =>{
-        const desired_service = apiServices[index];
+    const getMoreInfo = async (id) =>{
+        const desired_service = apiServices.find(obj => obj.id === id);
         if (!desired_service.hasFullInfo) {
             setClicked(true);
             try {
@@ -190,14 +190,14 @@ export default function Services(){
                         <div className="scroll ml-3 mt-3">
                             
                             {/* {dummyArray ? dummyArray.map((service_object, index) => (  */}
-                            {currentServices ? currentServices.map((service_object, index)=>(
-                                <div className="inline-block mr-7" key ={index}>
+                            {currentServices ? currentServices.map(service_object=>(
+                                <div className="inline-block mr-7" key ={service_object.id}>
                                     
-                                        <div onClick={() => getMoreInfo(index)} >
+                                        <div onClick={() => getMoreInfo(service_object.id)} >
                                             {userEmail != null && <Favorites service={service_object}/>}    
                                             {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
                                             {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}
-                                            <ServiceCard service = {service_object} /> 
+                                            <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
                                         </div>
                                    
                                     {/* <div className="card-footer">
