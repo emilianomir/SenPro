@@ -299,7 +299,7 @@ function Questionaire(){
     //Fuel SubQuestion
     questionsList.set("FuelQ", {
         question: ["What type of fuel do you use?", 6],
-        answer: [["PREMIUM", "Rating"], ["MIDGRADE", "Rating"], ["REGULAR_UNLEADED", "Rating"], ["DIESEL", "Rating"], ["E85", "Rating"]]
+        answer: [["PREMIUM", "Rating"], ["MIDGRADE", "Rating"], ["REGULAR UNLEADED", "Rating"], ["DIESEL", "Rating"], ["E85", "Rating"]]
     });  
 
     questionsList.set("BankQ", {

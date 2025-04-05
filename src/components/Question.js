@@ -282,7 +282,7 @@ function Question({theQuestion, current, func, changeLoading}){
                     theTest.name = valueSelect; 
                     break;
                 case 6:
-                    theTest.fuel_type = valueSelect;
+                    theTest.fuel_type = valueSelect.replaceAll(" ", "_");
             }   
         }
         // console.log("prevValues: "); //debugging
@@ -379,13 +379,13 @@ function Question({theQuestion, current, func, changeLoading}){
             <div className="w-19/20 p-10 bg-slate-800/85 h-9/10 rounded-lg">
                 <div className="flex flex-col justify-center items-center h-full text-center">
                 {start ?
-                <div className="w-full grid grid-cols-2 gap-5 h-full">
+                    <div className="w-full grid grid-cols-2 gap-5 h-full">
                     {ques.answer.map((answer_array, index)=> (
                     <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-3/4 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
                         let temp = answer_array[2] ? answer_array[2] : ""
                         destValue(answer_array[0], answer_array[1], temp);
                     }}>
-                        <div className="text-3xl text-black font-bold">
+                        <div className="text-3xl text-black font-bold w-full px-3 break-words">
                             {answer_array[0]}
                         </div>
                     </div>))}

@@ -187,13 +187,13 @@ export default function Services(){
                             <div className="h-1 bg-gray-500 w-9/10"/>   
                         </div>
          
-                        <div className="scroll ml-3 mt-3">
+                        <div className="scroll ml-3 mt-3 h-full">
                             
                             {/* {dummyArray ? dummyArray.map((service_object, index) => (  */}
                             {currentServices ? currentServices.map(service_object=>(
-                                <div className="inline-block mr-7" key ={service_object.id}>
+                                <div className="inline-block mr-7 h-3/5" key ={service_object.id}>
                                     
-                                        <div onClick={() => getMoreInfo(service_object.id)} >
+                                        <div className="h-full" onClick={() => getMoreInfo(service_object.id)} >
                                             {userEmail != null && <Favorites service={service_object}/>}    
                                             {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
                                             {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}

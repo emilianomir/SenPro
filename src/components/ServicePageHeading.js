@@ -34,7 +34,7 @@ export default function ServicePageHeading(){
                         {isVisible && <Account_Overlay />}
                     </div>
                 </div>
-                <div className="h-2 bg-gray-500 rounded-b-md"/>
+                <div className="h-2 bg-gray-500"/>
             </>
 
             
@@ -43,7 +43,7 @@ export default function ServicePageHeading(){
                 <div className="text-center pt-5 pb-8">
                     <h1 className="text-4xl font-extrabold text-white">Services Menu</h1>
                 </div>
-                <div className="h-2 bg-gray-500 rounded-b-md"/>
+                <div className="h-2 bg-gray-500"/>
             </>
 
             }
