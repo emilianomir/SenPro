@@ -26,9 +26,9 @@ function ServiceCard({service, has_fuel_type}){
                     <Image className = "h-11/20 object-cover rounded-t-xl" src= {error || !service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": service.photo_image} width={300} height={300} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                     <div className="h-9/20 rounded-b-xl border border-2 border-gray-200/50 group-hover:bg-gray-200/80 transition-colors ease-in-out duration-500">
                         <div className="h-1/2 flex w-full items-center justify-center">
-                            <h4 className = "text-black text-xl text-wrap p-3 font-extrabold text-center">{service.displayName.text}</h4>
+                            <h4 className = {`text-black ${service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} text-wrap p-3 font-extrabold text-center`}>{service.displayName.text}</h4>
                         </div>
-                        <div className="text-gray-700/90 text-xl/8 text-wrap pb-3 pl-2">
+                        <div className="text-gray-700/90 text-xl/8 text-wrap pb-3 pl-2 h-1/2">
                             <div className="flex">
                                 <p> Rating: {service.rating ? service.rating + "/5" : "N/A" }</p> 
                                 {service.rating &&
@@ -47,9 +47,13 @@ function ServiceCard({service, has_fuel_type}){
                                 <div>Current Price: <span className="font-bold">{theFuel.price.currencyCode == "USD" && "$"} {Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)}</span></div>
                             </div>
                             :
-                            <p >Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
-                            {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
-                            }</p>
+                            <div >Price Range:
+                                <div> 
+                                    {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
+                                    {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
+                                    }
+                                </div>
+                            </div>
                             }
                         </div>
 

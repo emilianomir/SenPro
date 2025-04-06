@@ -156,7 +156,7 @@ export default function ServiceInfo(){
 
                     </div>
                     }
-                    <div className="mt-3 pl-3 text-2xl font-bold"> <b>Address:</b> {current_service.formattedAddress}</div>
+                    <div className="mt-3 pl-6 text-2xl font-bold"> <b>Address:</b> {current_service.formattedAddress}</div>
                     {current_service.fuelOptions ?
                     
                         <div className="grid grid-cols-5 gap-1 mt-4">
