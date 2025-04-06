@@ -103,12 +103,28 @@ export default function Services(){
                     setCurrentServices(theSort(currentServices, "userRatingCount"));
                     setSortValue("Rating Count")
                     break;
+                case 3:
+                    console.log(currentServices.some(obj=> obj.fuelOptions));
+                    if (currentServices.some(obj => obj.fuelOptions)){
+                        console.log("run");
+                        setCurrentServices([...currentServices].sort((a,b) => {
+                            let userReqFuel1 = a.fuelOptions?.fuelPrices?.find(obj => obj.type === userResponses.fuel_type);
+                            let userReqFuel2 = b.fuelOptions?.fuelPrices?.find(obj => obj.type === userResponses.fuel_type);
+                            console.log(userReqFuel1);
+                            let price1 = userReqFuel1 ? Number(userReqFuel1.price.units) + (userReqFuel1.price.nanos ? userReqFuel1.price.nanos/1000000000: 0) : asc ? 10000000000000: 0;
+                            let price2 = userReqFuel2 ? Number(userReqFuel2.price.units) + (userReqFuel2.price.nanos ? userReqFuel2.price.nanos/1000000000: 0) : asc ? 10000000000000: 0;
+                            return asc ? price1 - price2 : price2 - price1; 
+                        }))
+                        setSortValue("Price")
+                    }
+                    break;
                 default:
                     break;
             }
         }
         if (sort < 4)
             dropdownSet();
+        console.log("RAn")
         
 
     },[sort, asc] );
@@ -142,7 +158,7 @@ export default function Services(){
                                             Rating Count
                                         </li>
                                         
-                                        <li className="border-b-2 border-gray-200 hover:bg-gray-200 transtion-colors ease-in-out duration-250 py-1">
+                                        <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
                                             Price  {/* Add logic to handle only food and drink*/}
                                         </li>
 
