@@ -55,10 +55,11 @@ export default function Account_Modal({email}){
     return (
         <>
 
-        <div className="col ps-5 fs-2 mt-4 text-info">
+        <div className="mt-6">
 
-            <button className='btn btn-danger w-30 fs-3 h-100' onClick={()=>{Reset();
-                                                                        setIsOpen(true)}}>Change Password</button>
+            <button className='outline-5 outline-gray-800/80 p-2 bg-red-600 text-gray-100 hover:bg-red-700/90 text-3xl' 
+            onClick={()=>{Reset();
+                          setIsOpen(true)}}>Change Password</button>
         </div>
         
         <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>

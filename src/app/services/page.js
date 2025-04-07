@@ -106,7 +106,6 @@ export default function Services(){
                 case 3:
                     console.log(currentServices.some(obj=> obj.fuelOptions));
                     if (currentServices.some(obj => obj.fuelOptions)){
-                        console.log("run");
                         setCurrentServices([...currentServices].sort((a,b) => {
                             let userReqFuel1 = a.fuelOptions?.fuelPrices?.find(obj => obj.type === userResponses.fuel_type);
                             let userReqFuel2 = b.fuelOptions?.fuelPrices?.find(obj => obj.type === userResponses.fuel_type);
@@ -116,6 +115,15 @@ export default function Services(){
                             return asc ? price1 - price2 : price2 - price1; 
                         }))
                         setSortValue("Price")
+                    }
+                    else if (userResponses.main_category == "Food and Drink"){
+                        setCurrentServices([...currentServices].sort((a,b)=> {
+                            let hasPrice1 = asc ? a.priceRange?.startPrice?.units : a.priceRange?.endPrice? a.priceRange.endPrice.units: a.priceRange?.startPrice?.units;
+                            let hasPrice2 = asc ? b.priceRange?.startPrice?.units : b.priceRange?.endPrice? b.priceRange.endPrice.units: b.priceRange?.startPrice?.units;
+                            hasPrice1 = hasPrice1 ? Number(hasPrice1) : asc ? 10000000: 0;
+                            hasPrice2 = hasPrice2 ? Number(hasPrice2): asc ? 10000000: 0;
+                            return asc ? hasPrice1 - hasPrice2 : hasPrice2 - hasPrice1;
+                        }))
                     }
                     break;
                 default:
