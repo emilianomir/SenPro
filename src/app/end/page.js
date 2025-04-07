@@ -2,11 +2,55 @@
 import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import Image from "next/image";
+
+import { useEffect, useState } from "react";
+import Loading from "@/components/Loading";
+import { getUserSession } from '@/components/DBactions';
 import "../css/end_page.css"
+import { useRouter } from 'next/navigation'
+import { users } from "@/db/schema/users";
+
 
 export default function End(){
-    const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-                                        
+    const {userServices, numberPlaces, userEmail, setUserEmail } = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const [yes, setyes] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+
+            if(userName && userServices.length == 0)
+            {
+                router.push('/home')   
+            }
+            else if(!userName  && userServices.length == 0)
+            {
+                router.push('/');
+            }
+            
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
+            
+    
+
+    
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return(
         <div>
             <ServicePageHeading />

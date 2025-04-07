@@ -5,12 +5,15 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
+import { createStatelessQ, getSession, deleteSession, getUserSession, getAPI} from "@/components/DBactions";
 
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setServices, setResponses, favorites, userResponses} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
+    const [isSessionLoading, setSessionLoad] = useState(true);
+    const [yes, setyes] = useState(true);
     const [callAPI, setcallAPI] = useState(false);
     const router = useRouter();
 
@@ -21,6 +24,7 @@ function Questionaire(){
     // if (numberPlaces == 0) { //this means the user has not entered the number of places
     //     redirect("/login"); 
     // }
+
 
     useEffect(()=> {
         const getInfo = async ()=> {
@@ -49,7 +53,6 @@ function Questionaire(){
     
                     }
                 }
-
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
                 // if (change){
@@ -59,7 +62,6 @@ function Questionaire(){
 
 
                 
-        
             }catch (error) {
                 console.error("Error fetching API:", error);
                 alert("There was an issue getting the data.");
@@ -70,6 +72,59 @@ function Questionaire(){
         // console.log("The apiServices: ") //debugging
         // console.log(apiServices);
     }, [callAPI]);
+
+
+    // Gets the session
+    useEffect(() => {
+        const fetchProducts = async () => {
+            if (yes){
+            try{
+                setyes(false);
+                var fav = [];
+                let sessionValues = await getSession('Qsession');
+                console.log(sessionValues);
+
+                if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0) await deleteSession('Qsession');
+                    console.log(favorites);
+                    fav = [];
+                    favorites.forEach((val) =>
+                    {
+                        fav.push(val.id);
+                    })
+                    var values = {numberPlaces, fav};
+                    await createStatelessQ(values);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+
+                    // Redoing Favorites 
+                    var FavoritesList = [];
+                    for(const element of sessionValues.fav)
+                    {
+                        var service = await getAPI(element);
+                        FavoritesList.push(service);
+                    }
+                    setFavorites(FavoritesList);
+                }
+
+                let userName = await getUserSession();
+                if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+                setSessionLoad(false);
+            }
+            }
+        }
+        fetchProducts();
+        }, [yes]);
+
+
 
     // const goToNext = ()=>{
     //     if (apiServices)
@@ -332,6 +387,11 @@ function Questionaire(){
         answer: [] }
     );
 
+
+
+    if(isSessionLoading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <div className="bg-secondary full_page">
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 

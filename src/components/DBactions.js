@@ -3,7 +3,7 @@ import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
 import { eq, and, sql} from "drizzle-orm";
 
-import { userAgentFromString } from "next/server.js";
+import { NextResponse, userAgentFromString } from "next/server.js";
 
 // databases
 import { questions } from "../db/schema/questions.js";
@@ -15,8 +15,10 @@ import { sessions } from "../db/schema/sessions.js";
 // encryption
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
+import 'server-only';
 // Sessions
 import { cookies } from "next/headers.js";
+import { parseRelativeUrl } from "next/dist/shared/lib/router/utils/parse-relative-url.js";
 
 // testing for existing emails in singup
 export async function testExistingUser(email){
@@ -157,7 +159,7 @@ export async function changePass(email, newpass)
 
 
 // API Call
-async function getAPI(id) {
+export async function getAPI(id) {
   try{
     const api_key = process.env.GOOGLE_API_KEY;
     const headers = {
@@ -403,9 +405,9 @@ export async function decrypt(session) {
 }
 
 // Deleting a Session
-export async function deleteSession() {
-  const cookieStore = await cookies()
-  cookieStore.delete('session')
+export async function deleteSession(name) {
+  const cookieStore = await cookies();
+  cookieStore.delete(name);
 }
 
 
@@ -458,8 +460,9 @@ export async function createSession (id) {
 
 
 // Getting Session 
-export async function getSession(){
-  const session = cookies().get('session')?.value;
+export async function getSession(name){
+  const theCookie = await cookies();
+  const session = theCookie.get(name)?.value;
   if(!session) return null;
   return await decrypt(session);
 }
@@ -471,3 +474,63 @@ export async function getUserFS(hashedEmail) {
   .fullJoin(sessions, eq(users.email,sessions.userEmail))
   .where(eq(sessions.id, hashedEmail));
 }
+
+
+export async function getUserSession()
+{
+  let session = await getSession('session');
+  let value = await getUserFS(session.idval);
+  return await getUser(value[0].email);
+  
+}
+
+
+
+
+
+
+
+// Session for Questionaire
+export async function createStatelessQ(values)
+{
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Holds for 30 minutes
+  values.expiresAt = expiresAt;
+  const session = await encrypt(values);
+  const cookieStore = await cookies()
+ 
+  cookieStore.set('Qsession', session, {
+    httpOnly: true,
+    secure: true,
+    expires: expiresAt,
+    sameSite: 'lax',
+    path: '/',
+  })
+}
+
+
+/*
+export async function updateStatelessQ(apiServices, userServices, numberPlaces, fav, userResponses)
+{
+  var session = (await cookies()).get('Qsession')?.value
+  if (session == null) return
+  session.apiServices = apiServices;
+  session.userServices = userServices;
+  session.numberPlaces =  numberPlaces;
+  session.fav = fav;
+  session.userResponses = userResponses;
+
+
+
+  const Tsession = await encrypt(session);
+
+  const expires = new Date(Date.now() + 30 * 60 * 1000)(
+    await cookies()
+  ).set('Qsession', Tsession, {
+    httpOnly: true,
+    secure: true,
+    expires: expires,
+    sameSite: 'lax',
+    path: '/',
+  })
+}
+*/

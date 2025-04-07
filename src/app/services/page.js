@@ -6,18 +6,45 @@ import { useAppContext } from "@/context";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
+import { getUserSession } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
 
 
 
-export default function Services(){
-    const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
-    const [clickedService, setClicked] = useState(false); //loading purposes
 
-    // if (userResponses == null)
-    //     redirect("/login");
+export default function Services(){
+    const {userResponses, userServices, apiServices, setAPIServices, userEmail, setUserEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const [clickedService, setClicked] = useState(false); //loading purposes
+    const [yes, setyes] = useState(true);
+    const [loading, setLoading] = useState(true);
+
+
+
+    
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
+            
+    if (userResponses == null && userEmail )
+        redirect("/home");
+    else if (userResponses == null && !userEmail)
+        redirect("/");
 
     /*
     {setStars([
@@ -81,7 +108,9 @@ export default function Services(){
 
 
 
-   
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <div className="full_page bg-secondary">
             <ServicePageHeading />

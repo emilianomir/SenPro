@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState } from "react";
-import { getSession, getUserFS, getUser} from "@/components/DBactions";
+import { getUserSession } from "@/components/DBactions";
 import Loading from "@/components/Loading";
 
 export default function Begin(){
@@ -21,10 +21,8 @@ export default function Begin(){
         if (yes){
           try{
             setyes(false);
-            let session = await getSession();
-            let value = await getUserFS(session.idval);
-            let userName = await getUser(value[0].email);
-            setUserEmail([userName[0].username, value[0].email]);
+            let userName = await getUserSession();
+            setUserEmail([userName[0].username, userName[0].email]);
           } catch(error) {
               console.error("Error fetching DB:", error);
               alert("There was an issue getting the data.");
