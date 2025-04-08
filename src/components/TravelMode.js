@@ -232,6 +232,25 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     };
 
     //! WEATHER DATA FETCHING ______________________________________________________________________________
+    // SAMPLE DATA ------------------------------------------------------------------------------------------------
+    // current weather object, data.current_weather
+    // {
+    //     temperature: 22.5,
+    //     windspeed: 18.4,
+    //     winddirection: 270,
+    //     weathercode: 2,
+    //     is_day: 1,
+    //     time: "2025-04-08T14:00"
+    //   }
+    // daily weather object, data.daily
+    // {
+    //     time: ["2025-04-01", "2025-04-02", "2025-04-03", ...],
+    //     weathercode: [2, 61, 0, ...],
+    //     temperature_2m_max: [26.3, 24.1, 27.8, ...],
+    //     temperature_2m_min: [17.5, 18.2, 16.0, ...],
+    //     precipitation_probability_max: [10, 85, 5, ...]
+    //   }
+    // END OF SAMPLE DATA------------------------------------------------------------------------------------------------
     const fetchWeatherData = async (lat, lng) => {
         try {
             const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current_weather=true&timezone=auto`);
@@ -377,13 +396,13 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     };
 
     //! ICE STUFF ===========================================================================================================================
-    const getIceRiskLevel = (code, tempF) => {
+    const getIceRiskLevel = (code, tempF) => { // you need precep and cold for ice
         const precipCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99];
         
-        if ([56, 57, 66, 67].includes(code)) return 'High';
-        if (tempF <= 36 && precipCodes.includes(code)) return 'Moderate';
-        if (tempF <= 32) return 'Moderate';
-        return 'Low';
+        if ([56, 57, 66, 67].includes(code)) return 'High'; // freezing rain or snow
+        if (tempF <= 36 && precipCodes.includes(code)) return 'Moderate'; // both low temp and precip from codes
+        if (tempF <= 32) return 'Moderate'; // low temp
+        return 'Low'; // no ice or low temp, so low risk
     };
 
     const getIceDescription = (riskLevel) => {
@@ -643,7 +662,8 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                                     </div>
                                 </div>
                                 <h4 className="forecast-title">3-Day Forecast</h4>
-                                <div className="forecast-container">
+                                <div className="forecast-container"> 
+                                    {/* //! slice the first 3 days of the forecast, can change the number of days */}
                                     {weatherInfo.daily.time.slice(0, 3).map((date, index) => (
                                         <div key={date} className="forecast-day">
                                             <div className="forecast-date">
