@@ -1,5 +1,6 @@
 // this is a utility function to load the google maps script 
 // it is used to load the google maps script and then call the callback function
+//basically it like a pseduo map api, so we can mock the map api
 export function loadGoogleMapsScript(callback) { // cb is initMap
     if (typeof window === 'undefined' || window.google) { // no window or google object already load
       callback(); // so run the cb
