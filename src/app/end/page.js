@@ -5,14 +5,14 @@ import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession } from '@/components/DBactions';
+import { getUserSession, getInfoSession, createStatelessQ, deleteSession} from '@/components/DBactions';
 import "../css/end_page.css"
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 
 
 export default function End(){
-    const {userServices, numberPlaces, userEmail, setUserEmail } = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -24,16 +24,25 @@ export default function End(){
             setyes(false);
             let userName = await getUserSession();
             if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+            let sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+            {
 
-            if(userName && userServices.length == 0)
-            {
-                router.push('/home')   
+                if(numberPlaces > 0) await deleteSession('Qsession');
+                let email = "HASHTHIS";
+                if(userName)
+                {
+                    email = userName[0].email;
+                }
+                console.log(await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email));
             }
-            else if(!userName  && userServices.length == 0)
+            else
             {
-                router.push('/');
+                setFavorites(sessionValues.favorites);
+                setServices(sessionValues.userServices);
+                setResponses(sessionValues.userResponses);
+                setAPIServices(sessionValues.apiServices);
             }
-            
             } catch(error) {
                 console.error("Error fetching DB:", error);
                 alert("There was an issue getting the data.");

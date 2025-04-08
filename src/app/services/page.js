@@ -6,7 +6,7 @@ import { useAppContext } from "@/context";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession } from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
@@ -15,7 +15,7 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, setAPIServices, userEmail, setUserEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
@@ -30,10 +30,10 @@ export default function Services(){
             setyes(false);
             let userName = await getUserSession();
             if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-            } catch(error) {
-                console.error("Error fetching DB:", error);
-                alert("There was an issue getting the data.");
-            } finally {
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
             setLoading(false);
             }
         }
@@ -126,7 +126,7 @@ export default function Services(){
                                         {userResponses.name ? userResponses.name: userResponses.main_category}
                                     </div>
                                 </div>
-                            </div>
+                            </div>  
                         </div>
 
                     </div>

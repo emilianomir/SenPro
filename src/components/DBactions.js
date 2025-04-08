@@ -11,6 +11,7 @@ import { services } from "../db/schema/services.js";
 import { favorites } from "../db/schema/favorites.js";
 import { history } from "../db/schema/history.js";
 import { sessions } from "../db/schema/sessions.js";
+import { datasession } from "../db/schema/datasession.js";
 
 // encryption
 import bcrypt from "bcryptjs";
@@ -479,33 +480,189 @@ export async function getUserFS(hashedEmail) {
 export async function getUserSession()
 {
   let session = await getSession('session');
+  if (!session) return null;
   let value = await getUserFS(session.idval);
   return await getUser(value[0].email);
   
 }
 
 
+export async function getInfoFS(idval)
+{
+  const datavalues = await db.select()
+  .from(datasession)
+  .where(eq(datasession.id, idval));
+  return datavalues;  
 
+}
 
+export async function getInfoSession()
+{
+  let session = await getSession('Qsession');
+  if (!session) return null;
+  let datavalues = await getInfoFS(session.idval);
+  if(datavalues.length == 0) return null; 
+  let info = JSON.parse(datavalues[0].info);
+  let userResponses = JSON.parse(datavalues[0].userResponses);
 
+  let data = [];
+  if(info.favorites.length > 0){
+    for(const element of info.favorites)
+    {
+      var service = await getAPI(element);
+      data.push(service);
+    }
+    info.favorites = data;
+  }
+
+  if(info.userServices.length > 0){
+    data = [];
+    for(const element of info.userServices)
+    {
+      var service = await getAPI(element);
+      data.push(service);
+    }
+    info.userServices = data;
+  }
+
+  if(info.apiServices.length > 0){
+    data = [];
+    for(const element of info.apiServices)
+    {
+      var service = await getAPI(element);
+      data.push(service);
+    }
+    info.apiServices = data;
+  }
+
+  
+
+  let idval = datavalues[0].id;
+  let expiresAt = datavalues[0].expiresAt
+  return Object.assign({}, {idval, expiresAt}, info, userResponses);
+}
+
+// getting session db values
+export async function hasInfoSession(email)
+{
+  let data = await db.select().from(datasession).where(eq(datasession.userEmail, email));
+  return !(data.length == 0);
+}
 
 
 // Session for Questionaire
-export async function createStatelessQ(values)
+export async function createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email)
 {
+  var currEmail = email;
+  if (email == "HASHTHIS")
+  {
+    currEmail = await bcrypt.hash(email, 5);
+  }
+
   const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Holds for 30 minutes
-  values.expiresAt = expiresAt;
-  const session = await encrypt(values);
-  const cookieStore = await cookies()
- 
-  cookieStore.set('Qsession', session, {
-    httpOnly: true,
-    secure: true,
-    expires: expiresAt,
-    sameSite: 'lax',
-    path: '/',
-  })
+  var values = {numberPlaces};
+  // getting the id from each 
+  let data = [];
+  if(favorites){
+    favorites.forEach((val) =>
+    {
+        data.push(val.id);
+    });
+  }
+  
+  values.favorites = data;
+  data = [];
+  if(userServices){
+    userServices.forEach((val) =>
+    {
+        data.push(val.id);
+    });
+  }
+
+  values.userServices = data;
+  data = [];
+  if(apiServices){
+    apiServices.forEach((val) =>
+    {
+        data.push(val.id);
+    });
+  }
+  values.apiServices = data;
+
+
+
+
+  // adding to the DB
+  try {
+    console.log("adding session to the info DB:", {
+      expiresAt,
+      currEmail,
+    });
+
+    if(await hasInfoSession(currEmail));
+    {
+      await db.delete(datasession).where(eq(datasession.userEmail, currEmail));
+    }
+
+
+    let datavalues = await db.insert(datasession).values({
+      userEmail: currEmail,
+      expiresAt: expiresAt,
+      info: JSON.stringify(values),
+      userResponses: JSON.stringify({userResponses}),
+    }).returning({idval: datasession.id});
+
+
+    let idval = datavalues[0].idval;
+    // adding session
+    const session = await encrypt({ idval, expiresAt });
+    const cookieStore = await cookies()
+    
+    cookieStore.set('Qsession', session, {
+      httpOnly: true,
+      secure: true,
+      expires: expiresAt,
+      sameSite: 'lax',
+      path: '/',
+    })
+
+    return ;
+  }catch (e) {
+    console.error("error adding session: ", e);
+    throw e;
+  }
+  
+
 }
+
+/*
+// updating db api services as well as well as user responses
+export async function updateServices(email, apiServices, userResponses)
+{
+  var data = [];
+  if(apiServices){
+    apiServices.forEach((val) =>
+    {
+        data.push(val.id);
+    });
+
+    let dataInfo = await db.select().from(datasession).where(eq(datasession.userEmail, email));
+    dataInfo[0].info = JSON.parse(dataInfo[0].info)
+    dataInfo.apiServices = data;
+    dataInfo.userResponses = userResponses; 
+    await db.delete(datasession).where(eq(datasession.userEmail, email));
+    await db.insert(datasession).values({
+      userEmail: email,
+      expiresAt: dataInfo[0].expiresAt,
+      info: JSON.stringify(dataInfo[0].info),
+      id: dataInfo[0].id
+    });
+    return dataInfo;
+  }
+  
+}
+  */
+
 
 
 /*
