@@ -30,6 +30,38 @@ export default function Services(){
             setyes(false);
             let userName = await getUserSession();
             if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+
+            let sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    let userR = "";
+                    if (userResponses){
+                        let fuel_type = userResponses.fuel_type;
+                        let main_category = userResponses.main_category;
+                        let name = userResponses.name;
+                        let priceLevel = userResponses.priceLevel;
+                        let rating = userResponses.rating;
+                        let textQuery = userResponses.textQuery;
+                        let types = userResponses.types;
+                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+                    }
+                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setFavorites(sessionValues.favorites);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    setAPIServices(sessionValues.apiServices);
+                }
         } catch(error) {
             console.error("Error fetching DB:", error);
             alert("There was an issue getting the data.");
@@ -41,10 +73,7 @@ export default function Services(){
         fetchProducts();
     }, [yes]);
             
-    if (userResponses == null && userEmail )
-        redirect("/home");
-    else if (userResponses == null && !userEmail)
-        redirect("/");
+
 
     /*
     {setStars([

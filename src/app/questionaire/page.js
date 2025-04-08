@@ -84,7 +84,6 @@ function Questionaire(){
                 let userName = await getUserSession();
                 if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
                 let sessionValues = await getInfoSession();
-
                 if(sessionValues == null || numberPlaces > 0)
                 {
                     
@@ -94,19 +93,16 @@ function Questionaire(){
                     {
                         email = userName[0].email;
                     }
-                    
                     await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
                 }
                 else
                 {
-                    console.log(sessionValues);
                     setNumberPlaces(sessionValues.numberPlaces);
                     setFavorites(sessionValues.favorites);
                     setServices(sessionValues.userServices);
                     setResponses(sessionValues.userResponses);
                     setAPIServices(sessionValues.apiServices);
                 }
-
 
             } catch(error) {
                 console.error("Error fetching DB:", error);
