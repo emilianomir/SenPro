@@ -2,14 +2,12 @@
 import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import Image from "next/image";
-
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import { getUserSession, getInfoSession, createStatelessQ, deleteSession} from '@/components/DBactions';
 import "../css/end_page.css"
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
-
 
 export default function End(){
     const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
@@ -63,26 +61,32 @@ export default function End(){
     return(
         <div>
             <ServicePageHeading />
-            <div className="container text-center text-white fs-2 mt-3 fw-bold">Here is your services list:</div>
-            <div className="container d-flex justify-content-center mt-4 scroll">
-                {userServices.map((theService, index)=>(
-                    <div key = {theService.id ? theService.id : index} className=" bg-secondary-subtle final_result me-3 border border-5 border-white"> 
-                        <div className="d-flex justify-content-center align-items-center final_result_text"> 
-                            <h3 className="text-center fw-bold p-3 text-wrap">{theService.displayName.text}</h3>
-                        </div>
-                        <div className="d-flex justify-content-center">
-                            <Image className = "final_result_photo" src= {!theService.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": theService.photo_image} width={300} height={300} alt = "Service image" unoptimized = {true} />
-                        </div>
-                        <div className="d-flex justify-content-center align-items-center p-3"> 
-                            <div className="text-center fs-4 text-wrap">{theService.formattedAddress}</div>
-                        </div>
-                        {/* {theService.attributes &&     
-                        <p className="fs-6 text-wrap">Info by: <a href= {service_object.attributes.providerUri}> {service_object.attributes.provider} </a> </p> }
-                        {theService.photos && service_object.photos[0].authorAttributions[0] &&     
-                        <p className="fs-6 text-wrap card-footer">Image By: <a href= {service_object.photos[0].authorAttributions[0].uri}> {service_object.photos[0].authorAttributions[0].displayName} </a> </p> } */}
-                    </div>
-                ))}
+            <div className="text-center text-white text-3xl mt-3 font-bold">Here is your services list:</div>
+            <div className="w-full flex justify-center">
+                <table className="w-3/4 mt-1 mb-3">
+                    <tbody >
+                        {userServices.map((theService, index)=>
+                            <tr key={theService.id}>
+                                <td className="w-full flex justify-end py-3">
+                                    <svg className="fill-white" height="100" width="100" xmlns="http://www.w3.org/2000/svg">
+                                        <circle r="45" cx="50" cy="50" stroke ="gray" strokeWidth ="3" />
+                                        <text className="text-3xl font-bold" x="50%" y="50%" dominantBaseline="middle" textAnchor="middle"  fill="black">{index + 1}</text>
+                                    </svg>
+                                </td>
+                                <td className="pl-2 border-b-2 border-b-gray-300">
+                                    <div className="font-bold text-4xl my-4">
+                                        {theService.displayName.text}
+                                    </div>
+                                    <div className="text-3xl text-gray-200 pb-3">
+                                        {theService.formattedAddress}
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
+
         </div>
 
     )

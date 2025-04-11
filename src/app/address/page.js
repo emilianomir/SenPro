@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { addUser, updateUserAddress } from "@/components/DBactions";
+import Image from "next/image";
 function AddressPage(){
     const router = useRouter();
     const {userEmail, setGuestAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
@@ -13,6 +14,14 @@ function AddressPage(){
     const handleChange = (event) => {
         setInput(event.target.value);
     };
+
+    const formSubmit = (event)=>{
+        const userNumber = event.target[0].value;
+        setNumberPlaces(userNumber);
+        event.preventDefault();
+        router.push("/questionaire")
+
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -46,7 +55,7 @@ function AddressPage(){
                 else {
                     if (userEmail == null){
                         setGuestAddress(theInput);
-                        router.push('/start');
+                        router.push("/start");
                     }
                     else {
                         try {
@@ -69,7 +78,64 @@ function AddressPage(){
 
     return (
         <>
-            <div className="bg-secondary-subtle">
+        <div className="h-screen w-full flex justify-center">
+        <div className="h-19/20 w-19/20 flex justify-center items-center bg-slate-900 p-5 mt-4">
+            <div className="grid grid-cols-2 gap-0">
+                <div className="w-full flex justify-end h-full">
+                    <img className="bg-slate-700/50 w-19/20 object-cover p-5 rounded-2xl opacity-70" src ="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt = "Map Image"/>
+                </div>
+
+                <div >
+                    <h2 className="mt-10 px-10 text-5xl font-bold">Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h2>
+                    <p className="text-center mt-20 text-3xl pt-5 px-10 text-gray-500">Please enter either a physical address or a Zip Code to begin. This will be your starting point.</p>
+                    <p className="text-center text-3xl mt-2 text-gray-500">(Recommend address for best experience).</p>
+                    <div className="ml-10 mt-10 px-5">
+                            <form onSubmit={handleSubmit}>
+                                <label htmlFor="addressInput" className="form-label text-3xl">Address/ZipCode</label>
+                                <div className="grid grid-cols-6 mt-4">
+                                    <div className="col-span-3">
+                                        <input id="addressInput" value={theInput} className="form-control border-b-4 w-full text-xl pb-1" onChange={handleChange} type="text" placeholder="Enter your address here" />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <select value={selectType} className="form-select outline outline-1 outline-white p-2 ml-4 w-3/4" onChange={(event) => setSelect(event.target.value)}>
+                                            <option value="" disabled>Select your type</option>
+                                            <option className="text-black" value="zipCode">Zip Code</option>
+                                            <option className="text-black" value="address">Address</option>
+                                        </select>
+                                    </div>
+                                    <div className="w-full">
+                                        <button type="submit" className="outline outline-1 outline-white p-1 w-full">Enter</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            {userEmail &&
+                            <form onSubmit={formSubmit}>
+                                <div className="text-gray-500">
+                                    Please enter the number of services you want to plan for. Max is 5 and mininum is 1.
+                                </div>
+                                <div className="col  row row-cols-1" >
+                                    <div className="col d-flex justify-content-center">
+                                        <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" min = "1" max = "5" required/>
+                                    </div>
+                                    <div className="col">
+                                        <button type="submit" className="btn btn-primary w-25">Enter</button>
+                                    </div>
+                                </div>
+                            </form>
+                            }
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+
+
+
+            {/* <div className="bg-secondary-subtle">
                 <div className="text-center">
                     <h1 className='fs-2 fw-bold'>Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h1>
                 </div>
@@ -99,7 +165,7 @@ function AddressPage(){
                         </form>
                     </div>
                 </div>
-            </div>    
+            </div>     */}
         </> 
     )
 

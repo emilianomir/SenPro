@@ -73,24 +73,25 @@ function StartPage(){
     }
     return (
         <>
-        <div className = "bg-secondary-subtle m-0" >
+        <div className = "" >
             <div className = "text-center">
-                <h1 className='fs-2 fw-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
+                <h1 className='text-4xl font-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
+                <div className='w-full h-1 bg-white' />
             </div>
         </div>
 
-        <div className="d-flex justify-content-center bg-secondary align-items-center vh-100 overflow:hidden">
-            <div className = "container bg-secondary-subtle text-center h-50 row row-cols-1">
-                <div className="col d-flex justify-content-center pt-4 pb-0">
-                    <h1 className="fs-1 fw-bold text-center w-50">How many places do you want to visit? </h1>
+        <div className="flex justify-center text-center mt-20">
+            <div className = "border border-2 bg-slate-800">
+                <div className="p-3">
+                    <h1 className="w-50 text-xl">How many places do you want to visit? </h1>
                 </div>
                 <form onSubmit={formSubmit}>
-                    <div className="col  row row-cols-1" >
-                        <div className="col d-flex justify-content-center">
-                            <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" min = "1" max = "5" required/>
+                    <div className="" >
+                        <div className="my-2">
+                            <input type="number" className="border-b-2 w-25 text-center" min = "1" max = "5" required/>
                         </div>
-                        <div className="col">
-                            <button type="submit" className="btn btn-primary w-25">Enter</button>
+                        <div className="mb-2">
+                            <button type="submit" className="outline outline-2 w-25">Enter</button>
                         </div>
                     </div>
                 </form>

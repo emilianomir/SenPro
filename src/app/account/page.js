@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { useAppContext } from '@/context';
 import { getUser, testExistingUser } from '@/components/DBactions';
-import { checkLogin, changePass } from '@/components/DBactions';
-import { Modal } from 'bootstrap';
+import Account_Modal from '@/components/Modals/Account_Modal';
 
 
 
@@ -18,19 +17,6 @@ export default function Account(){
     const [sVal, setSearch] = useState(userEmail[1]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [oldPass, changeOldPass] = useState("");
-    const [newPass, changeNewPass] = useState("");
-
-
-    // OnChange Events
-    function oldPassChange(event)
-    {
-        changeOldPass(event.target.value);
-    }
-    function newPassChange(event)
-    {
-        changeNewPass(event.target.value);
-    }
 
 
     // Using effect to pull necessary data from the db
@@ -57,122 +43,88 @@ export default function Account(){
     }
 
 
-
-    function Reset(){
-        changeOldPass("");
-        changeNewPass("");
-    }
-    // Form submission
-    const submitForm = (event)=> {
-        event.preventDefault();
-         if (!oldPass || !newPass){
-                    alert("Please fill out all fields");
-                    return;
-                }   
-                if (oldPass === newPass){
-                    alert("The new password should be different");
-                    return;
-                }
-
-        // checking if initial password is correct
-        checkLogin(search, oldPass).then((data) =>
-            {
-                if(!data){
-                    alert("Invalid password");
-                    return;
-                }
-                else 
-                {   
-                    changePass(search, newPass);
-                    alert("Password has been changed!");
-                    return;
-                }
-            }) 
-
-    }
-
-
-
-
     if(loading)
         return <p>loading...</p>
 
     return (
-        <div className="container">
-            <div>
-                <button className="btn btn-primary" onClick={()=>router.back()}>Back</button>
-            </div>
-            <div className="container">
-                <div className="text-center mb-5 border-bottom"><h1 className="fs-1 text-white fw-bolder">Hi {products[0].username}!</h1></div>
-                <div className="row row-cols-2">
-                    <div className="col-2 m-0 p-0">
-                        <div className="row row-cols-1 w-100 m-0 p-0">
-                            <div className="col w-100 m-0 p-0 pb-1">
-                                <button className="btn btn-primary w-100">Settings</button>
-                            </div>
-                            <div className="col w-100 m-0 p-0 pb-1 mb-5">
-                                <button className = "btn btn-dark w-100">Reviews</button>
-                            </div>
-
-                        </div>
+        <div className='w-full h-screen flex justify-center items-center'>
+            <div className='bg-slate-800 w-[95%] h-[95%] rounded-xl flex flex-col'>
+                <div className='w-full border-b-3 border-gray-400 grid grid-cols-2'>
+                    <div className='text-4xl font-extrabold ml-6 py-6'>
+                        Settings
                     </div>
-                    <div className="col-10 bg-secondary-subtle m-0 p-0">
-                        <div className="container">
-                            <h2 className="text-center pt-4">Account Settings</h2>
-                            <div className="row row-cols-1">
-                                <div className="col ps-5 fs-2 mt-4">
-                                    UserName: {products[0].username}
-                                </div>
-
-
-                                <div className="col ps-5 fs-2 mt-4 text-info">
-
-                                    <button className='btn btn-danger w-30 fs-3 h-100' data-bs-toggle="modal" data-bs-target="#reg-modal" onClick={Reset}>Change Password</button>
-                                </div>
-                            
-                                <div className="col ps-5 fs-2 mt-4">
-                                    Email: {products[0].email}
-                                </div>
-                                <div className="col ps-5 fs-2 mt-4">
-                                    Address: {products[0].address}
-                                </div>
-
-                                <div className="col w-25 ps-5 mt-5 pb-5 h-100">
-                                    <button className="btn btn-danger w-100 fs-3 h-100" onClick={routeClick}>Log Out</button>
-                                </div>
-                            </div>
+                    <div className='flex justify-end py-6 mr-6 text-2xl'>
+                        <div onClick={()=>router.back()} className='text-center w-1/5 border-2 font-bold p-2'>
+                            Back
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div className="modal fade" id="reg-modal" tabIndex="-1" aria-labelledby="modal-title" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="modal-title">Change your password</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div className='flex-grow grid grid-cols-10'>
+                    <div className='col-span-2 h-full border-r-2 border-gray-400 '>
+                        <div className='mt-3'>
+                            <div className='w-full flex justify-center'>
+                                <img width="50%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "" alt = "profileIcon" /> 
+                            </div>
+                            <div className='font-bold text-2xl mt-2 text-center'>Hi {products[0].username}!</div>
+                            <div className='text-xl text-gray-300 text-center'>{products[0].email}</div>
+                        </div>
+                        <div className='mr-5 text-end text-3xl mt-10'>
+                            <div className='mb-10 text-blue-500'>
+                                Account
+                            </div>
+                            <div className='hover:text-blue-300'>
+                                Reviews
+                            </div>
+                        </div>
+                        <div className='mt-30 w-full flex justify-end text-center'>
+                                <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl p-3 mr-2 hover:bg-red-700/95'>
+                                    Log Out
+                                </div>
                         </div>
 
-                        <form onSubmit={submitForm}>
-                        <div className="modal-body">
-                            <label htmlFor="modal-password" className="form-label">Current Password:</label>
-                            <input value={oldPass} type="password" onChange={oldPassChange} className="form-control" id="modal-password"/>
-                            <label htmlFor="modal-password2" className="form-label">New Password:</label>
-                            <input value={newPass} type="password" onChange={newPassChange} className="form-control" id="modal-password2"/>
-                        </div>  
-                        <div className="modal-footer">
-                            <button type = "submit" className="btn btn-primary">Submit</button>
-                        </div>
-                        </form>
+                    </div>
+                    <div className='col-span-8'>
+                        <div className=' p-6'>
+                            <div className='text-4xl font-bold w-[95%] pb-3 pl-2 border-b-3 border-gray-400/25 '>
+                                Account
+                                <div className='text-base text-gray-400'>
+                                    View or Update Your Existing Information Below
+                                </div>
+                            </div>
+                            <div className='mt-10 pl-2'>
+                                <div className='text-4xl font-bold'>
+                                    UserName:                                 
+                                    <div className='inline ml-2 text-gray-400/90'>
+                                        {products[0].username}
+                                    </div>
+                                </div>
+                                <div className='text-4xl font-bold mt-4'>
+                                    Email: 
+                                    <div className='inline ml-2 text-gray-400/90'>
+                                        {products[0].email}
+                                    </div>
+                                </div>
+                                <Account_Modal email={products[0].email}/>
+                                <div className="mt-6 text-4xl">
+                                    <div className='font-bold inline'>
+                                        Address:
+                                    </div> 
+                                    <div className='ml-2 inline border-b-2'>
+                                        {products[0].address}
+                                    </div>
+                                </div>
+                            </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+ 
 
 
 
 
     )
 }
+
