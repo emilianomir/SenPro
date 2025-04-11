@@ -2,9 +2,11 @@
 import "../css/begin_page.css"
 import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
-import RouteButton from "@/components/route_button";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState } from "react";
+import Home_Squares from "@/components/Home_Squares";
+import ServiceCard from "@/components/ServiceCard";
+
 import { getSession, getUserFS, getUser} from "@/components/DBactions";
 import Loading from "@/components/Loading";
 
@@ -35,7 +37,11 @@ export default function Begin(){
       }
       fetchProducts();
     }, [yes]);
+    const [isOpen, setIsOpen] = useState(false);
 
+    const dummyService = {photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "This is a really long test. How can a service have this much text? A service does not exist like this. Right?"}, rating: 4.2} 
+    // priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}
+    //photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg"
     const theList = [];
     for (let i = 0; i < 5; i ++) {
         theList.push({name: "Placeholder Service " + i, photo: "https://join.travelmanagers.com.au/wp-content/uploads/2017/09/default-placeholder-300x300.png"})
@@ -89,35 +95,64 @@ export default function Begin(){
         return (<Loading message= "Fetching Session"/>)
     }
     return (
-        <div className="container">
-            
-            <div className="mt-3">
-                <h1 className="fs-1 text-white text-center fw-bolder">Welcome {userEmail[0]} </h1>
-                <div className="fs-2 text-white text-center mt-3">What are you planning to do today?</div>
-            </div>
-            <div className="container mt-4 squares">
-                <div className="row row-col-2 h-100 mt-5">
-                    <div className="col w-100 h-75 bg-secondary-subtle me-4">
-                        <h2 className="text-center fw-bolder mt-3 pt-4 fs-1">Plan Trip</h2>
-                        <div className="d-flex justify-content-center mt-5"> 
-                            <div className="w-50">
-                                <RouteButton name = {"GO!"} location = {"/start"} />
+        <div className="h-350">
+            <div className="container w-full h-full mt-5 flex justify-center">
+                <div className="bg-slate-800 h-19/20 w-19/20 rounded-xl pb-0 ">
+                    <div className="h-1/8 bg-slate-500/25 text-center rounded-t-xl">
+                        <h1 className="text-5xl pt-6 font-bold">Welcome {userEmail[0]}</h1>
+                        <h2 className="text-3xl mt-4 font-semibold">What are you planning to do today?</h2>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mx-4 mt-7">
+                        <Home_Squares info={{heading: "Plan Trip", text: "Create a List of Services for Your Next Trip Plan", location:"/start"}} />
+                        <Home_Squares info ={{heading: "Past Trips", text: "View Your Past History of List of Services Created", location: "/history"}} />
+                    </div>
+                    <div>
+                        <div className="text-white text-center mt-10 text-3xl font-bold mb-3 py-3 mb-3">
+                            Your Favorites Section:
+                            <div className="mt-2 w-full flex justify-center">
+                                <div className="w-4/5 bg-white/50 h-1"/>
                             </div>
                         </div>
+                        <Favorites_Section favoritesList={theList}/>
                     </div>
-                    <div className="col w-100 h-75 bg-secondary-subtle">
-                        <h2 className="text-center fw-bolder mt-3 pt-4 fs-1">View Past Trips</h2>
-                        <div className="d-flex justify-content-center mt-5"> 
-                            <div className="w-50">
-                                <RouteButton name = {"GO!"} location = {"/history"} />
+                    <div>
+                        <div className="text-white text-center mt-10 text-3xl font-bold mb-3 py-3 mb-3">
+                            Closest Upcoming Trip:
+                            <div className="mt-2 w-full flex justify-center">
+                                <div className="w-4/5 bg-white/50 h-1"/>
                             </div>
+                            <ServiceCard service={dummyService} />
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="fs-2 text-white text-center fw-bolder mb-3">Your Favorites Section:</div>
-            <Favorites_Section favoritesList={theList}/>
+
+        <div className="p-4">
+            <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => setIsOpen(true)}
+            >
+                Open Modal
+            </button>
+                <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>
+                    <h2 className="text-xl font-bold text-black">Modal Title</h2>
+                    <p className="mt-2 text-black">Testing</p>
+                    <button
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => setIsOpen(false)}
+                    >
+                    Close
+                    </button>
+                </div>
+                </div>
+            
             
         </div>
+         
+
+
+        </div>
+
     )
 }

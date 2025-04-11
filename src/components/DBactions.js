@@ -459,7 +459,8 @@ export async function createSession (id) {
 
 // Getting Session 
 export async function getSession(){
-  const session = cookies().get('session')?.value;
+  const theCookie = await cookies();
+  const session = theCookie.get('session')?.value;
   if(!session) return null;
   return await decrypt(session);
 }

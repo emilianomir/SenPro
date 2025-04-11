@@ -44,7 +44,7 @@ function Questionaire(){
                                 i.photo_image = photoURL.url;
                             }
                                
-                            await new Promise(resolve => setTimeout(resolve, 100));
+                            // await new Promise(resolve => setTimeout(resolve, 100));
                         }
     
                     }
@@ -67,6 +67,13 @@ function Questionaire(){
         }
         if (callAPI)
             getInfo();
+        else {
+            document.body.classList.add('overflow-hidden');
+        }
+        // So it does not prevent other pages scrolling
+        return () => {
+          document.body.classList.remove('overflow-hidden');
+        };
         // console.log("The apiServices: ") //debugging
         // console.log(apiServices);
     }, [callAPI]);
@@ -132,7 +139,7 @@ function Questionaire(){
     );
     questionsList.set("FoodMeal", {
         question: ["Choose a meal you would like ", 1 ], 
-        answer: [["Barbeque", "Price", [2]], ["Breakfast", "Price", [2]], ["Brunch", "Price", [2]], ["Dessert", "Price", [2]], 
+        answer: [["Barbeque", "Price", [2, "Barbecue"]], ["Breakfast", "Price", [2]], ["Brunch", "Price", [2]], ["Dessert", "Price", [2]], 
         ["Hamburger", "Price", [2]], ["Pizza", "Price", [2]], ["Ramen", "Price", [2]], ["Seafood", "Price", [2]], ["Steak", "Price", [3, "Steak House"]],  ["Sushi", "Price", [2]], ["Vegan", "Price", [2]], ["Vegetarian", "Price", [2]], ["No Preference", "Price"]]}
     );
     questionsList.set("GeneralFood", {
@@ -292,7 +299,7 @@ function Questionaire(){
     //Fuel SubQuestion
     questionsList.set("FuelQ", {
         question: ["What type of fuel do you use?", 6],
-        answer: [["PREMIUM", "Rating"], ["MIDGRADE", "Rating"], ["REGULAR_UNLEADED", "Rating"], ["DIESEL", "Rating"], ["E85", "Rating"]]
+        answer: [["PREMIUM", "Rating"], ["MIDGRADE", "Rating"], ["REGULAR UNLEADED", "Rating"], ["DIESEL", "Rating"], ["E85", "Rating"]]
     });  
 
     questionsList.set("BankQ", {
@@ -332,17 +339,25 @@ function Questionaire(){
         answer: [] }
     );
 
+
+
     return (
-        <div className="bg-secondary full_page">
+        <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 
             <>
-                <div className="container">
-                    <div className="mb-5">
-                        <h1 className="pt-5 title text-white fw-bold">Place {userServices.length + 1}:</h1>
-                    </div>
+                <div className="relative h-screen bg-[url(https://images.alphacoders.com/674/674925.png)] bg-cover bg-black/500" />
+                <div className="absolute top-0 left-0 h-full w-full bg-slate-800/90" />
+              
+                <div className="absolute top-0 left-0 h-screen w-full">
+                    <h1 className="pt-5 pl-5 underline text-5xl text-white font-bold">Place {userServices.length + 1}:</h1>  
+                    <Question className = "" theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading}  />
                 </div>
-                <Question theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading}  />
+
             </>
+
+            
+
+
         }
         </div>  
 
