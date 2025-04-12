@@ -23,8 +23,8 @@ function WelcomePage(){
                 <Image className={`transition-opacity duration-500 ease-in ${isVisible ? "opacity-25 ": "opacity-0"}`} src= "/imgs/better_world_logo.png" alt = "globe" width = {500} height={500}/>
                     <div className="absolute w-full">
                         <div className="relative"> 
-                            <h1 className="text-8xl text-center font-bold pt-10">Welcome To PLANIT!</h1>
-                            <div className="absolute text-2xl/10 mt-3 w-full">
+                            <h1 className="2xl:text-9xl lg:text-8xl sm:text-6xl text-5xl text-center font-bold pt-10 text-p1">Welcome To PLANIT!</h1>
+                            <div className="absolute text-lg sm:text-2xl/10 mt-3 w-full sm:pr-3 md:p-0 ">
                             <p className="text-left ml-3">A service based application that helps you plan the perfect trip by:</p>
                                     <ul className="list-inside list-disc ml-7">
                                         <li>Give users best service match based on responses, whether through questionnaire or through name searching</li>
@@ -42,7 +42,7 @@ function WelcomePage(){
                                         <li>Keeps track of user's favorites services</li>
                                         <li>Alerts users of any traffic complications based on service address</li>
                                     </ul> 
-                                    <div className="mt-20 ml-0 flex justify-center w-full text-3xl font-semibold">
+                                    <div className="mt-20 ml-0 flex justify-center w-full text-2xl md:text-3xl font-semibold">
                                         Ready to make an account?
                                     </div>
                                     <div className="w-full flex justify-center mt-7" >

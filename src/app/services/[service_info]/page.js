@@ -22,6 +22,7 @@ export default function ServiceInfo(){
     const [moreThan1, setMoreThan1] = useState(false);
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const [onlyFuel, setOnlyFuel] = useState(false); //used for fuel toggle
+    const [isOpen, setIsOpen] = useState(false);
     const current_service = userServices[userServices.length-1]; 
     const router = useRouter();
     const [addServices, setYes] = useState(false)
@@ -42,6 +43,7 @@ export default function ServiceInfo(){
 
     const goToGallery = async ()=>{ //we don't have to worry about checking to see if there are photos in object since the gallery overlay would only show up if there are more than four photos present
         setLoading(true);
+        setIsOpen(true);
         if (current_service.photo_images_urls == undefined) { //this checks to see if we already made a call and have the photos stored in object
             const temp = []; 
             for (let i = 1; i < current_service.photos.length; i ++) { //we start at 1 since we already have cover photo
@@ -51,7 +53,7 @@ export default function ServiceInfo(){
                     temp.push(photoURL.url);
                 }
                     
-                await new Promise(resolve => setTimeout(resolve, 100)); //waits for 300 ms until next request (to avoid 429 error)
+                //await new Promise(resolve => setTimeout(resolve, 100)); //waits for 300 ms until next request (to avoid 429 error)
             }
         current_service.photo_images_urls = temp; //this holds the array of photos url
         setLoading(false);
@@ -110,11 +112,11 @@ export default function ServiceInfo(){
             /> */}
             <ServicePageHeading />
             {current_service && 
-            <div className="grid grid-cols-7">
-                <div className="col-span-4 bg-white text-black">
+            <div className="grid md:grid-cols-7">
+                <div className="md:col-span-4 bg-white text-black">
                     <h1>Map Placeholder</h1>
                 </div>
-                <div className="col-span-3 my-3 mx-3 rounded-lg bg-gray-800/80 h-[84vh]">
+                <div className="md:col-span-3 my-3 mx-3 rounded-lg bg-gray-800/80 h-[84vh]">
                     <h1 className="text-3xl text-center pt-4 font-extrabold underline">{current_service.displayName.text}</h1>
                     {onlyFuel ? 
                     <div className="h-1/2 w-full flex justify-center mt-4">   
@@ -136,17 +138,19 @@ export default function ServiceInfo(){
                         </table>
                     </div>
                     :
-                    <div className="grid grid-cols-2 gap-1 mt-4 h-1/2 mx-2">
-                        <div className="h-full">
-                            <Image className = "rounded-lg object-cover h-full object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} width={300} height={400} alt = "Service image" unoptimized = {true} />
+                    <div className="grid md:grid-cols-2 gap-1 mt-4 h-1/2 mx-2">
+                        <div className="h-full relative group">
+                            <Image className = "rounded-lg object-cover h-full object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} fill alt = "Service image" unoptimized = {true} />
+                            {current_service.photos.length > 5 &&
+                                <div onClick={goToGallery } className="h-full w-full opacity-0 group-hover:opacity-100 bg-gray-500/35 absolute top-0 z-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100 flex justify-center items-center text-gray-100 text-4xl font-bold">Gallery</div>}
                         </div>
                         <div className="mt-4 px-3">
                             <div className="bg-gray-700 rounded-lg py-3 text-gray-100">
                                 {current_service.regularOpeningHours?.weekdayDescriptions &&
                                 <div className="text-center mt-3">
-                                    <div className="font-bold text-2xl">Weekly Operations:</div>
+                                    <div className="font-bold text-base md:text-2xl">Weekly Operations:</div>
                                     {current_service.regularOpeningHours.weekdayDescriptions.map((desc, index)=>
-                                        <div key = {desc} className="text-lg/8">{desc}</div>
+                                        <div key = {desc} className="text-sm md:text-lg/8">{desc}</div>
                                     )}
                                 </div>
                                 }     
@@ -208,7 +212,38 @@ export default function ServiceInfo(){
 
 
                 </div>
+                <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                    <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>
+                        <h2 className="text-3xl font-bold text-black">Gallery:</h2>
+                        <div>
+                            {loading ? 
+                            <div className="text-black">Loading</div>
+                            :
+                            
+                            <div className="grid grid-cols-5 gap-2">
+                                <div>
+                                    <Service_Image url ={current_service.photo_image} />
+                                </div>
+                                {current_service.photo_images_urls && current_service.photo_images_urls.map(image => 
+                                <div key = {image}> 
+                                    <Service_Image url={image} />
+                                </div>
+                                )}
+                                
+                            </div>
+                            }
+                            
+                        </div>
+                        <button
+                        className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        onClick={() => setIsOpen(false)}
+                        >
+                        Close
+                        </button>
+                    </div>
+                </div>
             </div>
+            
             // <div className="container mt-5">
             //     <div className="row row-cols-2 service_info">
             //         <div className="col-4 h-100">

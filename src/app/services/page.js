@@ -145,11 +145,11 @@ export default function Services(){
                 <div className="">
                     <div className="w-full flex justify-end">
                         {currentServices && <div className="text-2xl flex mr-20 mt-3">
-                            <div>
+                            <div className="mr-1">
                                 Sort By: 
                             </div>
                             <div className="">
-                                <div className="relative ml-2">
+                                <div className="relative lg:ml-2">
                                     <button type="button" className ={`w-50 p-1 text-black bg-white ${!hideDrop ? "rounded-t-lg": "rounded-lg" } text-lg`} onClick={()=>setDrop(!hideDrop)}>
                                     {sortValue}
                                     </button>
@@ -198,7 +198,7 @@ export default function Services(){
 
                     </div>
                     <div className="mt-5 bg-slate-800/10 h-screen">
-                        <div className="text-center text-3xl py-4 font-bold">
+                        <div className="text-center text-2xl lg:text-3xl py-4 font-bold">
                             Choose your service:
                             {clickedService && 
                             <span className="justify-content-center position-absolute start-50 translate-middle-x">
@@ -217,7 +217,7 @@ export default function Services(){
                             {currentServices ? currentServices.map(service_object=>(
                                 <div className="inline-block mr-7 h-3/5" key ={service_object.id}>
                                     
-                                        <div className="h-full" onClick={() => getMoreInfo(service_object.id)} >
+                                        <div className="h-full w-full" onClick={() => getMoreInfo(service_object.id)} >
                                             {userEmail != null && <Favorites service={service_object}/>}    
                                             {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
                                             {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}

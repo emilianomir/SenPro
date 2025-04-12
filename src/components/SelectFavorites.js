@@ -11,8 +11,8 @@ export default function SelectFavorites(){
     console.log(favorites);
 
     return (
-        <div className="mt-10 w-full flex justify-center">
-            <button className="outline outline-2 text-2xl py-2 px-3" onClick={()=>setIsOpen(true)}>View Favorites</button>
+        <div className="mt-5 md:mt-10 w-full flex justify-center">
+            <button className="outline outline-2 text-xl md:text-2xl py-2 px-3" onClick={()=>setIsOpen(true)}>View Favorites</button>
             
             <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
                 <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>

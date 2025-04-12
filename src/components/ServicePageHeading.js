@@ -30,7 +30,7 @@ export default function ServicePageHeading(){
                 
                     
                     <div className="pt-2 flex justify-end">
-                        <img onClick={toggleOverlay} width="15%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "relative mr-20" alt = "profileIcon" /> 
+                        <img onClick={toggleOverlay} width="15%"  src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "md:relative md:mr-20 w-15%" alt = "profileIcon" /> 
                         {isVisible && <Account_Overlay />}
                     </div>
                 </div>
@@ -41,7 +41,7 @@ export default function ServicePageHeading(){
             :
             <>
                 <div className="text-center pt-5 pb-8">
-                    <h1 className="text-4xl font-extrabold text-white">Services Menu</h1>
+                    <h1 className={`${userEmail ? "text-xl": "text-4xl"} font-extrabold text-white`}>Services Menu</h1>
                 </div>
                 <div className="h-2 bg-gray-500"/>
             </>

@@ -334,39 +334,39 @@ function Question({theQuestion, current, func, changeLoading}){
 
     return (
 
-        <div className="grid grid-cols-2 h-full">
-            <div className="w-full h-2/3">
-                <div className="flex flex-col justify-center items-center h-full p-3">
+        <div className={`grid ${userEmail && !start ? "grid-rows-2": "grid-rows-3"} lg:grid-cols-2 h-full`}>
+            <div className="w-full md:h-2/3 lg:row-span-3">
+                <div className={`flex flex-col mt-4 md:mt-10 lg:mt-0 ${generalSearchP && start ? "": "justify-center"} md:justify-center items-center h-full p-3`}>
                     {start ? 
                     <div className="w-full">
-                        <h1 className="text-5xl text-center font-extrabold">{ques.question[0]}</h1>
+                        <h1 className="text-xl md:text-3xl lg:text-5xl text-center font-extrabold">{ques.question[0]}</h1>
                         {prevKeys.length > 0 &&
                         <div className="text-center">
-                            <button onClick = {gotoPrev} className="outline outline-2 mt-10 w-1/2 text-xl p-3">Go To Previous Question</button>
+                            <button onClick = {gotoPrev} className="outline outline-2 mt-3 md:mt-10 w-3/4 md:w-1/2 text-base md:text-lg lg:text-xl md:p-3">Go To Previous Question</button>
                         </div>
                         }
                         {generalSearchP &&
-                        <div className="mt-10 text-2xl text-center">
-                            <div className="text-white mb-3 text-2xl">Ready to search for places?</div> 
-                            <div className="text-white mb-3 font-bold">Click below :</div>
+                        <div className="mt-2 md:mt-10 text-base md:text-xl lg:text-2xl text-center">
+                            <div className="text-white mb-1 md:mb-3">Ready to search for places?</div> 
+                            <div className="text-white mb-1 md:mb-3 font-bold">Click below :</div>
                             <div className="">
-                                <button className="outline outline-2 w-1/2 p-2" onClick={generalSearch} type = "button">Done</button>
+                                <button className="outline outline-2 w-1/2 md:p-2" onClick={generalSearch} type = "button">Done</button>
                             </div>
                         </div>
                         }
                     </div>
                     :
                     <div className="px-5">
-                        <div className="text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
+                        <div className="text-xl md:text-2xl lg:text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
                         <div className="mt-5 w-full"> 
                             <form onSubmit={changeSpecLoc}>
-                                <input className="w-3/4 text-center border-b-1 mr-2 text-2xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
-                                <button className="outline outline-1 text-2xl p-1 w-1/5" type= "submit">Enter</button>
+                                <input className="w-3/4 text-center border-b-1 mr-2 text-base md:text-xl lg:text-2xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
+                                <button className="outline outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
                         {(!generalSearchP && userEmail != null) &&
                         <>
-                            <div className="text-3xl text-white mt-20">Or select from one of your favorites to continue: </div>
+                            <div className="text-xl md:text-2xl lg:text-3xl text-white mt-5 md:mt-20 text-center">Or select from one of your favorites to continue: </div>
                             <SelectFavorites/>
                         </>
                         }
@@ -376,23 +376,23 @@ function Question({theQuestion, current, func, changeLoading}){
                 </div>
                 
             </div>
-            <div className="w-19/20 p-10 bg-slate-800/85 h-9/10 rounded-lg">
-                <div className="flex flex-col justify-center items-center h-full text-center">
+            <div className={`${userEmail && !start ? "": "row-span-2"} lg:row-span-3 lg:w-19/20 p-5 md:p-10 bg-slate-800/85 h-9/10 rounded-lg`}>
+                <div className="flex flex-col md:justify-center items-center h-full text-center">
                 {start ?
                     <div className="w-full grid grid-cols-2 gap-5 h-full">
                     {ques.answer.map((answer_array, index)=> (
-                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-3/4 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
+                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-4/5 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
                         let temp = answer_array[2] ? answer_array[2] : ""
                         destValue(answer_array[0], answer_array[1], temp);
                     }}>
-                        <div className="text-3xl text-black font-bold w-full px-3 break-words">
+                        <div className="text-base md:text-2xl lg:text-3xl text-black font-bold w-full px-3 break-words">
                             {answer_array[0]}
                         </div>
                     </div>))}
                 </div>
                 :
                 <>
-                    <div className="text-3xl/10">
+                    <div className="text-xl md:text-2xl lg:text-3xl/10">
                         <p>Need help deciding what service you would like? Try our questionnaire to create a search with you are looking for!
                         <span className="font-bold block mt-3">Click Start to begin! </span></p>
                     </div>

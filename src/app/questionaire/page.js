@@ -205,7 +205,7 @@ function Questionaire(){
     });
     questionsList.set("SocialQ",{
         question: ["What type of social place are you looking for?", 1],
-        answer: [["Bowling Alley", "Rating", [3]], ["Community Center", "Rating", [3]], ["Cultural Center", "Rating", [3]], ["Movies", "Rating", [3, "Movies Theater"]], ["Philharmonic Hall", "Rating", [3]], ["No Preference", "Rating"]]
+        answer: [["Bowling Alley", "Rating", [3]], ["Community Center", "Rating", [3]], ["Cultural Center", "Rating", [3]], ["Movies", "Rating", [3, "Movie Theater"]], ["Philharmonic Hall", "Rating", [3]], ["No Preference", "Rating"]]
     });
     questionsList.set("TourQ", {
         question: ["What type of touring sites are you looking for?", 1],

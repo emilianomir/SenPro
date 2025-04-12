@@ -86,13 +86,13 @@ export default function FormLayout ({typeForm}){
 
 
     return (    
-    <div className= "w-full h-full flex justify-center">
-          <div className="border border-3 border-slate-500 mt-5 bg-gray-900/20 w-3/5">
-            <h1 className="text-white text-center text-5xl pt-3 px-85 mt-4 mb-3">{typeForm.name}</h1>
+    <div className= "w-full h-full flex justify-center items-center">
+          <div className="border border-3 border-slate-500 mt-5 bg-gray-900/20 w-4/5 md:w-3/5 h-3/5 md:h-4/5">
+            <h1 className="text-white text-center text-4xl md:text-5xl pt-3 mt-4 mb-3">{typeForm.name}</h1>
             <div className="w-full flex justify-center">
               <div className="w-5/6 h-1 mt-0 bg-white opacity-75"></div>
             </div>
-            <form className="mt-4  text-3xl/15" onSubmit={submitForm}>
+            <form className="mt-4 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitForm}>
               <div className="ml-10">
                 <div className="grid grid-cols-1">
                   <label htmlFor="inputEmail" className="form-label">
@@ -103,14 +103,14 @@ export default function FormLayout ({typeForm}){
                     onChange={changeData}
                     type="email"
                     placeholder="Enter your username"
-                    className="form-control border-b-4 w-5/6"
+                    className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                     id="inputEmail"
                     aria-describedby="emailHelp"
                   />
                 </div>
   
                 <div className="grid grid-cols-1">
-                  <label htmlFor="inputPass" className="form-label fs-3 ">
+                  <label htmlFor="inputPass" className="form-label ">
                     Password:{" "}
                   </label>
                   <input
@@ -118,14 +118,14 @@ export default function FormLayout ({typeForm}){
                     type="password"
                     onChange={changeData}
                     placeholder="Enter your password"
-                    className="form-control border-b-4 w-5/6"
+                    className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                     id="inputPass"
                   />
                 </div>
   
                 {typeForm.third && 
                 <div>
-                  <label htmlFor="confirmPass" className="form-label fs-3 ">
+                  <label htmlFor="confirmPass" className="form-label ">
                     Confirm Password:{" "}
                   </label>
                   <div className="grid grid-cols-1">
@@ -135,7 +135,7 @@ export default function FormLayout ({typeForm}){
                                 onChange={changeData}
                                 type="password"
                                 placeholder="Re-enter your password"
-                                className="form-control border-b-4 w-5/6"
+                                className="border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                                 id="confirmPass"
                             />
                         </div>
@@ -143,23 +143,21 @@ export default function FormLayout ({typeForm}){
                 </div> }
               </div>
               <div className="flex justify-center w-full">
-                <button type="submit" className="mt-7 px-5 outline-2 outline-white w-1/2">
+                <button type="submit" className="mt-3 md:mt-7 px-5 outline-2 outline-white w-1/2">
                   {typeForm.submit_name}
                 </button>
               </div>
             </form>
-            <h2 className="mt-7 text-center text-2xl">{typeForm.text}        
-              <Link className="ml-4 underline" href={typeForm.link}>
+            
+            <h2 className="mt-2 md:mt-7 text-center text-lg md:text-2xl grid grid-cols-1 md:block md:pb-5">{typeForm.text}        
+              <Link className="md:ml-4 underline" href={typeForm.link}>
                   {typeForm.link_name}
               </Link></h2>
-
+            
             {typeForm.name == "Login" &&
             <>
-                <div className="w-full flex justify-center mt-3">
-                    <div className="text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline">Here</Link></div>
-                    {/* <Link href = "/address" passHref>
-                            <button type="button"  className="px-3 py-3 text-2xl rounded border-1 border-solid btn-lg w-full border-white mt-5">Continue as Guest</button>
-                    </Link> */}
+                <div className="w-full mt-3 flex justify-center pb-3">
+                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline text-center md:text-left">Here</Link></div>
                 </div>
 
             </>

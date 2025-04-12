@@ -100,7 +100,7 @@ export default function Favorites_Section ({favoritesList}){
     else{
         return (
 
-            <div className="container mt-6">
+            <div className="mt-6">
                 {favorites.length === 0 ? 
                 <div>
                     <div className="w-full flex justify-center">
