@@ -4,10 +4,16 @@ import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import Home_Squares from "@/components/Home_Squares";
 import ServiceCard from "@/components/ServiceCard";
 
 import { getSession, getUserFS, getUser} from "@/components/DBactions";
+=======
+import { getUserSession } from "@/components/DBactions";
+import Home_Squares from "@/components/Home_Squares";
+import ServiceCard from "@/components/ServiceCard";
+>>>>>>> origin/main
 import Loading from "@/components/Loading";
 
 export default function Begin(){
@@ -23,10 +29,8 @@ export default function Begin(){
         if (yes){
           try{
             setyes(false);
-            let session = await getSession();
-            let value = await getUserFS(session.idval);
-            let userName = await getUser(value[0].email);
-            setUserEmail([userName[0].username, value[0].email]);
+            let userName = await getUserSession();
+            setUserEmail([userName[0].username, userName[0].email]);
           } catch(error) {
               console.error("Error fetching DB:", error);
               alert("There was an issue getting the data.");
@@ -96,6 +100,7 @@ export default function Begin(){
     }
     return (
         <div className="h-350">
+<<<<<<< HEAD
             <div className="w-full h-full mt-5 flex justify-center">
                 <div className="bg-slate-800 h-19/20 w-19/20 rounded-xl pb-0 ">
                     <div className="h-1/8 bg-slate-500/25 text-center rounded-t-xl">
@@ -103,6 +108,15 @@ export default function Begin(){
                         <h2 className="text-2xl md:text-3xl mt-4 font-semibold">What are you planning to do today?</h2>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4 mx-4 mt-7">
+=======
+            <div className="container w-full h-full mt-5 flex justify-center">
+                <div className="bg-slate-800 h-19/20 w-19/20 rounded-xl pb-0 ">
+                    <div className="h-1/8 bg-slate-500/25 text-center rounded-t-xl">
+                        <h1 className="text-5xl pt-6 font-bold">Welcome {userEmail[0]}</h1>
+                        <h2 className="text-3xl mt-4 font-semibold">What are you planning to do today?</h2>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mx-4 mt-7">
+>>>>>>> origin/main
                         <Home_Squares info={{heading: "Plan Trip", text: "Create a List of Services for Your Next Trip Plan", location:"/start"}} />
                         <Home_Squares info ={{heading: "Past Trips", text: "View Your Past History of List of Services Created", location: "/history"}} />
                     </div>
@@ -116,19 +130,54 @@ export default function Begin(){
                         <Favorites_Section favoritesList={theList}/>
                     </div>
                     <div>
+<<<<<<< HEAD
                         <div className="text-white text-center mt-10 text-3xl font-bold mb-3 py-3">
+=======
+                        <div className="text-white text-center mt-10 text-3xl font-bold mb-3 py-3 mb-3">
+>>>>>>> origin/main
                             Closest Upcoming Trip:
                             <div className="mt-2 w-full flex justify-center">
                                 <div className="w-4/5 bg-white/50 h-1"/>
                             </div>
+                            <ServiceCard service={dummyService} />
                         </div>
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
          
 
 
         </div>
+=======
+
+        <div className="p-4">
+            <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => setIsOpen(true)}
+            >
+                Open Modal
+            </button>
+                <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>
+                    <h2 className="text-xl font-bold text-black">Modal Title</h2>
+                    <p className="mt-2 text-black">Testing</p>
+                    <button
+                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => setIsOpen(false)}
+                    >
+                    Close
+                    </button>
+                </div>
+                </div>
+            
+            
+        </div>
+         
+
+
+        </div>
+>>>>>>> origin/main
 
     )
 }

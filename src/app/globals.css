@@ -5,7 +5,9 @@
 
 
   :root {
-    /* --background: #1e293b;
+    /* --background: oklch(0.446 0.043 257.281); */
+    --background: oklch(0.372 0.044 257.287);
+    /* --background: oklch(0.208 0.042 265.755); */
     --foreground: #ededed;
     --card_bg: #333d50;
     --textContent: #ffffff;
@@ -35,7 +37,6 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
-
 
 
 

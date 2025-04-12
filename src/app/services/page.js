@@ -6,6 +6,7 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
@@ -15,13 +16,15 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
     const [sortValue, setSortValue] = useState("Distance");
     const [currentServices, setCurrentServices] = useState(apiServices);
+    const [yes, setyes] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const router = useRouter();
     console.log("Ran")
@@ -43,10 +46,61 @@ export default function Services(){
                 console.error("Error fetching service " + desired_service.id + ":", error);
             }
 
+
         }
         userServices.push(desired_service);
         router.push("/services/" + desired_service.displayName.text);
     }
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+
+            let sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    let userR = "";
+                    if (userResponses){
+                        let fuel_type = userResponses.fuel_type;
+                        let main_category = userResponses.main_category;
+                        let name = userResponses.name;
+                        let priceLevel = userResponses.priceLevel;
+                        let rating = userResponses.rating;
+                        let textQuery = userResponses.textQuery;
+                        let types = userResponses.types;
+                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+                    }
+                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setFavorites(sessionValues.favorites);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    setAPIServices(sessionValues.apiServices);
+                }
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
 
     const referencePoint = [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
@@ -137,8 +191,9 @@ export default function Services(){
 
     },[sort, asc] );
 
-
-   
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <div className="">
             <ServicePageHeading />
