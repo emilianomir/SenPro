@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import { useState, useEffect } from "react";
-import { selectHistory } from "@/components/DBactions";
+import { selectHistory, getUserSession  } from "@/components/DBactions";
 import Loading from "@/components/Loading";
 import Image from "next/image";
 
@@ -26,6 +26,8 @@ export default function History(){
     useEffect(() => {
         const fetchInfo = async () => {
             try{
+                let userName = await getUserSession();
+                if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
                 const history = await selectHistory(userEmail[1]);
                 console.log("HISTORY:")
                 console.log(history);

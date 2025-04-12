@@ -5,12 +5,16 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
+import { createStatelessQ, getInfoSession, deleteSession, getUserSession} from "@/components/DBactions";
+import { ConsoleLogWriter } from "drizzle-orm";
 
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setServices, setResponses, favorites, userResponses} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
+    const [isSessionLoading, setSessionLoad] = useState(true);
+    const [yes, setyes] = useState(true);
     const [callAPI, setcallAPI] = useState(false);
     const router = useRouter();
 
@@ -21,6 +25,7 @@ function Questionaire(){
     // if (numberPlaces == 0) { //this means the user has not entered the number of places
     //     redirect("/login"); 
     // }
+
 
     useEffect(()=> {
         const getInfo = async ()=> {
@@ -49,7 +54,6 @@ function Questionaire(){
     
                     }
                 }
-
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
                 // if (change){
@@ -59,7 +63,6 @@ function Questionaire(){
 
 
                 
-        
             }catch (error) {
                 console.error("Error fetching API:", error);
                 alert("There was an issue getting the data.");
@@ -77,6 +80,49 @@ function Questionaire(){
         // console.log("The apiServices: ") //debugging
         // console.log(apiServices);
     }, [callAPI]);
+
+
+    // Gets the session
+    useEffect(() => {
+        const fetchProducts = async () => {
+            if (yes){
+            try{
+                setyes(false);
+                let userName = await getUserSession();
+                if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+                let sessionValues = await getInfoSession();
+                if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setFavorites(sessionValues.favorites);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    setAPIServices(sessionValues.apiServices);
+                }
+
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+                setSessionLoad(false);
+            }
+            }
+        }
+        fetchProducts();
+        }, [yes]);
+
+
 
     // const goToNext = ()=>{
     //     if (apiServices)
@@ -341,6 +387,10 @@ function Questionaire(){
 
 
 
+
+    if(isSessionLoading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 

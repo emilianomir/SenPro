@@ -6,6 +6,7 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
@@ -15,8 +16,63 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, setAPIServices, userEmail} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
+    const [yes, setyes] = useState(true);
+    const [loading, setLoading] = useState(true);
+
+
+
+    
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+
+            let sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    let userR = "";
+                    if (userResponses){
+                        let fuel_type = userResponses.fuel_type;
+                        let main_category = userResponses.main_category;
+                        let name = userResponses.name;
+                        let priceLevel = userResponses.priceLevel;
+                        let rating = userResponses.rating;
+                        let textQuery = userResponses.textQuery;
+                        let types = userResponses.types;
+                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+                    }
+                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setFavorites(sessionValues.favorites);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    setAPIServices(sessionValues.apiServices);
+                }
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
@@ -57,6 +113,7 @@ export default function Services(){
         const innerEquation = Math.sin((lat2Radius-lat1Radius)/2)**2 +
                               Math.cos(lat1Radius) * Math.cos(lat2Radius) * (Math.sin(convertRadius(lo2-lo1)/2) ** 2);
         const fullEquation = 2 * earthR * Math.asin(Math.sqrt(innerEquation));
+
         
         return fullEquation;
 
@@ -138,7 +195,9 @@ export default function Services(){
     },[sort, asc] );
 
 
-   
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <div className="">
             <ServicePageHeading />
@@ -193,7 +252,7 @@ export default function Services(){
                                         {userResponses.name ? userResponses.name: userResponses.main_category}
                                     </div> */}
                                 </div>
-                            </div>
+                            </div>  
                         </div>
 
                     </div>

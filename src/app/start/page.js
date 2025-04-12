@@ -2,19 +2,37 @@
 import { useAppContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import { getUser, testExistingUser } from '@/components/DBactions';
+import { getUserSession } from '@/components/DBactions';
 import Loading from '@/components/Loading';
 
 function StartPage(){
-    const {userEmail, setNumberPlaces} = useAppContext();
+    const {userEmail, setNumberPlaces, setUserEmail} = useAppContext();
     const router = useRouter();
+    const [yes, setyes] = useState(true);
 
     
     // const [sVal, setSearch] = useState(search);
     // const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-
+    // Gets the session
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
 
 
     // //[userName, other] = search.split('@');
@@ -50,6 +68,9 @@ function StartPage(){
 
     }
 
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
     return (
         <>
         <div className = "" >
