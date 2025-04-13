@@ -6,6 +6,9 @@ import { useEffect, useRef, useState } from 'react';
 import '../app/css/TravelMode.css';
 import TrafficCongestionPanel from './TrafficCongestionPanel';
 
+// MOCKING GOOGLE MAPS
+import { loadGoogleMapsScript } from '../utils/loadGoogleMaps';
+
 const TravelMode = ({ origin, destination, originAddress, destinationAddress }) => {
     // Only use defaults if no coordinates are provided
     const defaultOrigin = {
@@ -66,14 +69,15 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     //! load the google maps script and initialize the map
     useEffect(() => {
         // load the google maps script on top of the page
-        const loadGoogleMapsScript = () => {
-            const script = document.createElement('script'); // create a script element
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`; // load the google maps script
-            script.async = true; // load the script async
-            script.defer = true; // load the script after the page has loaded
-            script.onload = initMap; // init the map
-            document.head.appendChild(script); // add the script to the head of the document so it can be used in the initMap function
-        };
+        //! original code but now used in utils/loadGoogleMaps.js for also use in mock testing
+        // const loadGoogleMapsScript = () => {
+        //     const script = document.createElement('script'); // create a script element
+        //     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`; // load the google maps script
+        //     script.async = true; // load the script async
+        //     script.defer = true; // load the script after the page has loaded
+        //     script.onload = initMap; // init the map
+        //     document.head.appendChild(script); // add the script to the head of the document so it can be used in the initMap function
+        // };
 
         const initMap = () => {
             const directionsRenderer = new google.maps.DirectionsRenderer(); //
@@ -187,7 +191,8 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
         if (window.google && window.google.maps) {
             initMap();
         } else {
-            loadGoogleMapsScript();
+            // loadGoogleMapsScript();
+            loadGoogleMapsScript(initMap);
         }
     }, [addresses, showTraffic]); // add addresses to the dependency array
 

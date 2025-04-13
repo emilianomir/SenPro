@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import '../app/css/TrafficIncidentsPanel.css';
 import TrafficIncident from './TrafficIncident';
 
-const TrafficIncidentsPanel = ({ location }) => { // pass in the location object from the parent component
+const TrafficIncidentsPanel = ({ location }) => { // this object will have latitude and long values
     const [incidents, setIncidents] = useState([]); // state for the incidents
     const [isLoading, setIsLoading] = useState(true); // state for the loading
     const [error, setError] = useState(null);
@@ -26,7 +26,7 @@ const TrafficIncidentsPanel = ({ location }) => { // pass in the location object
                 // call our tomtom incidents api
                 const response = await fetch(
                     `/api/tomtom-incidents?` +
-                    `centerLat=${location.lat}&centerLng=${location.lng}&` +
+                    `centerLat=${location.lat}&centerLng=${location.lng}&` + //! construct URL with lat and lng to pass to server
                     `radius=5` // 5 miles radius
                 );
                 
