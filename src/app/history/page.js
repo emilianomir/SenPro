@@ -12,7 +12,7 @@ import Image from "next/image";
 
 export default function History(){
     const current_date = new Date();
-    const {userEmail} = useAppContext();
+    const {userEmail, setUserEmail} = useAppContext();
     const [changed, setChanged] = useState([false, false]);
     const [collapse, setCollapse] = useState(null);
     const [data, setData] = useState(null); 

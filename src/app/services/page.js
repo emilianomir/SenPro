@@ -6,7 +6,7 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
@@ -20,7 +20,7 @@ export default function Services(){
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
-
+    const [currentServices, setCurrentServices] = useState(apiServices);
 
 
     
@@ -30,7 +30,11 @@ export default function Services(){
             try{
             setyes(false);
             let userName = await getUserSession();
-            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+            if (userName != null) {
+                setUserEmail([userName[0].username, userName[0].email]);
+                const favoritesList = await getFavAPI(userName[0].email);
+                if(favoritesList) setFavorites(favoritesList);
+            }
 
             let sessionValues = await getInfoSession();
             if(sessionValues == null || numberPlaces > 0)
@@ -53,15 +57,16 @@ export default function Services(){
                         let types = userResponses.types;
                         userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
                     }
-                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
+                    await createStatelessQ(numberPlaces, userServices, apiServices, userR, email);
                 }
                 else
                 {
                     setNumberPlaces(sessionValues.numberPlaces);
-                    setFavorites(sessionValues.favorites);
                     setServices(sessionValues.userServices);
                     setResponses(sessionValues.userResponses);
+                    // for api
                     setAPIServices(sessionValues.apiServices);
+                    setCurrentServices(sessionValues.apiServices);
                 }
         } catch(error) {
             console.error("Error fetching DB:", error);
@@ -77,10 +82,8 @@ export default function Services(){
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
     const [sortValue, setSortValue] = useState("Distance");
-    const [currentServices, setCurrentServices] = useState(apiServices);
 
     const router = useRouter();
-    console.log("Ran")
 
     const getMoreInfo = async (id) =>{
         const desired_service = apiServices.find(obj => obj.id === id);
@@ -189,7 +192,6 @@ export default function Services(){
         }
         if (sort < 4)
             dropdownSet();
-        console.log("RAn")
         
 
     },[sort, asc] );
@@ -275,9 +277,9 @@ export default function Services(){
                             {/* {dummyArray ? dummyArray.map((service_object, index) => (  */}
                             {currentServices ? currentServices.map(service_object=>(
                                 <div className="inline-block mr-7 h-3/5" key ={service_object.id}>
-                                    
+                                        {userEmail != null && <Favorites service={service_object}/>} 
                                         <div className="h-full" onClick={() => getMoreInfo(service_object.id)} >
-                                            {userEmail != null && <Favorites service={service_object}/>}    
+                                               
                                             {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
                                             {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}
                                             <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 

@@ -3,8 +3,8 @@ import "../css/begin_page.css"
 import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
-import { useEffect, useState } from "react";
-import { getUserSession } from "@/components/DBactions";
+import { useEffect, useState} from "react";
+import { getUserSession} from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import ServiceCard from "@/components/ServiceCard";
 import Loading from "@/components/Loading";
@@ -14,6 +14,7 @@ export default function Begin(){
     const {userEmail, setUserEmail} = useAppContext();
     const [loading, setLoading] = useState(true);
     const [yes, setyes] = useState(true);
+    const [back, setBack] = useState(false);
 
 
     // Gets the session
@@ -24,6 +25,8 @@ export default function Begin(){
             setyes(false);
             let userName = await getUserSession();
             setUserEmail([userName[0].username, userName[0].email]);
+
+            if(userName == null) setBack(true);
           } catch(error) {
               console.error("Error fetching DB:", error);
               alert("There was an issue getting the data.");
@@ -43,6 +46,8 @@ export default function Begin(){
     for (let i = 0; i < 5; i ++) {
         theList.push({name: "Placeholder Service " + i, photo: "https://join.travelmanagers.com.au/wp-content/uploads/2017/09/default-placeholder-300x300.png"})
     }
+    if (back)
+        redirect("/login");
 
     /*    
     //Use this to replace the favorites. 

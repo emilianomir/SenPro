@@ -185,6 +185,7 @@ export async function getAPI(id) {
           const image_url = `https://places.googleapis.com/v1/${service_result.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`; //(`/api/maps/places?thePhoto=` + service_result.photos[0].name);
           const image_response = await fetch(image_url);
           service_result.photoURL = image_response.url;
+          service_result.photo_image = image_response.url;
           
       }catch(error) {
           console.error("Error fetching image for id " + id + ":", error);
@@ -301,6 +302,20 @@ export async function getFavorites(email)
     throw e;
   }
 }
+ // Get with api Call
+ export async function getFavAPI(email)
+ {
+  let ids = await getFavorites(email);
+  let data = [];
+  if(ids.length > 0){
+    for(const element of ids)
+    {
+      var service = await getAPI(element.info);
+      data.push(service);
+    }
+  }
+  return data;
+ }
 
 
 // History Calls
@@ -506,14 +521,6 @@ export async function getInfoSession()
   let userResponses = JSON.parse(datavalues[0].userResponses);
 
   let data = [];
-  if(info.favorites.length > 0){
-    for(const element of info.favorites)
-    {
-      var service = await getAPI(element);
-      data.push(service);
-    }
-    info.favorites = data;
-  }
 
   if(info.userServices.length > 0){
     data = [];
@@ -551,7 +558,7 @@ export async function hasInfoSession(email)
 
 
 // Session for Questionaire
-export async function createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email)
+export async function createStatelessQ(numberPlaces, userServices, apiServices, userResponses, email)
 {
   var currEmail = email;
   if (email == "HASHTHIS")
@@ -563,12 +570,6 @@ export async function createStatelessQ(numberPlaces, favorites, userServices, ap
   var values = {numberPlaces};
   // getting the id from each 
   let data = [];
-  if(favorites){
-    favorites.forEach((val) =>
-    {
-        data.push(val.id);
-    });
-  }
   
   values.favorites = data;
   data = [];
@@ -633,6 +634,46 @@ export async function createStatelessQ(numberPlaces, favorites, userServices, ap
   }
   
 
+}
+
+
+// User Cords
+// Add Cords
+export async function addCords(email, cords) {
+  try {
+    if(await getUser(email)){
+      await db
+      .update(users)
+      .set({ cords: JSON.stringify(cords) })
+      .where(eq(users.email, email));
+      console.log("cords added successfully");
+    }
+    else
+    {
+      console.log("No such user Exists");
+    }
+  } catch (e) {
+    console.error("error adding cords:", e);
+    throw e;
+  }
+}
+// get Cords
+export async function getCords(email){
+  try {
+    console.log("getting cords from given email:", {
+      email,
+    });
+    if(await getUser(email)){
+      const value = await db.select({ cords: users.cords })
+      .from(users)
+      .where(eq(users.email, email));
+      return JSON.parse(value[0].cords);
+      
+    } else return null;
+  } catch (e) {
+    console.error("error in in service selection:", e);
+    throw e;
+  }
 }
 
 /*
