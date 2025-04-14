@@ -6,23 +6,48 @@ import Link from "next/link";
 
 
 export default function SelectFavorites(){
-    const { favorites, userServices} = useAppContext();
+    const {favorites, userServices} = useAppContext();
     const [isOpen, setIsOpen] = useState(false);
-    console.log(favorites);
+    const [clicked, setClicked] = useState(false);
+    const router = useRouter();
+
+
+    const getMoreInfo = async (id) =>{
+        const desired_service = favorites.find(obj => obj.id === id);
+        if (!desired_service.hasFullInfo) {
+            setClicked(true);
+            try {
+                const response = await fetch(`/api/maps/places?id=` + desired_service.id + "&partial=true");
+                if (response.ok) {
+                    const {service_result} = await response.json();
+                    for (const [key, value] of Object.entries(service_result)){
+                        desired_service[key] = value;
+                    desired_service.hasFullInfo = true;
+                    }
+                }
+            }catch(error) {
+                console.error("Error fetching service " + desired_service.id + ":", error);
+            }
+
+
+        }
+        userServices.push(desired_service);
+        router.push("/services/" + desired_service.displayName.text);
+    }
 
     return (
         <div className="mt-5 md:mt-10 w-full flex justify-center">
             <button className="outline outline-2 text-xl md:text-2xl py-2 px-3" onClick={()=>setIsOpen(true)}>View Favorites</button>
             
             <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
-                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg w-5/6`}>
-                    <h2 className="text-3xl font-bold text-black">Choose your service:</h2>
-                    <div className="scroll">
-                        {favorites && favorites.length > 0 ? favorites.map((service_object, index)=>(
-                        <div className="inline-block mr-7" key ={index}>
+                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-slate-700 p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
+                    <h2 className="text-3xl font-bold ">{clicked ? "Loading..." : "Choose your service:"}</h2>
+                    <div className="overflow-x-auto whitespace-nowrap h-9/10">
+                        {favorites && favorites.length > 0 ? favorites.map((service_object)=>(
+                        <div className="inline-block mr-3" key ={service_object.id}>
                             
-                            <div onClick={() => getMoreInfo(index)} > 
-                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                            <div className="h-100 md:h-125" onClick={() => getMoreInfo(service_object.id)} > 
+                                <ServiceCard service = {service_object} has_fuel_type={null} decrease_text = {true}/> 
                             </div>
                             
                             {/* <div className="card-footer">
@@ -41,7 +66,7 @@ export default function SelectFavorites(){
         
                     </div> 
                     <button
-                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                    className="bg-red-500 text-white px-4 py-2 rounded absolute top-0 right-0 mr-2 mt-2"
                     onClick={() => setIsOpen(false)}
                     >
                     Close

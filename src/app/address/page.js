@@ -1,5 +1,4 @@
 "use client"
-import "../css/address_page.css"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
@@ -54,7 +53,7 @@ function AddressPage(){
                 }
                 else {
                     if (userEmail == null){
-                        setGuestAddress(theInput);
+                        setGuestAddress([returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info]);  //holds the formatted address and second index holds the lat and long
                         router.push("/start");
                     }
                     else {
@@ -115,41 +114,6 @@ function AddressPage(){
         </div>
 
         </div>
-
-
-
-
-            {/* <div className="bg-secondary-subtle">
-                <div className="text-center">
-                    <h1 className='fs-2 fw-bold'>Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h1>
-                </div>
-            </div>
-            <div className="d-flex justify-content-center align-items-center vh-100 bg-secondary">
-                <div className="bg-secondary-subtle main_container">
-                    <p className="text-center main_text text-wrap p-3">Please enter either a physical address or a Zip Code to begin. </p>
-                    <p className="text-center main_text fw-bold">(Recommend address for best experience).</p>
-                    <div className="ms-5 mt-5">
-                        <form onSubmit={handleSubmit}>
-                            <label htmlFor="addressInput" className="form-label fs-3">Address/ZipCode</label>
-                            <div className="row row-cols-3 m-0 p-0">
-                                <div className="col-8">
-                                    <input id="addressInput" value={theInput} className="form-control" onChange={handleChange} type="text" placeholder="Enter your address here" />
-                                </div>
-                                <div className="col-2">
-                                    <select value={selectType} className="form-select w-100" onChange={(event) => setSelect(event.target.value)}>
-                                        <option value="" disabled>Select your type</option>
-                                        <option value="zipCode">Zip Code</option>
-                                        <option value="address">Address</option>
-                                    </select>
-                                </div>
-                                <div className="col-1">
-                                    <button type="submit" className="btn btn-primary w-100">Enter</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>     */}
         </> 
     )
 

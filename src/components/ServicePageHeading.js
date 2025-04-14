@@ -1,6 +1,5 @@
 "use client"
 import Account_Overlay from "./Account_Overlay"
-import "../app/css/service_card.css"
 import { useState } from "react"
 import { useAppContext } from "@/context"
 import Link from "next/link";

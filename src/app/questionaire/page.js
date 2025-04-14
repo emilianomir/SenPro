@@ -1,5 +1,4 @@
 "use client"
-import "../css/question_page.css"
 import Question from "@/components/Question";
 import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
@@ -83,44 +82,44 @@ function Questionaire(){
 
 
     // Gets the session
-    useEffect(() => {
-        const fetchProducts = async () => {
-            if (yes){
-            try{
-                setyes(false);
-                let userName = await getUserSession();
-                if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-                let sessionValues = await getInfoSession();
-                if(sessionValues == null || numberPlaces > 0)
-                {
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //         if (yes){
+    //         try{
+    //             setyes(false);
+    //             let userName = await getUserSession();
+    //             if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+    //             let sessionValues = await getInfoSession();
+    //             if(sessionValues == null || numberPlaces > 0)
+    //             {
                     
-                    if(numberPlaces > 0) await deleteSession('Qsession');
-                    let email = "HASHTHIS";
-                    if(userName)
-                    {
-                        email = userName[0].email;
-                    }
-                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
-                }
-                else
-                {
-                    setNumberPlaces(sessionValues.numberPlaces);
-                    setFavorites(sessionValues.favorites);
-                    setServices(sessionValues.userServices);
-                    setResponses(sessionValues.userResponses);
-                    setAPIServices(sessionValues.apiServices);
-                }
+    //                 if(numberPlaces > 0) await deleteSession('Qsession');
+    //                 let email = "HASHTHIS";
+    //                 if(userName)
+    //                 {
+    //                     email = userName[0].email;
+    //                 }
+    //                 await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
+    //             }
+    //             else
+    //             {
+    //                 setNumberPlaces(sessionValues.numberPlaces);
+    //                 setFavorites(sessionValues.favorites);
+    //                 setServices(sessionValues.userServices);
+    //                 setResponses(sessionValues.userResponses);
+    //                 setAPIServices(sessionValues.apiServices);
+    //             }
 
-            } catch(error) {
-                console.error("Error fetching DB:", error);
-                alert("There was an issue getting the data.");
-            } finally {
-                setSessionLoad(false);
-            }
-            }
-        }
-        fetchProducts();
-        }, [yes]);
+    //         } catch(error) {
+    //             console.error("Error fetching DB:", error);
+    //             alert("There was an issue getting the data.");
+    //         } finally {
+    //             setSessionLoad(false);
+    //         }
+    //         }
+    //     }
+    //     fetchProducts();
+    //     }, [yes]);
 
 
 
@@ -293,7 +292,7 @@ function Questionaire(){
     });
     questionsList.set("RetQ", {
         question: ["What category of retail store are you looking for?", 2],
-        answer: [["Vehicle", "VecQ", [2]], ["Electronics", "ElectQ", [1]], ["Home", "HomeQ", [2]], ["Clothing and Goods", "ClothQ", [2]], ["Pet Store", "Price", [3]], ["Variety", "VaryQ", [2]]]
+        answer: [["Vehicle", "VecQ", [2]], ["Electronics", "ElectQ", [4]], ["Home", "HomeQ", [2]], ["Clothing and Goods", "ClothQ", [2]], ["Pet Store", "Price", [3]], ["Variety", "VaryQ", [2]]]
     });
 
     //Retail Store SubQuestions
@@ -388,9 +387,9 @@ function Questionaire(){
 
 
 
-    if(isSessionLoading){
-        return (<Loading message= "Fetching Session"/>)
-    }
+    // if(isSessionLoading){
+    //     return (<Loading message= "Fetching Session"/>)
+    // }
     return (
         <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 

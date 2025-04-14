@@ -1,5 +1,4 @@
 "use client"
-import "../css/services_page.css"
 import ServiceCard from "@/components/ServiceCard";
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useAppContext } from "@/context";
@@ -16,7 +15,7 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, guestAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
@@ -52,58 +51,72 @@ export default function Services(){
         router.push("/services/" + desired_service.displayName.text);
     }
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-        if (yes){
-            try{
-            setyes(false);
-            let userName = await getUserSession();
-            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //     if (yes){
+    //         try{
+    //         setyes(false);
+    //         let userName = await getUserSession();
+    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
 
-            let sessionValues = await getInfoSession();
-            if(sessionValues == null || numberPlaces > 0)
-                {
+    //         let sessionValues = await getInfoSession();
+    //         if(sessionValues == null || numberPlaces > 0)
+    //             {
                     
-                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
-                    let email = "HASHTHIS";
-                    if(userName)
-                    {
-                        email = userName[0].email;
-                    }
-                    let userR = "";
-                    if (userResponses){
-                        let fuel_type = userResponses.fuel_type;
-                        let main_category = userResponses.main_category;
-                        let name = userResponses.name;
-                        let priceLevel = userResponses.priceLevel;
-                        let rating = userResponses.rating;
-                        let textQuery = userResponses.textQuery;
-                        let types = userResponses.types;
-                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
-                    }
-                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
-                }
-                else
-                {
-                    setNumberPlaces(sessionValues.numberPlaces);
-                    setFavorites(sessionValues.favorites);
-                    setServices(sessionValues.userServices);
-                    setResponses(sessionValues.userResponses);
-                    setAPIServices(sessionValues.apiServices);
-                }
-        } catch(error) {
-            console.error("Error fetching DB:", error);
-            alert("There was an issue getting the data.");
-        } finally {
-            setLoading(false);
-            }
-        }
-        }
-        fetchProducts();
-    }, [yes]);
+    //                 if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+    //                 let email = "HASHTHIS";
+    //                 if(userName)
+    //                 {
+    //                     email = userName[0].email;
+    //                 }
+    //                 let userR = "";
+    //                 if (userResponses){
+    //                     let fuel_type = userResponses.fuel_type;
+    //                     let main_category = userResponses.main_category;
+    //                     let name = userResponses.name;
+    //                     let priceLevel = userResponses.priceLevel;
+    //                     let rating = userResponses.rating;
+    //                     let textQuery = userResponses.textQuery;
+    //                     let types = userResponses.types;
+    //                     userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+    //                 }
+    //                 await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
+    //             }
+    //             else
+    //             {
+    //                 setNumberPlaces(sessionValues.numberPlaces);
+    //                 setFavorites(sessionValues.favorites);
+    //                 setServices(sessionValues.userServices);
+    //                 setResponses(sessionValues.userResponses);
+    //                 setAPIServices(sessionValues.apiServices);
+    //             }
+    //     } catch(error) {
+    //         console.error("Error fetching DB:", error);
+    //         alert("There was an issue getting the data.");
+    //     } finally {
+    //         setLoading(false);
+    //         }
+    //     }
+    //     }
+    //     fetchProducts();
+    // }, [yes]);
 
-    const referencePoint = [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
+    const referencePoint = guestAddress ? [guestAddress[1].latitude, guestAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
+    console.log(guestAddress);
+    console.log(referencePoint);
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
+        if (asc){
+            la1 = la1 ? la1 : 999
+            lo1 = lo1 ? lo1 : 999
+            la2 = la2 ? la2 : 999
+            lo2 = lo2 ? lo2 : 999
+        }
+        else {
+            la1 = la1 ? la1 : -999
+            lo1 = lo1 ? lo1 : -999
+            la2 = la2 ? la2 : -999
+            lo2 = lo2 ? lo2 : -999
+        }
         const earthR = 3959; //Miles
         const convertRadius = angle => angle * Math.PI / 180;
         const lat1Radius = convertRadius(la1);
@@ -116,40 +129,33 @@ export default function Services(){
 
     }
 
+    useEffect(()=> {
+        const getMiles = () => {
+            setCurrentServices(currentServices.map(obj => ({...obj, miles : `Miles from ${guestAddress[0]}: ` + Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.location?.latitude, obj.location?.longitude))})));
+        }    
+        getMiles();
+    }, []);
 
-    // let dummyArray = [
-    //         {lat: 22.6750660, long: 14.5356228, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 201, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: -26.1287716, long: 14.5356228, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 21, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: 22.6750660, long: 28.2454652, photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 13, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: 22.6750660, long: 159.9461722, displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 10, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: -9.4324878, long: 14.5356228, displayName: {text: "Bob's Food"}, rating: 4.1, userRatingCount: 2001, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: 49.6246541, long: 14.5356228, displayName: {text: "Bob's Food"}, rating: 4.6, userRatingCount: 10100001, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: 22.6750660, long: 6.1084164 ,displayName: {text: "Bob's Food"}, rating: 5.0, userRatingCount: 11, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    //         {lat: 4.7335833, long: 114.6989328 ,displayName: {text: "Bob's Food"}, rating: 4.2, userRatingCount: 1, priceRange: {startPrice: {units: "400"}, endPrice: {units: "500"}}},
-    // ];
 
 
     const theSort = (array, property) => {
         return [...array].sort((a,b) => a[property] ? b[property] ? asc ? a[property]- b[property]: b[property] - a[property] : a[property]- 0: 0 - b[property]? b[property]: 0)
     }
     
-    //dummyArray = dummyArray.map(obj => ({...obj, miles : "Miles: " + Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.lat, obj.long))}));
     useEffect(() => {
         const dropdownSet = () => {
             switch(sort) {
                 case 0:
-                    // if (asc){
-                    //     //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
-                    //     setAPIServices(apiServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.location.latitude, a.location.longitude) -  distanceCalculate(referencePoint[0], referencePoint[1], b.location.latitude, b.location.longitude)));
-        
-                    // }
-                    // else {
-                    //     setAPIServices(apiServices = apiServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b.location.latitude, b.location.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a.location.latitude, a.location.longitude)));    
-                    // }
+                    if (asc){
+                        //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
+                        setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude ) -  distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude)));
+                    }
+                    else {
+                        setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude)));    
+                    }
                     setSortValue("Distance")
                     break;
                 case 1:
-                    //dummyArray = theSort(dummyArray, "rating");
                     setCurrentServices(theSort(currentServices, "rating"));
                     setSortValue("Rating")
                     break;
@@ -191,9 +197,9 @@ export default function Services(){
 
     },[sort, asc] );
 
-    if(loading){
-        return (<Loading message= "Fetching Session"/>)
-    }
+    // if(loading){
+    //     return (<Loading message= "Fetching Session"/>)
+    // }
     return (
         <div className="">
             <ServicePageHeading />
@@ -266,17 +272,18 @@ export default function Services(){
                             <div className="h-1 bg-gray-500 w-9/10"/>   
                         </div>
          
-                        <div className="scroll ml-3 mt-3 h-full">
+                        <div className="overflow-x-auto ml-3 mt-3 h-full whitespace-nowrap">
                             
-                            {/* {dummyArray ? dummyArray.map((service_object, index) => (  */}
+                            
                             {currentServices ? currentServices.map(service_object=>(
                                 <div className="inline-block mr-7 h-3/5" key ={service_object.id}>
                                     
-                                        <div className="h-full w-full" onClick={() => getMoreInfo(service_object.id)} >
+                                        <div className="h-full w-full" >
                                             {userEmail != null && <Favorites service={service_object}/>}    
-                                            {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
-                                            {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}
-                                            <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                                            {sort === 0 && <div className="inline">{service_object.miles ? service_object.miles : 0 }</div> }
+                                            <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
+                                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                                            </div>
                                         </div>
                                    
                                     {/* <div className="card-footer">

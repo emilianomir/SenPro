@@ -1,6 +1,5 @@
 "use client"
 import ServicePageHeading from "@/components/ServicePageHeading";
-import "../../css/services_page.css"
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,7 +15,7 @@ import { users } from "@/db/schema/users";
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses, userEmail} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail, setGuestAddress} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
@@ -26,6 +25,8 @@ export default function ServiceInfo(){
     const current_service = userServices[userServices.length-1]; 
     const router = useRouter();
     const [addServices, setYes] = useState(false)
+
+    console.log(userServices);
 
 
     if( userServices.length > 0){
@@ -64,6 +65,7 @@ export default function ServiceInfo(){
     }
 
     const handleEnter = ()=> { 
+        setGuestAddress([current_service.formattedAddress, current_service.location])
         if (numberPlaces == userServices.length)
             setYes(true);
         else
@@ -139,18 +141,19 @@ export default function ServiceInfo(){
                     </div>
                     :
                     <div className="grid md:grid-cols-2 gap-1 mt-4 h-1/2 mx-2">
-                        <div className="h-full relative group">
-                            <Image className = "rounded-lg object-cover h-full object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} fill alt = "Service image" unoptimized = {true} />
+                        <div className="relative group ">
+                            <Image className = "rounded-lg  object-cover  object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} fill alt = "Service image" unoptimized = {true} />
+
                             {current_service.photos.length > 5 &&
                                 <div onClick={goToGallery } className="h-full w-full opacity-0 group-hover:opacity-100 bg-gray-500/35 absolute top-0 z-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100 flex justify-center items-center text-gray-100 text-4xl font-bold">Gallery</div>}
                         </div>
                         <div className="mt-4 px-3">
-                            <div className="bg-gray-700 rounded-lg py-3 text-gray-100">
+                            <div className="bg-gray-700 rounded-lg py-1 text-gray-100">
                                 {current_service.regularOpeningHours?.weekdayDescriptions &&
-                                <div className="text-center mt-3">
+                                <div className="text-center mt-3 px-2">
                                     <div className="font-bold text-base md:text-2xl">Weekly Operations:</div>
                                     {current_service.regularOpeningHours.weekdayDescriptions.map((desc, index)=>
-                                        <div key = {desc} className="text-sm md:text-lg/8">{desc}</div>
+                                        <div key = {desc} className="text-sm md:text-md pb-1">{desc}</div>
                                     )}
                                 </div>
                                 }     

@@ -8,6 +8,7 @@ import Loading from "@/components/Loading";
 import { check } from "drizzle-orm/mysql-core";
 
 export default function FormLayout ({typeForm}){
+    console.log("Ran login")
     const router = useRouter();
     const {setUserEmail} = useAppContext();
     const [yes, setYes] = useState(false);

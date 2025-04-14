@@ -36,45 +36,8 @@ export async function POST(req) {
             else {
                 result = false;
             }
-            /*
-            const zipApiKey = process.env.ZIP_CODE_API_KEY;
 
-            const url = new URL(
-                "https://api.zipcodestack.com/v1/search"
-            );
-            
-            const params = {
-                "codes": userInput,
-                "country": "us"
-            };
-            Object.keys(params)
-                .forEach(key => url.searchParams.append(key, params[key]));
-            
-            const headers = {
-                "apikey": zipApiKey,
-                "Accept": "application/json",
-            };
-
-            const response = await fetch(url, {
-                method: "GET",
-                headers: headers,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            let result;
-            if (data.results.length == 0) {
-                result = false;
-            }
-            else {
-                result = true;
-            }
- 
-            */
-
-            return new Response(JSON.stringify({ info: data, isValid: result }), {
+            return new Response(JSON.stringify({formattedAddress: data.result?.address?.formattedAddress, info: data.result?.geocode?.location, isValid: result }), {
                 status: 200,
                 headers: { "Content-Type": "application/json" },
             });

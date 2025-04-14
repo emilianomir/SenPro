@@ -1,73 +1,71 @@
 "use client"
 import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import { getUserSession, getInfoSession, createStatelessQ, deleteSession} from '@/components/DBactions';
-import "../css/end_page.css"
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
 
 export default function End(){
     const { Image } = useQRCode();
-    ///const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-             
+    //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+
     const googleMapURL = "https://www.google.com/maps/dir/";
     const addressURLS = userServices.map(service=> encodeURIComponent(service.formattedAddress.includes("#") ?
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
 
     const fullURL = googleMapURL + addressURLS.join('/');
-    const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const [yes, setyes] = useState(true);
-    const [loading, setLoading] = useState(true);
+    //const [loading, setLoading] = useState(true);
     const router = useRouter();
     
-    useEffect(() => {
-        const fetchProducts = async () => {
-        if (yes){
-            try{
-            setyes(false);
-            let userName = await getUserSession();
-            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-            let sessionValues = await getInfoSession();
-            if(sessionValues == null || numberPlaces > 0)
-            {
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //     if (yes){
+    //         try{
+    //         setyes(false);
+    //         let userName = await getUserSession();
+    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+    //         let sessionValues = await getInfoSession();
+    //         if(sessionValues == null || numberPlaces > 0)
+    //         {
 
-                if(numberPlaces > 0) await deleteSession('Qsession');
-                let email = "HASHTHIS";
-                if(userName)
-                {
-                    email = userName[0].email;
-                }
-                console.log(await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email));
-            }
-            else
-            {
-                setFavorites(sessionValues.favorites);
-                setServices(sessionValues.userServices);
-                setResponses(sessionValues.userResponses);
-                setAPIServices(sessionValues.apiServices);
-            }
-            } catch(error) {
-                console.error("Error fetching DB:", error);
-                alert("There was an issue getting the data.");
-            } finally {
-            setLoading(false);
-            }
-        }
-        }
-        fetchProducts();
-    }, [yes]);
+    //             if(numberPlaces > 0) await deleteSession('Qsession');
+    //             let email = "HASHTHIS";
+    //             if(userName)
+    //             {
+    //                 email = userName[0].email;
+    //             }
+    //             console.log(await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email));
+    //         }
+    //         else
+    //         {
+    //             setFavorites(sessionValues.favorites);
+    //             setServices(sessionValues.userServices);
+    //             setResponses(sessionValues.userResponses);
+    //             setAPIServices(sessionValues.apiServices);
+    //         }
+    //         } catch(error) {
+    //             console.error("Error fetching DB:", error);
+    //             alert("There was an issue getting the data.");
+    //         } finally {
+    //         setLoading(false);
+    //         }
+    //     }
+    //     }
+    //     fetchProducts();
+    // }, [yes]);
             
     
 
     
-    if(loading){
-        return (<Loading message= "Fetching Session"/>)
-    }
+    // if(loading){
+    //     return (<Loading message= "Fetching Session"/>)
+    // }
     return(
         <div>
             <ServicePageHeading />
