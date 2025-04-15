@@ -54,8 +54,10 @@ function Questionaire(){
     
                     }
                 }
+                /*
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
+                */
                 // if (change){
                 setAPIServices(services_result);
                 router.push("/services");
@@ -91,10 +93,13 @@ function Questionaire(){
                 let userName = await getUserSession();
                 if (userName != null) {
                     setUserEmail([userName[0].username, userName[0].email]);
-                    const favoritesList = await getFavAPI(userName[0].email);
-                    if(favoritesList) setFavorites(favoritesList);
+                    if(favorites.length == 0){
+                        const favoritesList = await getFavAPI(userName[0].email);
+                        if(favoritesList) setFavorites(favoritesList);
+                    }
                 }
-                let sessionValues = await getInfoSession();
+                let sessionValues = null;
+                if (numberPlaces <= 0) sessionValues = await getInfoSession();
                 if(sessionValues == null || numberPlaces > 0)
                 {
                     
@@ -112,6 +117,7 @@ function Questionaire(){
                     setServices(sessionValues.userServices);
                 }
 
+
             } catch(error) {
                 console.error("Error fetching DB:", error);
                 alert("There was an issue getting the data.");
@@ -122,7 +128,6 @@ function Questionaire(){
         }
         fetchProducts();
         }, [yes]);
-
 
 
     // const goToNext = ()=>{

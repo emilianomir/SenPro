@@ -32,11 +32,13 @@ export default function Services(){
             let userName = await getUserSession();
             if (userName != null) {
                 setUserEmail([userName[0].username, userName[0].email]);
-                const favoritesList = await getFavAPI(userName[0].email);
-                if(favoritesList) setFavorites(favoritesList);
+                if(favorites.length == 0){
+                    const favoritesList = await getFavAPI(userName[0].email);
+                    if(favoritesList) setFavorites(favoritesList);
+                }
             }
-
-            let sessionValues = await getInfoSession();
+            let sessionValues = null;
+            if (numberPlaces <= 0) sessionValues = await getInfoSession();
             if(sessionValues == null || numberPlaces > 0)
                 {
                     
@@ -68,6 +70,7 @@ export default function Services(){
                     setAPIServices(sessionValues.apiServices);
                     setCurrentServices(sessionValues.apiServices);
                 }
+
         } catch(error) {
             console.error("Error fetching DB:", error);
             alert("There was an issue getting the data.");

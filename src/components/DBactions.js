@@ -561,7 +561,7 @@ export async function hasInfoSession(email)
 export async function createStatelessQ(numberPlaces, userServices, apiServices, userResponses, email)
 {
   var currEmail = email;
-  if (email == "HASHTHIS")
+  if (currEmail == "HASHTHIS")
   {
     currEmail = await bcrypt.hash(email, 5);
   }

@@ -121,14 +121,14 @@ export default function Favorites_Section ({favoritesList}){
                     {favorites.map((service, index) => (
 
                         <div key ={index} className="">
-                            <div className="bg-gradient-to-br from-black-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 active:bg-blue-700">
+                            <div className="">
                             {userEmail != null && <Favorites service={service}/>}
                             </div> 
                             <div className="w-full max-w-2xs bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 shadow-lg transition ease-in-out delay-100 duration-400 hover:-translate-y-5 mt-5">
-                                <div onClick={() => setSelection(index)} className = {`${selection == index ? "border-2 border-blue-200": "card cardAdjust" }`} >
+                                <div onClick={() => setSelection(index)} className = {`${selection == index ? "border-2 border-blue-200 cardAdjust": "card cardAdjust" }`} >
                                     <Image className = "size-75 object-cover rounded-t-xl" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                                     <div className="flex items-center px-5 pb-5"> 
-                                        <h4 className = "text-xl font-semibold tracking-tight text-gray-900 dark:text-white" >{service.displayName.text}</h4>
+                                        <h4 className = {`${service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} font-semibold tracking-tight text-gray-900 dark:text-white`}>{service.displayName.text}</h4>
                                     </div>
                                     <div className="flex items-center mt-2.5 mb-5">
                                         <div className="flex items-center space-x-1 rtl:space-x-reverse">

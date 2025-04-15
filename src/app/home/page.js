@@ -16,7 +16,6 @@ export default function Begin(){
     const [yes, setyes] = useState(true);
     const [back, setBack] = useState(false);
 
-
     // Gets the session
     useEffect(() => {
       const fetchProducts = async () => {
@@ -24,9 +23,11 @@ export default function Begin(){
           try{
             setyes(false);
             let userName = await getUserSession();
-            setUserEmail([userName[0].username, userName[0].email]);
-
-            if(userName == null) setBack(true);
+            if(userName == null){
+                setUserEmail(["Redirecting", "Redirecting"])
+                setBack(true);
+            }
+            else setUserEmail([userName[0].username, userName[0].email]);
           } catch(error) {
               console.error("Error fetching DB:", error);
               alert("There was an issue getting the data.");
