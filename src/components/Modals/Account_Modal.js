@@ -63,18 +63,18 @@ export default function Account_Modal({email}){
         </div>
         
         <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
-            <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-gray-700 p-6 rounded-lg shadow-lg w-3/4 h-100`}>
-            <h2 className="text-4xl font-bold border-b-2 border-gray-200 pb-2 mb-6">Change your password</h2>
+            <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-gray-700 p-6 rounded-lg shadow-lg w-3/4 h-100 relative`}>
+            <h2 className="mt-3 md: mt-0 text-3xl md:text-4xl font-bold border-b-2 border-gray-200 pb-2 mb-6">Change your password</h2>
             <div>
                 <form onSubmit={submitForm}>
                 <div className='grid grid-cols-1'>
                     <div className="mb-5">
-                        <label htmlFor="current-password" id ="current" className="text-2xl">Current Password:</label>
-                        <input value={oldPass} type="password" onChange={oldPassChange} className="border-b-2 border-gray-200 text-xl ml-3" id="current-password"/>
+                        <label htmlFor="current-password" id ="current" className="text-xl md:text-2xl">Current Password:</label>
+                        <input value={oldPass} type="password" onChange={oldPassChange} className="border-b-2 border-gray-200 text-lg md:text-xl md:ml-3" id="current-password"/>
                     </div>
                     <div className='mb-5'>
                         <label htmlFor="new-password" className="text-2xl">New Password:</label>
-                        <input value={newPass} type="password" onChange={newPassChange} className="border-b-2 border-gray-200 text-xl ml-3" id="new-password2"/>
+                        <input value={newPass} type="password" onChange={newPassChange} className="border-b-2 border-gray-200 text-lg md:text-xl md:ml-3" id="new-password2"/>
                     </div> 
                     <div>
                         <button type = "submit" className="outline outline-2 outline-gray-200 px-3 py-2 text-2xl hover:bg-gray-500">Submit</button>
@@ -83,7 +83,7 @@ export default function Account_Modal({email}){
                 </form>
             </div>
             <button
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+            className="absolute top-0 right-0 md:mr-2 md:mt-2 bg-red-500 text-white px-4 py-2 rounded"
             onClick={() => setIsOpen(false)}
             >
             Close

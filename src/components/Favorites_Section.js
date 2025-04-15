@@ -101,7 +101,6 @@ export default function Favorites_Section (){
                             }
                         </div>
                         }
-                        
                     </div>
                     :
                     <Loading message={"Getting Favorites"} />

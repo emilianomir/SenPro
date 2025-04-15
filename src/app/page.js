@@ -13,7 +13,7 @@ function WelcomePage(){
     }, 50); 
     }, []);
     return (
-        <div className="h-300 bg-slate-900/55">
+        <div className="min-h-screen h-[175vh] bg-slate-900/55">
             <div className = "relative">
                 <div className = "absolute top-0 right-0 mt-6 mr-4 w-50 z-10">
                     <RouteButton name = "Login" location = "/login"/>

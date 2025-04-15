@@ -207,7 +207,7 @@ export default function ServiceInfo(){
                                 Back
                             </div>
                             <div onClick={handleEnter} className="border-2 border-gray-200 p-2">
-                                Next
+                                {numberPlaces == userServices.length + 1 ? "Finish": "Next"}
                             </div>  
                         </div>
                     </div>

@@ -63,7 +63,6 @@ function Favorites({service, responses}){
         fetchProducts();
     }, []);
 
-
     
     if(loading)
         return <p>loading...</p>

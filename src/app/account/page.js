@@ -69,7 +69,7 @@ export default function Account(){
                     <div className='text-4xl font-extrabold ml-6 py-6'>
                         Settings
                     </div>
-                    <div className='flex justify-end items-center py-6 mr-2 md:mr-6 text-lg'>
+                    <div className='flex justify-end items-center py-6 mr-2 md:mr-6 text-lg md:text-2xl'>
                         <div onClick={()=>router.back()} className='text-center w-1/2 md:w-1/5 border-2 font-bold p-2'>
                             Back
                         </div>

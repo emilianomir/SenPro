@@ -4,7 +4,7 @@ import { useAppContext } from "@/context";
 import Image from "next/image";
 import { useState } from "react";
 
-function ServiceCard({service, has_fuel_type, haveTransition = true, decrease_text = false}){
+function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransition = true, decrease_text = false, showMiles = false}){
     // const {userServices, userResponses} = useAppContext();
     const [error, setError] = useState(false);
     let theFuel = null; 
@@ -46,9 +46,16 @@ function ServiceCard({service, has_fuel_type, haveTransition = true, decrease_te
                                 <div>Current Price: <span className="font-bold">{theFuel.price.currencyCode == "USD" && "$"} {Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)}</span></div>
                             </div>
                             :
+                            showMiles ?
+                            <div className="mb-2">Miles away from {currentLocation}: 
+                            <div className="inline md:block"> 
+                                {service.miles? service.miles: "UNKNOWN"} 
+                            </div>
+                            </div>
+                            :
                             <div className="mb-2">Price Range:
                                 <div> 
-                                    {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
+                                    {service.priceRange?.startPrice?.units? "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
                                     {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
                                     }
                                 </div>

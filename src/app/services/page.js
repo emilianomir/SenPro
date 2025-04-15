@@ -279,9 +279,9 @@ export default function Services(){
                                     
                                         <div className="h-full w-full" >
                                             {userEmail != null && <Favorites service={service_object}/>}    
-                                            {sort === 0 && <div className="inline ml-2">{service_object.miles ? `Miles from ${guestAddress ? guestAddress[0] : "Placeholder" }: ` +   service_object.miles : 0 }</div> }
+                                            {sort === 0 && <div className="inline ml-2">{service_object.miles ? `Miles from $: ` +   service_object.miles : 0 }</div> }
                                             <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
-                                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {guestAddress ? guestAddress[0] : "Placeholder" }  showMiles = {sort == 0 ? true: false}/> 
                                             </div>
                                         </div>
                                    

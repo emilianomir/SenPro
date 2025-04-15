@@ -119,18 +119,18 @@ export default function FormLayout ({typeForm}){
                     type="password"
                     onChange={changeData}
                     placeholder="Enter your password"
-                    className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
+                    className=" border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                     id="inputPass"
                   />
                 </div>
   
                 {typeForm.third && 
                 <div>
-                  <label htmlFor="confirmPass" className="form-label ">
+                  <label htmlFor="confirmPass" className="">
                     Confirm Password:{" "}
                   </label>
-                  <div className="grid grid-cols-1">
-                        <div>
+                  <div className="flex items-center">
+                        
                             <input
                                 value={formData.confirmPass}
                                 onChange={changeData}
@@ -139,12 +139,12 @@ export default function FormLayout ({typeForm}){
                                 className="border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                                 id="confirmPass"
                             />
-                        </div>
+                        
                     </div>
                 </div> }
               </div>
               <div className="flex justify-center w-full">
-                <button type="submit" className="mt-3 md:mt-7 px-5 outline-2 outline-white w-1/2">
+                <button type="submit" className="mt-3 md:mt-5 px-5 outline-2 outline-white w-1/2">
                   {typeForm.submit_name}
                 </button>
               </div>
