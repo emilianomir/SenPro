@@ -57,7 +57,7 @@ export default function Account_Modal({email}){
 
         <div className="mt-6">
 
-            <button className='outline-5 outline-gray-800/80 p-2 bg-red-600 text-gray-100 hover:bg-red-700/90 text-3xl' 
+            <button className='outline-5 outline-gray-800/80 p-2 bg-red-600 text-gray-100 hover:bg-red-700/90 text-xl md:text-3xl' 
             onClick={()=>{Reset();
                           setIsOpen(true)}}>Change Password</button>
         </div>

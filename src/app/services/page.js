@@ -11,16 +11,13 @@ import Favorites from "@/components/Favorites";
 
 
 
-
-
-
 export default function Services(){
     const {userResponses, userServices, apiServices, guestAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
-    const [sortValue, setSortValue] = useState("Distance");
+    const [sortValue, setSortValue] = useState("Options");
     const [currentServices, setCurrentServices] = useState(apiServices);
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
@@ -131,7 +128,7 @@ export default function Services(){
 
     useEffect(()=> {
         const getMiles = () => {
-            setCurrentServices(currentServices.map(obj => ({...obj, miles : `Miles from ${guestAddress[0]}: ` + Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.location?.latitude, obj.location?.longitude))})));
+            setCurrentServices(currentServices.map(obj => ({...obj, miles : (Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.location?.latitude, obj.location?.longitude) * 100))/100})));
         }    
         getMiles();
     }, []);
@@ -146,13 +143,15 @@ export default function Services(){
         const dropdownSet = () => {
             switch(sort) {
                 case 0:
-                    if (asc){
-                        //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
-                        setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude ) -  distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude)));
-                    }
-                    else {
-                        setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude)));    
-                    }
+                    setCurrentServices(theSort(currentServices, "miles"));
+                    // if (asc){
+                    //     //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
+                    //     setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude ) -  distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude)));
+                    // }
+                    // else {
+                    //     console.log("I ran des");
+                    //     setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude)));    
+                    // }
                     setSortValue("Distance")
                     break;
                 case 1:
@@ -215,9 +214,9 @@ export default function Services(){
                                     {sortValue}
                                     </button>
                                     
-                                    <div className={`${hideDrop? "opacity-0 ": "opacity-100"} transition-opacity ease-out duration-250 absolute w-50 bg-white text-center text-black rounded-b shadow text-lg py-2 z-10`} id = "dropdown">
+                                    <div className={`${hideDrop? "opacity-0 -z-2": "opacity-100 z-2"} transition-opacity ease-out duration-250 absolute w-50 bg-white text-center text-black rounded-b shadow text-lg py-2`} id = "dropdown">
                                     <ul aria-labelledby = "dropdown">
-                                        <li className={` ${sort == 0 || sort == 4 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(0)}>
+                                        <li className={` ${sort == 0 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(0)}>
                                             Distance
                                         </li>
                                         <li className={` ${sort == 1 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(1)}>
@@ -227,9 +226,9 @@ export default function Services(){
                                             Rating Count
                                         </li>
                                         
-                                        <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
-                                            Price  {/* Add logic to handle only food and drink*/}
-                                        </li>
+                                        {(userResponses.main_category == "Food and Drink" || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
+                                            Price  
+                                        </li> }
 
                                         <li className= {`${asc ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 p-1 mt-2`} onClick={() => setAsc(true)}>
                                             Asecending
@@ -280,7 +279,7 @@ export default function Services(){
                                     
                                         <div className="h-full w-full" >
                                             {userEmail != null && <Favorites service={service_object}/>}    
-                                            {sort === 0 && <div className="inline">{service_object.miles ? service_object.miles : 0 }</div> }
+                                            {sort === 0 && <div className="inline ml-2">{service_object.miles ? `Miles from ${guestAddress ? guestAddress[0] : "Placeholder" }: ` +   service_object.miles : 0 }</div> }
                                             <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
                                                 <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
                                             </div>

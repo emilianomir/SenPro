@@ -16,7 +16,7 @@ export default {
         p1: 'rgb(var(--p1) / <alpha-value>)',
         // primary2: "var(--p2)",
       },
-    },
+    }
   },
   plugins: [],
 };

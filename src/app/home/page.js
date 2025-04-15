@@ -8,7 +8,6 @@ import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
 
 export default function Begin(){
-    //add setFavorites to context
     const {userEmail, setUserEmail} = useAppContext();
     const [goLogin, setLogin] = useState(false);
     const router = useRouter();
@@ -41,14 +40,6 @@ export default function Begin(){
     if (goLogin) 
         return;
 
-    const dummyService = {photo_image: "https://dpgdistribution.com/wp-content/uploads/2018/04/walmart.jpg", displayName: {text: "This is a really long test. How can a service have this much text? A service does not exist like this. Right?"}, rating: 4.2} 
-    const theList = [];
-    for (let i = 0; i < 5; i ++) {
-        theList.push({name: "Placeholder Service " + i, photo: "https://join.travelmanagers.com.au/wp-content/uploads/2017/09/default-placeholder-300x300.png"})
-    }
-
-
-
     return (
         <>
         {userEmail ?
@@ -70,7 +61,7 @@ export default function Begin(){
                                 <div className="w-4/5 bg-white/50 h-1"/>
                             </div>
                         </div>
-                        <Favorites_Section favoritesList={theList}/>
+                        <Favorites_Section />
                     </div>
                     <div>
                         <div className="text-white text-center mt-10 text-3xl font-bold mb-3 py-3">

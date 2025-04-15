@@ -10,11 +10,6 @@ function StartPage(){
     const router = useRouter();
     const [goLogin, setLogin] = useState(false);
 
-
-    // const [sVal, setSearch] = useState(search);
-    // const [products, setProducts] = useState([]);
-
-
     // Gets the session
     useEffect(() => {
         const fetchProducts = async () => {

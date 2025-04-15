@@ -72,7 +72,6 @@ export default function History(){
 
     console.log("DATA: ")
     console.log(data);
-    // console.log(collapse)
 
     if(isLoading){
         return (<Loading message= "Fetching History"/>)

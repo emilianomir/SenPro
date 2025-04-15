@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import { getFavorites } from '@/components/DBactions';
 import Favorites from "@/components/Favorites";
-import Image from "next/image"
 import Link from "next/link";
 import ServiceCard from "./ServiceCard";
 
 
-export default function Favorites_Section ({favoritesList}){
+export default function Favorites_Section (){
     const {userEmail, userServices, setServices, favorites, setFavorites} = useAppContext();
     // const [isLoading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    //const [error, setError] = useState(false);
     const [selection, setSelection] = useState(null);
     console.log("FAVORITES: ")
     console.log(favorites);
@@ -83,7 +82,7 @@ export default function Favorites_Section ({favoritesList}){
          
                         :
                         <div className="whitespace-nowrap overflow-x-auto flex md:justify-center w-full">
-                            {/* {favorites.map((service, index) => ( */}
+                            
                             {favorites.map((service, index) => (
                                 <div key ={service.id} className={`inline-block ${favorites.length > 1 && "me-3"}`}>
                                     <Favorites service={service} responses={service.responses}/>
