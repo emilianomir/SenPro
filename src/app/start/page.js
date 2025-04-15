@@ -31,8 +31,9 @@ function StartPage(){
             }
         }
         }
-        fetchProducts();
+        if(!userEmail) fetchProducts();
     }, [yes]);
+
 
 
     // //[userName, other] = search.split('@');
@@ -68,11 +69,11 @@ function StartPage(){
 
     }
 
-    if(loading){
-        return (<Loading message= "Fetching Session"/>)
-    }
     return (
         <>
+        {userEmail ?
+        <>
+        
         <div className = "" >
             <div className = "text-center">
                 <h1 className='text-4xl font-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
@@ -100,8 +101,10 @@ function StartPage(){
         </div>
        
         </>
-
-        
+        :
+        <Loading message= "Fetching Session"/>
+    }
+    </>
     );
 
 }

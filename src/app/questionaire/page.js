@@ -93,7 +93,7 @@ function Questionaire(){
                 let userName = await getUserSession();
                 if (userName != null) {
                     setUserEmail([userName[0].username, userName[0].email]);
-                    if(favorites.length == 0){
+                    if(!favorites){
                         const favoritesList = await getFavAPI(userName[0].email);
                         if(favoritesList) setFavorites(favoritesList);
                     }

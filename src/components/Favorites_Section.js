@@ -54,7 +54,8 @@ export default function Favorites_Section ({favoritesList}){
             setFavorites(servicesInformation);
             setLoading(false);
         }
-            fetchInfo();
+        if(!favorites)fetchInfo();
+
         }, []);
 
 
@@ -95,11 +96,10 @@ export default function Favorites_Section ({favoritesList}){
         })
         */
 
-    if(isLoading){
-        return (<Loading message= "Fetching Favorites"/>)
-    }
-    else{
+
         return (
+            <>
+            {favorites ? 
 
             <div className="container mt-6">
                 {favorites.length === 0 ? 
@@ -174,6 +174,9 @@ export default function Favorites_Section ({favoritesList}){
                 }
                 
             </div>
+            :
+            <Loading message= "Fetching Favorites"/>
+            }
+            </>
         )
     }
-}

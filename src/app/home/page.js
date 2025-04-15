@@ -36,7 +36,7 @@ export default function Begin(){
           }
         }
       }
-      fetchProducts();
+      if(!userEmail)fetchProducts();
     }, [yes]);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -93,11 +93,9 @@ export default function Begin(){
 
     // if (userEmail == null)
     //     redirect("/login");
-
-    if(loading){
-        return (<Loading message= "Fetching Session"/>)
-    }
     return (
+        <>
+        {userEmail ? 
         <div className="h-350">
             <div className="container w-full h-full mt-5 flex justify-center">
                 <div className="bg-slate-800 h-19/20 w-19/20 rounded-xl pb-0 ">
@@ -156,6 +154,10 @@ export default function Begin(){
 
 
         </div>
+        :
+        <Loading message= "Fetching Session"/>
+        }
+        </>
 
     )
 }
