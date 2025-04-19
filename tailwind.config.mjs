@@ -8,10 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        // bkg: "var(--background)",
+        // foreground: "var(--foreground)",
+        // card_bkg: "var(--card_bg)",
+        // textContent: "var(--textContent)",
+        // border_col: "var(--border_col)",
+        p1: 'rgb(var(--p1) / <alpha-value>)',
+        // primary2: "var(--p2)",
       },
-    },
+    }
   },
   plugins: [],
 };

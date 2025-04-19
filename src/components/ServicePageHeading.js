@@ -1,6 +1,5 @@
 "use client"
 import Account_Overlay from "./Account_Overlay"
-import "../app/css/service_card.css"
 import { useState } from "react"
 import { useAppContext } from "@/context"
 import Link from "next/link";
@@ -20,17 +19,22 @@ export default function ServicePageHeading(){
         <div className="rounded-t-lg bg-slate-900">
             {userEmail != null ? 
             <>
-                <div className = "pb-2 grid grid-cols-3">
-                    <div className = "pl-5 pt-2" onClick={resetUserServices} ><Link href={"/home"}><img className="ml-10" width = "15%" src ="https://www.nicepng.com/png/full/17-178841_home-png-home-icon-free.png" alt = "home icon"/></Link></div> 
+                <div className = "pb-2 grid grid-cols-8 md:grid-cols-3">
+                    <div className = "col-span-2 md:col-span-1 flex items-center justify-center md:justify-start md:pl-5 md:pt-2 w-full" onClick={resetUserServices} >
+                        <div className="w-1/2 md:w-2/5 lg:w-3/20">
+                            <Link href={"/home"} >
+                            <img className="md:ml-10 w-auto" src ="https://www.nicepng.com/png/full/17-178841_home-png-home-icon-free.png" alt = "home icon" />
+                            </Link>
+                        </div>
+                    </div> 
 
-                    <div className="text-center pt-5 pb-8">
-                        <h1 className="text-4xl font-extrabold text-white">Services Menu</h1>
+                    <div className="col-span-4 md:col-span-1 flex justify-center py-3 text-center md:pt-5 md:pb-8">
+                        <h1 className="text-3xl md:text-4xl font-extrabold text-white">Services Menu</h1>
                     </div>
 
                 
-                    
-                    <div className="pt-2 flex justify-end">
-                        <img onClick={toggleOverlay} width="15%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "relative mr-20" alt = "profileIcon" /> 
+                    <div className="col-span-2 md:col-span-1 pt-2 flex items-center justify-center md:justify-end">
+                        <img className = "md:relative md:mr-20 w-1/2 md:w-2/5 lg:w-3/20" onClick={toggleOverlay}  src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png"  alt = "profileIcon" /> 
                         {isVisible && <Account_Overlay />}
                     </div>
                 </div>
@@ -41,7 +45,7 @@ export default function ServicePageHeading(){
             :
             <>
                 <div className="text-center pt-5 pb-8">
-                    <h1 className="text-4xl font-extrabold text-white">Services Menu</h1>
+                    <h1 className={`${userEmail ? "text-xl": "text-4xl"} font-extrabold text-white`}>Services Menu</h1>
                 </div>
                 <div className="h-2 bg-gray-500"/>
             </>
