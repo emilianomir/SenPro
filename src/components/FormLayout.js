@@ -10,7 +10,7 @@ import { check } from "drizzle-orm/mysql-core";
 export default function FormLayout ({typeForm}){
     console.log("Ran login")
     const router = useRouter();
-    const {setUserEmail} = useAppContext();
+    const {setUserEmail, setGuestAddress} = useAppContext();
     const [yes, setYes] = useState(false);
     const [loading, setLoading] = useState(false);
     const [formData, changeFormData] = useState(()=>
@@ -66,6 +66,8 @@ export default function FormLayout ({typeForm}){
                 await createSession(formData.inputEmail);
                 let userName = await getUser(formData.inputEmail);
                 setUserEmail([userName[0].username, userName[0].email]);
+                const temp = [26.1509653, -98.1884949];
+                setGuestAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
                 router.push("/home");
               }
               else

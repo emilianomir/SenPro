@@ -10,7 +10,7 @@ import { ConsoleLogWriter } from "drizzle-orm";
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, guestAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
     const [yes, setyes] = useState(true);
@@ -32,7 +32,8 @@ function Questionaire(){
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses})
+                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : guestAddress[0], 
+                        location: userServices.length> 0 ? userServices.location : guestAddress[1]})
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

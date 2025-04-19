@@ -22,12 +22,12 @@ function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransi
     return (
         // <Link href = {"/services/" + service.displayName.text} >
                 <div className={`h-full group max-w-xs rounded-xl bg-white shadow-lg ${haveTransition && "mt-5 transition ease-in-out delay-100 duration-400 hover:-translate-y-5"}`}>
-                    <Image className = "h-11/20 w-full object-cover rounded-t-xl" src= {error || !service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": service.photo_image} width={300} height={300} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
-                    <div className="h-9/20 rounded-b-xl border border-2 border-gray-200/50 group-hover:bg-gray-200/80 transition-colors ease-in-out duration-500">
-                        <div className="h-1/2 flex w-full items-center justify-center">
+                    <Image className = "h-1/2 w-full object-cover rounded-t-xl" src= {error || !service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": service.photo_image} width={300} height={300} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
+                    <div className="h-1/2 rounded-b-xl border border-2 border-gray-200/50 group-hover:bg-gray-200/80 transition-colors ease-in-out duration-500">
+                        <div className="h-2/5 flex w-full items-center justify-center">
                             <h4 className = {`text-black ${service.displayName.text.length > 25 ? `${!decrease_text ? "text-lg md:text-xl": "text-md md: text-lg"}` :    `${!decrease_text ? "text-xl md:text-2xl": "text-lg md:text-xl" }`} text-wrap p-3 font-extrabold text-center`}>{service.displayName.text}</h4>
                         </div>
-                        <div className={`text-gray-700/90 ${decrease_text ? "text-md/7 md:text-lg/8" : "text-lg/7 md:text-xl/8"} text-wrap pb-3 pl-2 h-1/2`}>
+                        <div className={`text-gray-700/90 ${decrease_text ? "text-md/7 md:text-lg/8" : "text-lg/7 md:text-xl/8"} text-wrap pb-3 pl-2 h-3/5`}>
                             <div className="flex">
                                 <p> Rating: {service.rating ? service.rating + "/5" : "N/A" }</p> 
                                 {service.rating &&
@@ -40,17 +40,18 @@ function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransi
                                 }
 
                             </div>
-                            {theFuel ? 
-                            <div >
-                                <div className="font-bold">{theFuel.type}</div>
-                                <div>Current Price: <span className="font-bold">{theFuel.price.currencyCode == "USD" && "$"} {Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)}</span></div>
-                            </div>
-                            :
+                            {
                             showMiles ?
                             <div className="mb-2">Miles away from {currentLocation}: 
-                            <div className="inline md:block"> 
+                            <div className="inline ml-2 font-bold"> 
                                 {service.miles? service.miles: "UNKNOWN"} 
                             </div>
+                            </div>
+                            :
+                            theFuel ? 
+                            <div >
+                                <div className="font-bold">{theFuel.type}</div>
+                                <div>Current Price: <span className="font-bold">{theFuel.price.currencyCode == "USD" && "$"} {(Math.round((Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)) * 100))/100}</span></div>
                             </div>
                             :
                             <div className="mb-2">Price Range:

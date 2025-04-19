@@ -11,14 +11,14 @@ import { useQRCode } from 'next-qrcode';
 export default function End(){
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-    const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-
+    const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses, guestAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    console.log(guestAddress)
     const googleMapURL = "https://www.google.com/maps/dir/";
     const addressURLS = userServices.map(service=> encodeURIComponent(service.formattedAddress.includes("#") ?
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
 
-    const fullURL = googleMapURL + addressURLS.join('/');
+    const fullURL = googleMapURL + guestAddress[0] + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
     //const [loading, setLoading] = useState(true);
     const router = useRouter();

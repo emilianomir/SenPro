@@ -18,8 +18,9 @@ export default function Begin(){
         try{
         if (!userEmail) {
             let userName = await getUserSession();
-            if (userName)
+            if (userName) {
                 setUserEmail([userName[0].username, userName[0].email]);
+            }
             else 
                 setLogin(true);
         }
