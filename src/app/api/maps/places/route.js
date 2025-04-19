@@ -3,11 +3,9 @@ function delay (ms){
 }
 
 export async function POST(req){
-    const {userResponses} = await req.json();
-
     try {
-        const address = "Houston, TX 77015";
-        // const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+        const { userResponses, address: inputAddress } = await req.json();
+        const address = inputAddress || "Houston, TX 77015";
         const api_key = process.env.GOOGLE_API_KEY;
         const url = "https://places.googleapis.com/v1/places:searchText"
 
@@ -32,7 +30,7 @@ export async function POST(req){
         }
         console.log("The textBody: ") ///debugging purposes
         console.log(textBody);
-    
+
 
         const headers = {
             "Content-Type": "application/json",

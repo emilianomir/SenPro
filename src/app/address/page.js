@@ -25,9 +25,11 @@ function AddressPage(){
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log("handleSubmit called with:", { theInput, selectType });
         if (selectType == '')
             alert("Select an option");
         else {
+            console.log("submit validation for :", { userInput: theInput, userSelection: selectType });
             try {
                 console.log("formCheck function called");
                 const response = await fetch('/api/validate/zipCode', {
@@ -54,10 +56,12 @@ function AddressPage(){
                 }
                 else {
                     if (userEmail == null){
+                        console.log("guest F - setting guestAddress:", theInput);
                         setGuestAddress(theInput);
                         router.push("/start");
                     }
                     else {
+                        console.log("existing user F - updating address:", { email: userEmail[1], address: theInput });
                         try {
                             await updateUserAddress(userEmail[1], theInput);
                             router.push(`/start`); // pass user email to start page
