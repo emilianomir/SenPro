@@ -1,0 +1,74 @@
+.incident-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.incident-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.incident-severity {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.incident-severity.low {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.incident-severity.moderate {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.incident-severity.high {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.incident-severity.unknown {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.incident-type {
+  font-weight: 500;
+}
+
+.incident-details {
+  font-size: 0.9rem;
+}
+
+.incident-location {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.incident-delay, .incident-length {
+  margin: 4px 0;
+}
+
+.incident-timing {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.incident-status {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 8px;
+} 
