@@ -11,18 +11,21 @@ import Script from "next/script";
 import Loading from "@/components/Loading";
 import Service_Image from "@/components/Service_Image";
 import { users } from "@/db/schema/users";
+import TravelMode from "@/components/TravelMode";
 
 
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses, userEmail} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail, guestAddress, userAddress} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
     const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const [onlyFuel, setOnlyFuel] = useState(false); //used for fuel toggle
-    const current_service = userServices[userServices.length-1]; 
+    const current_service = userServices[userServices.length-1];
+    const prevService = userServices.length > 1 ? userServices[userServices.length-2] : null; // check if there is a previous service, used for the travelmode.js component
+    const originAddressToUse = prevService ? prevService.formattedAddress : (userAddress || guestAddress); // if there is a previous service, use the previous service's address as the origin, otherwise use the user's address or guest address
     const router = useRouter();
     const [addServices, setYes] = useState(false)
 
@@ -112,7 +115,10 @@ export default function ServiceInfo(){
             {current_service && 
             <div className="grid grid-cols-7">
                 <div className="col-span-4 bg-white text-black">
-                    <h1>Map Placeholder</h1>
+                    <TravelMode
+                        originAddress={originAddressToUse}
+                        destinationAddress={current_service.formattedAddress}
+                    />
                 </div>
                 <div className="col-span-3 my-3 mx-3 rounded-lg bg-gray-800/80 h-[84vh]">
                     <h1 className="text-3xl text-center pt-4 font-extrabold underline">{current_service.displayName.text}</h1>

@@ -24,7 +24,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     const googleMapRef = useRef(null); // ref for the Google Map instance
     const trafficLayerRef = useRef(null); // erf for the traffic layer instance
     const [location, setLocation] = useState(origin || defaultOrigin);
-    const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '' }); // travel info is the distance and time it will take to travel between the two points
+    const [travelInfo, setTravelInfo] = useState({ distance: '', duration: '', startAddress: '', endAddress: '' }); // travel info includes distance, time, and formatted start/end addresses
     const [showTraffic, setShowTraffic] = useState(true); // show traffic is a boolean that determines if the traffic layer is shown with btn
     const [showWeather, setShowWeather] = useState(false); // show weather is a boolean that determines if weather info is shown
     
@@ -175,9 +175,9 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                 };
 
                 const response = await directionsService.route(routeOptions);
+                const leg = response.routes[0].legs[0]; // legs refers to the legs of the route, which is the distance and time it will take to travel between the two points, the two legs are the origin and destination, leg 1 is the origin and leg 2 is the destination
                 directionsRenderer.setDirections(response);
-                const { distance, duration } = response.routes[0].legs[0];
-                setTravelInfo({ distance: distance.text, duration: duration.text });
+                setTravelInfo({ distance: leg.distance.text, duration: leg.duration.text, startAddress: leg.start_address, endAddress: leg.end_address }); // set the travel info to the distance and time it will take to travel between the two points
             } catch (e) {
                 console.error("directions error:", e);
                 // only show alert if the route actually failed
@@ -475,7 +475,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         <div className="address-marker">A</div>
                         <div className="address-content">
                             <div className="address-label">From:</div>
-                            <div className="address-value">{addresses.origin}</div>
+                            <div className="address-value">{travelInfo.startAddress || addresses.origin}</div>
                         </div>
                     </div>
                     <div className="route-connector">
@@ -488,7 +488,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         <div className="address-marker">B</div>
                         <div className="address-content">
                             <div className="address-label">To:</div>
-                            <div className="address-value">{addresses.destination}</div>
+                            <div className="address-value">{travelInfo.endAddress || addresses.destination}</div>
                         </div>
                     </div>
                 </div>
