@@ -107,19 +107,10 @@ export async function POST(req) {
             }
             const data = await response.json();
             console.log(data);
-            // let result;
-            // if (data.result.verdict.validationGranularity == "PREMISE" || data.result.verdict.validationGranularity == "SUB_PREMISE") {
-
             let result = false;
-            
-            if (data.result && data.result.address && data.result.address.formattedAddress) { // added this to bypass the validationGranularity check
+            if (data.result && data.result.address && data.result.address.formattedAddress) {
                 result = true;
             }
-
-            // else {
-            //     result = false;
-            // }
-
 
             return new Response(JSON.stringify({info: data, isValid: result }), {
                 status: 200,
