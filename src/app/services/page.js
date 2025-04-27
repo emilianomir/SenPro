@@ -136,7 +136,18 @@ export default function Services(){
 
 
     const theSort = (array, property) => {
-        return [...array].sort((a,b) => a[property] ? b[property] ? asc ? a[property]- b[property]: b[property] - a[property] : a[property]- 0: 0 - b[property]? b[property]: 0)
+        return [...array].sort(
+            (a,b) => {
+                let hasValue1 = a[property];
+                let hasValue2 = b[property];
+                hasValue1 = hasValue1 ? Number(hasValue1) : asc ? 1000000000000000: 0;
+                hasValue2 = hasValue2 ? Number(hasValue2): asc ? 1000000000000000: 0;
+                return asc ? hasValue1 - hasValue2 : hasValue2 - hasValue1;
+            })
+                // a[property] && b[property] ? 
+                //     asc ? a[property]- b[property]: 
+                //     b[property] - a[property] 
+                // : a[property] - 0 : 0 - b[property]? b[property]: 0) //fix this to sort correctly
     }
     
     useEffect(() => {
@@ -238,7 +249,7 @@ export default function Services(){
                                                     Rating Count
                                                 </li>
                                                 
-                                                {(userResponses.main_category == "Food and Drink" || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
+                                                {((userResponses.main_category == "Food and Drink") || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
                                                     Price  
                                                 </li> }
 
@@ -332,12 +343,12 @@ export default function Services(){
                                 
                                 
                                 {currentServices ? currentServices.map(service_object=>(
-                                    <div className="inline-block mr-7 h-13/20" key ={service_object.id}>
+                                    <div className="inline-block mr-7 h-13/20 min-w-1/5" key ={service_object.id}>
                                         
                                             <div className="h-full w-full" >
                                                 {userEmail != null && <Favorites service={service_object}/>}    
                                                 <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
-                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : guestAddress[0] }  showMiles = {sort == 0 ? true: false}/> 
+                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : guestAddress[0] } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
                                                 </div>
                                             </div>
                                     

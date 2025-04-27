@@ -27,10 +27,6 @@ export default function ServiceInfo(){
     const [addServices, setYes] = useState(false)
     const [clickedPop, setClickedPop] = useState(false);
     const [isLargeScreen, setIsLargeScreen] = useState(false);
-
-    console.log(userServices);
-
-
     if( userServices.length > 0){
         if(current_service.photoURL)
             current_service.photo_image = current_service.photoURL;

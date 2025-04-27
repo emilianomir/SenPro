@@ -4,7 +4,7 @@ import { useAppContext } from "@/context";
 import Image from "next/image";
 import { useState } from "react";
 
-function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransition = true, decrease_text = false, showMiles = false}){
+function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransition = true, decrease_text = false, showFuel = false, showFood = false}){
     // const {userServices, userResponses} = useAppContext();
     const [error, setError] = useState(false);
     let theFuel = null; 
@@ -41,25 +41,26 @@ function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransi
 
                             </div>
                             {
-                            showMiles ?
-                            <div className="mb-2">Miles away from {currentLocation}: 
-                            <div className="inline ml-2 font-bold"> 
-                                {service.miles? service.miles: "UNKNOWN"} 
-                            </div>
-                            </div>
-                            :
-                            theFuel ? 
-                            <div >
-                                <div className="font-bold">{theFuel.type}</div>
-                                <div>Current Price: <span className="font-bold">{theFuel.price.currencyCode == "USD" && "$"} {(Math.round((Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)) * 100))/100}</span></div>
-                            </div>
-                            :
+                            showFood ?
                             <div className="mb-2">Price Range:
                                 <div> 
                                     {service.priceRange?.startPrice?.units? "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
                                     {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
                                     }
                                 </div>
+                            </div>
+                            :
+                            showFuel? 
+                            <div >
+                                <div className="font-bold">{theFuel ? theFuel.type: has_fuel_type}</div>
+                                {theFuel ? <div>Current Price: <span className="font-bold">{theFuel.price.currencyCode == "USD" && "$"} {(Math.round((Number(theFuel.price.units) + (theFuel.price.nanos ? theFuel.price.nanos/1000000000: 0)) * 100))/100}</span></div>
+                                : <div>Price/Service Unknown</div> }
+                            </div>
+                            :
+                            <div className="mb-2">Miles away from {currentLocation}: 
+                            <div className="inline ml-2 font-bold"> 
+                                {service.miles? service.miles: "UNKNOWN"} 
+                            </div>
                             </div>
                             }
                         </div>
