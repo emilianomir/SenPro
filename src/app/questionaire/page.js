@@ -5,7 +5,7 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
-import { createStatelessQ, getInfoSession, deleteSession, getUserSession} from "@/components/DBactions";
+import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI} from "@/components/DBactions";
 import { ConsoleLogWriter } from "drizzle-orm";
 
 
@@ -54,8 +54,10 @@ function Questionaire(){
     
                     }
                 }
+                /*
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
+                */
                 // if (change){
                 setAPIServices(services_result);
                 router.push("/services");
@@ -89,8 +91,15 @@ function Questionaire(){
             try{
                 setyes(false);
                 let userName = await getUserSession();
-                if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-                let sessionValues = await getInfoSession();
+                if (userName != null) {
+                    setUserEmail([userName[0].username, userName[0].email]);
+                    if(!favorites){
+                        const favoritesList = await getFavAPI(userName[0].email);
+                        if(favoritesList) setFavorites(favoritesList);
+                    }
+                }
+                let sessionValues = null;
+                if (numberPlaces <= 0) sessionValues = await getInfoSession();
                 if(sessionValues == null || numberPlaces > 0)
                 {
                     
@@ -100,16 +109,14 @@ function Questionaire(){
                     {
                         email = userName[0].email;
                     }
-                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
+                    await createStatelessQ(numberPlaces, userServices, [], [], email);
                 }
                 else
                 {
                     setNumberPlaces(sessionValues.numberPlaces);
-                    setFavorites(sessionValues.favorites);
                     setServices(sessionValues.userServices);
-                    setResponses(sessionValues.userResponses);
-                    setAPIServices(sessionValues.apiServices);
                 }
+
 
             } catch(error) {
                 console.error("Error fetching DB:", error);
@@ -121,7 +128,6 @@ function Questionaire(){
         }
         fetchProducts();
         }, [yes]);
-
 
 
     // const goToNext = ()=>{

@@ -22,7 +22,7 @@ export default function SelectFavorites(){
                         <div className="inline-block mr-7" key ={index}>
                             
                             <div onClick={() => getMoreInfo(index)} > 
-                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
+                                <ServiceCard service = {service_object} has_fuel_type={service_object.fuel_type}/> 
                             </div>
                             
                             {/* <div className="card-footer">
