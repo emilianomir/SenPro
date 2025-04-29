@@ -5,10 +5,12 @@ import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
 import { createStatelessQ, getInfoSession, deleteSession, getUserSession} from "@/components/DBactions";
-import { ConsoleLogWriter } from "drizzle-orm";
+
 
 
 function Questionaire(){
+
+    console.log("Questionnaire ran")
   
     const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, guestAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
@@ -41,18 +43,18 @@ function Questionaire(){
         
                 const {services_result} = await response.json();
                 if (services_result) {
-                    for (let i of services_result) {
-                        if (i.photos) {
-                            const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
-                            if (result.ok) {
-                                const photoURL= result;
-                                i.photo_image = photoURL.url;
+                    await Promise.all([
+                        services_result.map(async i => {
+                            if (i.photos) {
+                                const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
+                                if (result.ok) {
+                                    const photoURL= result;
+                                    i.photo_image = photoURL.url;
+                                }
                             }
-                               
-                            // await new Promise(resolve => setTimeout(resolve, 100));
-                        }
-    
-                    }
+                        })
+                    ])
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);

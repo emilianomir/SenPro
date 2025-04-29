@@ -6,6 +6,7 @@ import { getUserSession } from '@/components/DBactions';
 import Loading from '@/components/Loading';
 
 function StartPage(){
+    console.log("Start ran")
     const {userEmail, setNumberPlaces, setUserEmail, userServices} = useAppContext();
     const router = useRouter();
     const [goLogin, setLogin] = useState(false);

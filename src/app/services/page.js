@@ -144,10 +144,6 @@ export default function Services(){
                 hasValue2 = hasValue2 ? Number(hasValue2): asc ? 1000000000000000: 0;
                 return asc ? hasValue1 - hasValue2 : hasValue2 - hasValue1;
             })
-                // a[property] && b[property] ? 
-                //     asc ? a[property]- b[property]: 
-                //     b[property] - a[property] 
-                // : a[property] - 0 : 0 - b[property]? b[property]: 0) //fix this to sort correctly
     }
     
     useEffect(() => {
@@ -155,14 +151,6 @@ export default function Services(){
             switch(sort) {
                 case 0:
                     setCurrentServices(theSort(currentServices, "miles"));
-                    // if (asc){
-                    //     //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
-                    //     setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude ) -  distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude)));
-                    // }
-                    // else {
-                    //     console.log("I ran des");
-                    //     setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude)));    
-                    // }
                     setSortValue("Distance")
                     break;
                 case 1:
@@ -224,7 +212,7 @@ export default function Services(){
                     <>
                         <div className="md:grid md:grid-cols-2">
                             <div className="ml-2 mt-2 text-center md:text-start">
-                                <Link href={"/questionaire"}><button className="outline outline-2 text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link>
+                                {currentServices && <Link href={"/questionaire"}><button className="outline outline-2 text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link> }
                             </div>
                             <div className="w-4/5 flex justify-end mt-2">
                                 <div className="text-2xl grid md:grid-cols-2">
@@ -249,7 +237,7 @@ export default function Services(){
                                                     Rating Count
                                                 </li>
                                                 
-                                                {((userResponses.main_category == "Food and Drink") || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
+                                                {((userResponses.main_category == "Food and Drink") || (currentServices && currentServices.some(theService => theService.fuelOptions))) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
                                                     Price  
                                                 </li> }
 
@@ -271,60 +259,6 @@ export default function Services(){
                                 </div>
                             </div>
                         </div>
-                        {/* <div className="w-full flex justify-end">
-                            {currentServices && <div className="text-2xl flex mr-20 mt-3">
-                                <div className="mr-1">
-                                    Sort By: 
-                                </div>
-                                <div className="">
-                                    <div className="relative lg:ml-2">
-                                        <button type="button" className ={`w-50 p-1 text-black bg-white ${!hideDrop ? "rounded-t-lg": "rounded-lg" } text-lg`} onClick={()=>setDrop(!hideDrop)}>
-                                        {sortValue}
-                                        </button>
-                                        
-                                        <div className={`${hideDrop? "opacity-0 -z-2": "opacity-100 z-2"} transition-opacity ease-out duration-250 absolute w-50 bg-white text-center text-black rounded-b shadow text-lg py-2`} id = "dropdown">
-                                        <ul aria-labelledby = "dropdown">
-                                            <li className={` ${sort == 0 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(0)}>
-                                                Distance
-                                            </li>
-                                            <li className={` ${sort == 1 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(1)}>
-                                                Rating
-                                            </li>
-                                            <li className={` ${sort == 2 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(2)}>
-                                                Rating Count
-                                            </li>
-                                            
-                                            {(userResponses.main_category == "Food and Drink" || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
-                                                Price  
-                                            </li> }
-
-                                            <li className= {`${asc ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 p-1 mt-2`} onClick={() => setAsc(true)}>
-                                                Asecending
-                                            </li>
-
-                                            <li className={`${!asc ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 p-1 mt-2`} onClick={() => setAsc(false)}>
-                                                Descending
-                                            </li>
-                                            
-                                            
-                                        </ul>
-                                        </div>
-                                        
-                                    </div>
-
-                                </div>
-                            </div>} */}
-                            <div className="">
-                                <div className="" >
-                                    <div className="">
-                                        {/* <div className="d-flex justify-content-center align-items-center h-100 fs-5 text-center">
-                                            {userResponses.name ? userResponses.name: userResponses.main_category}
-                                        </div> */}
-                                    </div>
-                                </div>
-                            </div>
-
-                        {/* </div> */}
                         <div className="mt-5 bg-slate-800/10 h-screen">
                             <div className="text-center text-2xl lg:text-3xl py-4 font-bold">
                                 Choose your service:

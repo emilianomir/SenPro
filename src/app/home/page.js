@@ -7,10 +7,18 @@ import { getUserSession } from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
 
+const info = [
+    {heading: "Plan Trip", text: "Create a List of Services for Your Next Trip Plan", location:"/start"},
+    {heading: "Past Trips", text: "View Your Past History of List of Services Created", location: "/history"}
+]
+
 export default function Begin(){
+    console.log("Home ran")
     const {userEmail, setUserEmail} = useAppContext();
     const [goLogin, setLogin] = useState(false);
     const router = useRouter();
+
+
 
     // Gets the session
     useEffect(() => {
@@ -52,8 +60,8 @@ export default function Begin(){
                         <h2 className="text-2xl md:text-3xl mt-4 font-semibold">What are you planning to do today?</h2>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4 mx-4 mt-7">
-                        <Home_Squares info={{heading: "Plan Trip", text: "Create a List of Services for Your Next Trip Plan", location:"/start"}} />
-                        <Home_Squares info ={{heading: "Past Trips", text: "View Your Past History of List of Services Created", location: "/history"}} />
+                        <Home_Squares info={info[0]} />
+                        <Home_Squares info ={info[1]} />
                     </div>
                     <div>
                         <div className="text-white text-center mt-10 text-3xl font-bold mb-3 py-3 mb-3">

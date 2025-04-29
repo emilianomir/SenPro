@@ -1,5 +1,7 @@
 import RouteButton from "@/components/route_button";
-export default function Home_Squares({info}) {
+import { memo } from "react";
+const Home_Squares = memo(function Home_Squares({info}) {
+    console.log("Home squares ran")
     return(                        
     <div className="rounded-lg bg-slate-700/50">
         <h3 className="text-center bg-slate-500 rounded-t-lg text-2xl py-4 font-semibold">{info.heading}</h3>
@@ -11,4 +13,6 @@ export default function Home_Squares({info}) {
             </div>
     </div>
     )
-}
+})
+
+export default Home_Squares

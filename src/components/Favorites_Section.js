@@ -9,6 +9,7 @@ import ServiceCard from "./ServiceCard";
 
 
 export default function Favorites_Section (){
+    console.log("Favorites ran")
     const {userEmail, userServices, setServices, favorites, setFavorites} = useAppContext();
     // const [isLoading, setLoading] = useState(true);
     //const [error, setError] = useState(false);

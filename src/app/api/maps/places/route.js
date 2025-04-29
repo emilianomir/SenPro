@@ -1,7 +1,3 @@
-function delay (ms){
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 export async function POST(req){
     const {userResponses, userAddress, location} = await req.json();
 

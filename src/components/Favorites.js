@@ -5,6 +5,7 @@ import { useAppContext } from "@/context";
 
 
 function Favorites({service, responses}){
+
     const {userEmail, favorites, setFavorites} = useAppContext();
     const [sVal, setSearch] = useState(userEmail[1]);
     // Stars

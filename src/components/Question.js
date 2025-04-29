@@ -20,6 +20,7 @@ class Responses {
 }
 //General search is how I refer to skipping some parts of questionnaire and only responding to current responses 
 function Question({theQuestion, current, func, changeLoading}){
+    console.log("Question ran")
     const [start, SetStart] = useState(false);
     const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [destSelect, changeDes] = useState("Begin"); //destination for map purposes
@@ -28,9 +29,7 @@ function Question({theQuestion, current, func, changeLoading}){
     const ques = theQuestion.get(destSelect); //this is how each question is rendered each time
     const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
     const [theTest, setTheTest] = useState(new Responses()); //the created object for API calls
-    const [nameValue, setNameValue] = useState(''); //for searching service purposes
     const [generalSearchP, setSearchP] = useState(false); //to show and hide the section for general searching
-    const [nameSearch, setNameSearch] = useState(false); //to know when the user is ready to search for a service via name
     const [readyGeneralSearch, setGeneralSearch] = useState(false); //to know when a user is ready to search for a services via general search 
 
     function gotoPrev() {
@@ -79,7 +78,6 @@ function Question({theQuestion, current, func, changeLoading}){
         }
         console.log("After back:")
         console.log(theTest); //debugging
-        console.log(previousResponses);
         changeDes(previousResponses[0]); 
         prevKeys.pop();
         if (prevKeys.length == 0)
@@ -87,13 +85,14 @@ function Question({theQuestion, current, func, changeLoading}){
     }
 
     const changeSpecLoc = (e) => { //to tell us that the user is ready to search with name
-        setNameSearch(true);
         e.preventDefault();
-    }
-
-
-    const changeNameValue = (e)=>{ //for textbox
-        setNameValue(e.target.value);
+        const text = e.target.nameSearch.value;
+        setTheTest(new Responses()); //here, I do a full reset on the object because the types the user currently selected and the name of the service might not be connected. 
+        // Like the user can select food as type, but then search Academy, which would lead to no services showing up due to strict type searching.
+        theTest.name = text[0].toUpperCase() + text.length > 1 ? text.substring(1): "";
+        setResponses(theTest)
+        changeLoading()
+        func()
     }
 
     const generalSearch = ()=> { //ready to search generally
@@ -291,23 +290,16 @@ function Question({theQuestion, current, func, changeLoading}){
 
 
     useEffect(() => { //this only called if finished and destSelect changes in values.
-        if (nameSearch){
-            setTheTest(new Responses()); //here, I do a full reset on the object because the types the user currently selected and the name of the service might not be connected. 
-                                            // Like the user can select food as type, but then search Academy, which would lead to no services showing up due to strict type searching.
-            theTest.name = nameValue[0].toUpperCase() + nameValue.substring(1);
-            setResponses(theTest)
-        }
         if (readyGeneralSearch) 
             setResponses(theTest)
         
-        if ((finished && destSelect === "End") || readyGeneralSearch || nameSearch) { 
+        if ((finished && destSelect === "End") || readyGeneralSearch) { 
             changeLoading();
             func();// this is a function call from the questionaire page that just routes to services menu
         }
-      }, [finished, nameSearch, readyGeneralSearch]);
+      }, [finished, readyGeneralSearch]);
 
     return (
-
         <div className={`grid ${userEmail && !start ? "grid-rows-2": "grid-rows-3"} lg:grid-cols-2 h-full`}>
             <div className="w-full md:h-2/3 lg:row-span-3">
                 <div className={`flex flex-col mt-4 md:mt-10 lg:mt-0 ${generalSearchP && start ? "": "justify-center"} md:justify-center items-center h-full p-3`}>
@@ -334,7 +326,7 @@ function Question({theQuestion, current, func, changeLoading}){
                         <div className="text-xl md:text-2xl lg:text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
                         <div className="mt-5 w-full"> 
                             <form onSubmit={changeSpecLoc}>
-                                <input className="w-3/4 text-center border-b-1 mr-2 text-base md:text-xl lg:text-2xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
+                                <input className="w-3/4 text-center border-b-1 mr-2 text-base md:text-xl lg:text-2xl" placeholder="Enter your search here" id="nameSearch" required></input>
                                 <button className="outline outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
