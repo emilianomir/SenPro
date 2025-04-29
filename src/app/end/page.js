@@ -4,13 +4,13 @@ import ServicePageHeading from "@/components/ServicePageHeading";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI} from '@/components/DBactions';
+import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, checkRemoveOldest} from '@/components/DBactions';
 import "../css/end_page.css"
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 
 export default function End(){
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -28,6 +28,8 @@ export default function End(){
                     if(favoritesList) setFavorites(favoritesList);
                 }
             }
+            else userName = [{username: userEmail[0], email:userEmail[1]}];
+            await checkRemoveOldest(userName[0].email);
             let sessionValues = null;
             if (numberPlaces <= 0) sessionValues = await getInfoSession();
             if(sessionValues == null || numberPlaces > 0)
@@ -56,8 +58,6 @@ export default function End(){
         fetchProducts();
     }, [yes]);
             
-    
-
     
     if(loading){
         return (<Loading message= "Fetching Session"/>)
