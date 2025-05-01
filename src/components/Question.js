@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
-import { testExistingUser, addQuestion, getUser } from "./DBactions";
+//import { testExistingUser, addQuestion, getUser } from "./DBactions";
 import { useSearchParams } from "next/navigation";
 import SelectFavorites from "@/components/SelectFavorites";
 import Favorites_Section from "./Favorites_Section";
@@ -269,18 +269,18 @@ function Question({theQuestion, current, func, changeLoading}){
         prevKeys.push([destSelect, valueSelect]);
         changeDes(mapKey);
       
-        if (userEmail != null) {
-            try {
-                const exists = await testExistingUser(userEmail[1]);
-                if (exists) {
-                    await addQuestion(userEmail[1], ques.question[0], valueSelect);
-                } else {
-                    console.error("user doesnt exist in db:", userEmail[1]);
-                }
-            } catch (e) {
-                console.error("error storing question and answer:", e);
-            }
-        }
+        // if (userEmail != null) {
+        //     try {
+        //         const exists = await testExistingUser(userEmail[1]);
+        //         if (exists) {
+        //             await addQuestion(userEmail[1], ques.question[0], valueSelect);
+        //         } else {
+        //             console.error("user doesnt exist in db:", userEmail[1]);
+        //         }
+        //     } catch (e) {
+        //         console.error("error storing question and answer:", e);
+        //     }
+        // }
 
         if (mapKey == "End") { 
             setResponses(theTest);//to have the object in mulitple pages

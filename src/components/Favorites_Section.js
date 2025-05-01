@@ -35,17 +35,20 @@ export default function Favorites_Section (){
                                 service_result.photoURL = img_response.url;
                                 service_result.photo_image =  img_response.url;
                             }
-                        }catch(error) {
-                            console.error("Error fetching image for id " + id.info + ":", error);
+                            service_result.id = id.info;
+                            service_result.responses = id.response;
+                            
+                            return service_result;
                         }
-                        service_result.id = id.info;
-                        service_result.responses = id.response;
-                        return service_result;
+                    catch(error) {
+                        console.error("Error fetching service " + id.info + ":", error);
                     }
-                }catch(error) {
-                    console.error("Error fetching service " + id.info + ":", error);
                 }
-            });
+        
+            }
+            catch(error) {
+                console.error("Error fetching service " + id.info + ":", error);
+            }});
             const waitCalls = await Promise.all(servicesCalls);
             waitCalls.forEach(result => { 
                 if (result) servicesInformation.push(result)
@@ -62,40 +65,6 @@ export default function Favorites_Section (){
 
 
 
-
-
-
-
-
-
-
-/*
-    useEffect(() => {
-        const fetchInfo = async () => {
-            try{
-                const fav = await getFavorites(userEmail[1]);
-                setFavorites(fav.map(element => JSON.parse(element.info)));
-                } catch(error) {
-                    console.error("Error fetching DB:", error);
-                    alert("There was an issue getting the data.");
-                } finally {
-                    setLoading(false);
-                }
-            }
-            fetchInfo();
-        }, []);
-
-*/
-
-
-        /*
-        favoritesList.length = 0;
-        favorites.forEach(element => {
-            const val = JSON.parse(element.info);
-            favoritesList.push(val);
-            console.log(favoritesList)
-        })
-        */
 
   
         return (

@@ -3,21 +3,20 @@ function delay (ms){
 }
 
 export async function POST(req){
-    const {userResponses} = await req.json();
+    const {userResponses, userAddress, location} = await req.json();
 
     try {
-        const address = "Houston, TX 77015";
         // const api_key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
         const api_key = process.env.GOOGLE_API_KEY;
         const url = "https://places.googleapis.com/v1/places:searchText"
 
         const textBody = {
-            textQuery: `${userResponses.name ? userResponses.name : userResponses.textQuery} near ${address}`,
+            textQuery: `${userResponses.name ? userResponses.name : userResponses.textQuery} near ${userAddress}`,
             openNow: true, //we can change to false to show more services. But then we would need to ask for the business operations of each place to help user see time 
             regionCode: "US",
             languageCode: "en",
             pageSize: 10, //this is to limit the max services sent by response. High numbers causing images not to load due to many requests 
-            rankPreference: "DISTANCE"
+            rankPreference: "DISTANCE",
             //enter the location restriction inside here for the API calls
         }
 
@@ -29,6 +28,18 @@ export async function POST(req){
         if (userResponses.types){
             textBody.includedType = userResponses.types;
             textBody.strictTypeFiltering = true;
+        }
+        if (location){
+            textBody.locationBias = 
+            {
+                "circle": {
+                    "center": {
+                    "latitude": location.latitude,
+                    "longitude": location.longitude
+                    },
+                    "radius": 1000.0
+                }
+            }
         }
         console.log("The textBody: ") ///debugging purposes
         console.log(textBody);

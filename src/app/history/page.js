@@ -99,12 +99,6 @@ export default function History(){
 
     console.log("DATA: ")
     console.log(data);
-            /*
-    console.log("FUTURE")
-    console.log(futureDate);
-    */
-
-    // console.log(collapse)
 
     // API function calls
 

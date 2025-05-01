@@ -27,18 +27,32 @@ export default function ServiceInfo(){
     const [addServices, setYes] = useState(false)
     const [clickedPop, setClickedPop] = useState(false);
     const [isLargeScreen, setIsLargeScreen] = useState(false);
-
-    console.log(userServices);
-
-
     if( userServices.length > 0){
         if(current_service.photoURL)
             current_service.photo_image = current_service.photoURL;
     }
 
+    const handleSmallPopUP = ()=>{
+        console.log("I RAN")
+        if (isLargeScreen)
+            return;
+        if (!clickedPop) {
+            setClickedPop(true)
+            document.body.classList.remove('overflow-hidden')
+        }
+        else {
+            setClickedPop(false)
+            document.body.classList.add('overflow-hidden')
+        }
+
+    }  
+            
+
     const handleBack = ()=>{
         setBack(true);
     }
+
+
 
     const handleToggle = ()=> {
         setOnlyFuel(!onlyFuel);
@@ -67,7 +81,6 @@ export default function ServiceInfo(){
     }
 
     const handleEnter = ()=> { 
-        setGuestAddress([current_service.formattedAddress, current_service.location])
         if (numberPlaces == userServices.length)
             setYes(true);
         else
@@ -106,24 +119,9 @@ export default function ServiceInfo(){
     }, [wentBack, addServices]
     );
 
-    
-    useEffect(() => {
-        const handleResize = () => {
-          const mdBreakpoint = 1024; 
-          setIsLargeScreen((window.innerWidth >= mdBreakpoint));
-        };
-    
-        // Add event listener on mount
-        window.addEventListener("resize", handleResize);
-        handleResize(); // Check immediately on mount
-    
-        // Clean up event listener
-        return () => window.removeEventListener("resize", handleResize);
-      }, []);
-
-    
     useEffect(() => {
         const handleGalleryOpen = () =>{
+            console.log("Gallery ran")
             if (isOpen) {
                 document.body.classList.add('overflow-hidden');
             }
@@ -136,6 +134,25 @@ export default function ServiceInfo(){
             document.body.classList.remove('overflow-hidden');
         };
     }, [isOpen])
+
+    useEffect(() => {
+        const handleResize = () => {
+          console.log("resize ran")
+          const mdBreakpoint = 1024; 
+          setIsLargeScreen((window.innerWidth >= mdBreakpoint));
+          document.body.classList.add('overflow-hidden');
+        };
+    
+        // Add event listener on mount
+        window.addEventListener("resize", handleResize);
+        handleResize(); // Check immediately on mount
+    
+        // Clean up event listener
+        return () => window.removeEventListener("resize", handleResize);
+      }, []);
+
+    
+
 
 
     return(
@@ -151,10 +168,10 @@ export default function ServiceInfo(){
                 <div className={`md:col-span-4 bg-white text-black ${clickedPop ? "hidden" : "visible h-7/10"} md:h-full`}>
                     <h1>Map Placeholder</h1>
                 </div>
-                <div onClick={() => !isLargeScreen && !clickedPop && setClickedPop(true)} className={`md:col-span-3 my-3 mx-3 rounded-lg bg-gray-800/80 ${isLargeScreen ? "h-[84vh]" : "h-[135vh"}`}>
+                <div onClick={()=> (!clickedPop && handleSmallPopUP())} className={`md:col-span-3 my-3 mx-3 rounded-lg bg-gray-800/80 ${isLargeScreen ? "h-[84vh]" : "h-[135vh"}`}>
                     {clickedPop && 
                         <div className="absolute text-center top-0 flex w-full h-1/10 justify-center left-0">
-                            <div onClick={() => clickedPop && setClickedPop(false)} className="h-full w-19/20">
+                            <div onClick={handleSmallPopUP} className="h-full w-19/20">
                             </div>
                         </div>}
                     <h1 className="text-3xl text-center pt-4 font-extrabold underline">{current_service.displayName.text}</h1>

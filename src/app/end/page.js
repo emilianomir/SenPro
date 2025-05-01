@@ -10,7 +10,7 @@ import { useQRCode } from 'next-qrcode';
 
 export default function End(){
 
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, guestAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
 
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
@@ -18,16 +18,58 @@ export default function End(){
     const addressURLS = userServices.map(service=> encodeURIComponent(service.formattedAddress.includes("#") ?
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
-    const fullURL = googleMapURL + addressURLS.join('/');
+
+    const fullURL = googleMapURL + guestAddress[0] + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     
+
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //     if (yes){
+    //         try{
+    //         setyes(false);
+    //         let userName = await getUserSession();
+    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+    //         let sessionValues = await getInfoSession();
+    //         if(sessionValues == null || numberPlaces > 0)
+    //         {
+
+    //             if(numberPlaces > 0) await deleteSession('Qsession');
+    //             let email = "HASHTHIS";
+    //             if(userName)
+    //             {
+    //                 email = userName[0].email;
+    //             }
+    //             console.log(await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email));
+    //         }
+    //         else
+    //         {
+    //             setFavorites(sessionValues.favorites);
+    //             setServices(sessionValues.userServices);
+    //             setResponses(sessionValues.userResponses);
+    //             setAPIServices(sessionValues.apiServices);
+    //         }
+    //         } catch(error) {
+    //             console.error("Error fetching DB:", error);
+    //             alert("There was an issue getting the data.");
+    //         } finally {
+    //         setLoading(false);
+    //         }
+    //     }
+    //     }
+    //     fetchProducts();
+    // }, [yes]);
+            
+    
+
     useEffect(() => {
         const fetchProducts = async () => {
         if (yes){
             try{
             setyes(false);
+            setLoading(true)
             let userName = await getUserSession();
             if (userName != null) {
                 setUserEmail([userName[0].username, userName[0].email]);
@@ -63,21 +105,22 @@ export default function End(){
             }
         }
         }
-        fetchProducts();
+        if (!userEmail)
+            fetchProducts();
     }, [yes]);
             
     
-<<<<<<< HEAD
+
     if(loading){
         return (<Loading message= "Fetching Session"/>)
     }
-=======
+
 
     
     // if(loading){
     //     return (<Loading message= "Fetching Session"/>)
     // }
->>>>>>> origin/main
+
     return(
         <div>
             <ServicePageHeading />

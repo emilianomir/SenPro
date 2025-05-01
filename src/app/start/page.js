@@ -14,13 +14,13 @@ function StartPage(){
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-            if (!userEmail) {
+            
                 let userName = await getUserSession();
                 if (userName != null)
                     setUserEmail([userName[0].username, userName[0].email]);
                 // else 
                 //     setLogin(true);
-            }
+            
             } catch(error) {
                 
                 console.error("Error fetching DB:", error);

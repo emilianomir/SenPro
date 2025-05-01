@@ -1,6 +1,6 @@
 "use client"
 import { useAppContext } from "@/context"
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState} from "react";
 import { getUserSession} from "@/components/DBactions";
@@ -9,6 +9,8 @@ import Loading from "@/components/Loading";
 
 export default function Begin(){
     const {userEmail, setUserEmail} = useAppContext();
+    const [goLogin, setLogin] = useState(false);
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [yes, setyes] = useState(true);
     const [back, setBack] = useState(false);
@@ -17,7 +19,7 @@ export default function Begin(){
     useEffect(() => {
       const fetchProducts = async () => {
         try{
-        if (!userEmail) {
+        
             setLoading(true)
             let userName = await getUserSession();
             if(userName == null){
@@ -26,7 +28,8 @@ export default function Begin(){
             }
             else setUserEmail([userName[0].username, userName[0].email]);
           }
-        }
+        
+    
         catch(error) {
             console.error("Error fetching DB:", error);
             alert("There was an issue getting the data.");
@@ -35,7 +38,7 @@ export default function Begin(){
         }
       }
       if(!userEmail)fetchProducts();
-    }, [yes]);
+}, [yes]);
   
 
     if (back)

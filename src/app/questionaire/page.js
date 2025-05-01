@@ -10,7 +10,7 @@ import { ConsoleLogWriter } from "drizzle-orm";
 
 function Questionaire(){
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, guestAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
     const [yes, setyes] = useState(true);
@@ -32,7 +32,8 @@ function Questionaire(){
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses})
+                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : guestAddress[0], 
+                        location: userServices.length> 0 ? userServices.location : guestAddress[1]})
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -167,7 +168,7 @@ function Questionaire(){
     //Food Category Questions
     questionsList.set("FoodDrink",{
         question: ["What type would you like?", 1],
-        answer: [["Bar", "BarQ", [3]], ["Restaurant", "SpecificTypes", [3]], ["Cafe", "CafeQ", [3]], ["Food Shop", "FoodShopQ", [3, "Shop"]]]
+        answer: [["Bar", "BarQ", [3]], ["Restaurant", "SpecificTypes", [3]], ["Cafe", "CafeQ", [3]], ["Food Shop", "FoodShopQ", [0]]]
     });
     questionsList.set("BarQ", {
         question: ["What type of bar would you like?", 1],
@@ -195,7 +196,7 @@ function Questionaire(){
     );
     questionsList.set("GeneralFood", {
         question: ["What experience would you like?", 1 ], 
-        answer: [["Fast Food", "Price", [1]], ["Dining", "Price", [1]], ["Fine Dining", "Price", [1]], ["No Preference", "Price"]]
+        answer: [["Fast Food", "Price", [1]], ["Fine Dining", "Price", [1]], ["No Preference", "Price"]]
     });
 
     questionsList.set("CafeQ", {
@@ -204,8 +205,8 @@ function Questionaire(){
     });    
     questionsList.set("FoodShopQ", {
         question: ["What type of shop would you like?", 1],
-        answer: [["Bagel", "Price", [1]], ["Chocolate", "Price" , [1]], ["Coffee", "Price" , [1]], ["Dessert", "Price" , [1]], ["Donut", "Price" , [1]], ["Ice Cream", "Price" , [1]], 
-        ["Juice", "Price" , [1]], ["Sandwich", "Price" , [1]], ["No Preference", "Price" , [0]]]
+        answer: [["Bagel Shop", "Price", [3]], ["Chocolate Shop", "Price" , [3]], ["Coffee Shop", "Price" , [3]], ["Dessert Shop", "Price" , [3]], ["Donut Shop", "Price" , [3]], ["Ice Cream Shop", "Price" , [3]], 
+        ["Juice Shop", "Price" , [3]], ["Sandwich Shop", "Price" , [3]], ["No Preference", "Price" , [0]]]
     }); 
 
 
@@ -241,8 +242,8 @@ function Questionaire(){
     //Park SubQuestion
     questionsList.set("ParkQ",{
         question: ["What type of park are you looking for?", 1],
-        answer: [["Regular", "Rating", [0]], ["Amusement Park", "Rating", [1, "Amusement"]], ["Dog Park", "Rating", [1, "Dog"]], ["National Park", "Rating", [1, "National"]],
-        ["Picnic", "Rating", [3, "Picnic Ground"]], ["Skateboard", "Rating", [1, "Skateboard"]], ["State Park", "Rating", [1, "State"]], ["Water Park", "Rating", [1, "Water"]], ["Wildlife Park", "Rating", [1, "Wildlife Park"]], ["No Preference", "Rating"]]
+        answer: [["Regular", "Rating", [0]], ["Amusement Park", "Rating", [2, "Amusement"]], ["Dog Park", "Rating", [2, "Dog"]], ["National Park", "Rating", [2, "National"]],
+        ["Picnic", "Rating", [3, "Picnic Ground"]], ["Skateboard", "Rating", [2]], ["State Park", "Rating", [2, "State"]], ["Water Park", "Rating", [2, "Water"]], ["Wildlife Park", "Rating", [2, "Wildlife"]], ["No Preference", "Rating"]]
     });
 
     questionsList.set("AmuseQ", {
@@ -288,7 +289,7 @@ function Questionaire(){
         answer: [["Golf", "Rating", [3, "Golf Course"]], ["Ice Skating", "Rating", [3, "Ice Skating Rink"]], ["Playground", "Rating", [3]], ["Ski Resort", "Rating", [3]], ["Sports Club", "Rating", [3]],
     ["Stadium", "Rating", [3]], ["Swimming", "Rating", [3,"Swimming Pool"]]]
     });
- 
+
 
 
     //Shopping Questions
@@ -374,7 +375,7 @@ function Questionaire(){
         answer: [["Electrician", "Price", [3]], ["Funeral Home", "Price" , [3]], ["Lawyer", "Price", [3]], ["Moving", "Price", [3, "Moving Company"]], ["Painter", "Price", [3]], ["Plumber", "Price", [3]],
     ["Real Estate", "Price", [3, "Real Estate Agency"]], ["Roofing", "Price", [3, "Roofing Contractor"]], ["Traveling", "Price", [3, "Travel Agency"]]]
     });  
- 
+
 
 
     questionsList.set("Price", {

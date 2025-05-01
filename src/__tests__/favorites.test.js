@@ -128,13 +128,16 @@ describe('Favorites DB Calls', () => {
     });
 
     it('should properly add and check for a given favorite service', async () => {
-        const beforeAdding = await db.select({userEmail:favorites.userEmail, count:sql`count(${favorites.sAddress})`}).from(favorites).groupBy(favorites.userEmail);
+        const beforeAdding = await db.select({userEmail:favorites.userEmail, count:sql`count(${favorites.sAddress})`}).from(favorites).where(eq(favorites.userEmail, 'testuser')).groupBy(favorites.userEmail);
+        console.log(beforeAdding)
         await addFavoriteService("TestService", {noinfo:"null"}, 'testuser');
         const favoritesResult = await db.select({userEmail:favorites.userEmail, count:sql`count(${favorites.sAddress})`})
+        
         .from(favorites)
+        .where(eq(favorites.userEmail, 'testuser'))
         .groupBy(favorites.userEmail)
         .having(sql`count(${favorites.sAddress}) > ${beforeAdding[0].count}`);
-
+        console.log(favoritesResult)
 
         expect(favoritesResult).not.toStrictEqual([]);
     });
