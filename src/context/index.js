@@ -11,7 +11,7 @@ export function AppWrapper ({children}){
     const [userEmail, setUserEmail] = useState(null);
     const [guestAddress, setGuestAddress] = useState(null);
     const [userAddress, setUserAddress] = useState(null);
-    const [favorites, setFavorites] = useState([]);
+    const [favorites, setFavorites] = useState(null);
 
     const contextValues = { //for better practice
         userServices,

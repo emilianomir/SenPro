@@ -1,11 +1,10 @@
 "use client"
-import "../css/question_page.css"
 import Question from "@/components/Question";
 import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
-import { createStatelessQ, getInfoSession, deleteSession, getUserSession} from "@/components/DBactions";
+import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI} from "@/components/DBactions";
 import { ConsoleLogWriter } from "drizzle-orm";
 
 
@@ -33,7 +32,8 @@ function Questionaire(){
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userResponses, address: userAddress || guestAddress })
+                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : guestAddress[0], 
+                        location: userServices.length> 0 ? userServices.location : guestAddress[1]})
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -54,8 +54,10 @@ function Questionaire(){
     
                     }
                 }
+                /*
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
+                */
                 // if (change){
                 setAPIServices(services_result);
                 router.push("/services");
@@ -89,8 +91,15 @@ function Questionaire(){
             try{
                 setyes(false);
                 let userName = await getUserSession();
-                if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-                let sessionValues = await getInfoSession();
+                if (userName != null) {
+                    setUserEmail([userName[0].username, userName[0].email]);
+                    if(!favorites){
+                        const favoritesList = await getFavAPI(userName[0].email);
+                        if(favoritesList) setFavorites(favoritesList);
+                    }
+                }
+                let sessionValues = null;
+                if (numberPlaces <= 0) sessionValues = await getInfoSession();
                 if(sessionValues == null || numberPlaces > 0)
                 {
                     
@@ -100,16 +109,14 @@ function Questionaire(){
                     {
                         email = userName[0].email;
                     }
-                    await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
+                    await createStatelessQ(numberPlaces, userServices, [], [], email);
                 }
                 else
                 {
                     setNumberPlaces(sessionValues.numberPlaces);
-                    setFavorites(sessionValues.favorites);
                     setServices(sessionValues.userServices);
-                    setResponses(sessionValues.userResponses);
-                    setAPIServices(sessionValues.apiServices);
                 }
+
 
             } catch(error) {
                 console.error("Error fetching DB:", error);
@@ -121,7 +128,6 @@ function Questionaire(){
         }
         fetchProducts();
         }, [yes]);
-
 
 
     // const goToNext = ()=>{
@@ -162,7 +168,7 @@ function Questionaire(){
     //Food Category Questions
     questionsList.set("FoodDrink",{
         question: ["What type would you like?", 1],
-        answer: [["Bar", "BarQ", [3]], ["Restaurant", "SpecificTypes", [3]], ["Cafe", "CafeQ", [3]], ["Food Shop", "FoodShopQ", [3, "Shop"]]]
+        answer: [["Bar", "BarQ", [3]], ["Restaurant", "SpecificTypes", [3]], ["Cafe", "CafeQ", [3]], ["Food Shop", "FoodShopQ", [0]]]
     });
     questionsList.set("BarQ", {
         question: ["What type of bar would you like?", 1],
@@ -190,7 +196,7 @@ function Questionaire(){
     );
     questionsList.set("GeneralFood", {
         question: ["What experience would you like?", 1 ], 
-        answer: [["Fast Food", "Price", [1]], ["Dining", "Price", [1]], ["Fine Dining", "Price", [1]], ["No Preference", "Price"]]
+        answer: [["Fast Food", "Price", [1]], ["Fine Dining", "Price", [1]], ["No Preference", "Price"]]
     });
 
     questionsList.set("CafeQ", {
@@ -199,8 +205,8 @@ function Questionaire(){
     });    
     questionsList.set("FoodShopQ", {
         question: ["What type of shop would you like?", 1],
-        answer: [["Bagel", "Price", [1]], ["Chocolate", "Price" , [1]], ["Coffee", "Price" , [1]], ["Dessert", "Price" , [1]], ["Donut", "Price" , [1]], ["Ice Cream", "Price" , [1]], 
-        ["Juice", "Price" , [1]], ["Sandwich", "Price" , [1]], ["No Preference", "Price" , [0]]]
+        answer: [["Bagel Shop", "Price", [3]], ["Chocolate Shop", "Price" , [3]], ["Coffee Shop", "Price" , [3]], ["Dessert Shop", "Price" , [3]], ["Donut Shop", "Price" , [3]], ["Ice Cream Shop", "Price" , [3]], 
+        ["Juice Shop", "Price" , [3]], ["Sandwich Shop", "Price" , [3]], ["No Preference", "Price" , [0]]]
     }); 
 
 
@@ -236,8 +242,8 @@ function Questionaire(){
     //Park SubQuestion
     questionsList.set("ParkQ",{
         question: ["What type of park are you looking for?", 1],
-        answer: [["Regular", "Rating", [0]], ["Amusement Park", "Rating", [1, "Amusement"]], ["Dog Park", "Rating", [1, "Dog"]], ["National Park", "Rating", [1, "National"]],
-        ["Picnic", "Rating", [3, "Picnic Ground"]], ["Skateboard", "Rating", [1, "Skateboard"]], ["State Park", "Rating", [1, "State"]], ["Water Park", "Rating", [1, "Water"]], ["Wildlife Park", "Rating", [1, "Wildlife Park"]], ["No Preference", "Rating"]]
+        answer: [["Regular", "Rating", [0]], ["Amusement Park", "Rating", [2, "Amusement"]], ["Dog Park", "Rating", [2, "Dog"]], ["National Park", "Rating", [2, "National"]],
+        ["Picnic", "Rating", [3, "Picnic Ground"]], ["Skateboard", "Rating", [2]], ["State Park", "Rating", [2, "State"]], ["Water Park", "Rating", [2, "Water"]], ["Wildlife Park", "Rating", [2, "Wildlife"]], ["No Preference", "Rating"]]
     });
 
     questionsList.set("AmuseQ", {
@@ -251,7 +257,7 @@ function Questionaire(){
     });
     questionsList.set("SocialQ",{
         question: ["What type of social place are you looking for?", 1],
-        answer: [["Bowling Alley", "Rating", [3]], ["Community Center", "Rating", [3]], ["Cultural Center", "Rating", [3]], ["Movies", "Rating", [3, "Movies Theater"]], ["Philharmonic Hall", "Rating", [3]], ["No Preference", "Rating"]]
+        answer: [["Bowling Alley", "Rating", [3]], ["Community Center", "Rating", [3]], ["Cultural Center", "Rating", [3]], ["Movies", "Rating", [3, "Movie Theater"]], ["Philharmonic Hall", "Rating", [3]], ["No Preference", "Rating"]]
     });
     questionsList.set("TourQ", {
         question: ["What type of touring sites are you looking for?", 1],
@@ -283,7 +289,7 @@ function Questionaire(){
         answer: [["Golf", "Rating", [3, "Golf Course"]], ["Ice Skating", "Rating", [3, "Ice Skating Rink"]], ["Playground", "Rating", [3]], ["Ski Resort", "Rating", [3]], ["Sports Club", "Rating", [3]],
     ["Stadium", "Rating", [3]], ["Swimming", "Rating", [3,"Swimming Pool"]]]
     });
- 
+
 
 
     //Shopping Questions
@@ -293,7 +299,7 @@ function Questionaire(){
     });
     questionsList.set("RetQ", {
         question: ["What category of retail store are you looking for?", 2],
-        answer: [["Vehicle", "VecQ", [2]], ["Electronics", "ElectQ", [1]], ["Home", "HomeQ", [2]], ["Clothing and Goods", "ClothQ", [2]], ["Pet Store", "Price", [3]], ["Variety", "VaryQ", [2]]]
+        answer: [["Vehicle", "VecQ", [2]], ["Electronics", "ElectQ", [4]], ["Home", "HomeQ", [2]], ["Clothing and Goods", "ClothQ", [2]], ["Pet Store", "Price", [3]], ["Variety", "VaryQ", [2]]]
     });
 
     //Retail Store SubQuestions
@@ -369,7 +375,7 @@ function Questionaire(){
         answer: [["Electrician", "Price", [3]], ["Funeral Home", "Price" , [3]], ["Lawyer", "Price", [3]], ["Moving", "Price", [3, "Moving Company"]], ["Painter", "Price", [3]], ["Plumber", "Price", [3]],
     ["Real Estate", "Price", [3, "Real Estate Agency"]], ["Roofing", "Price", [3, "Roofing Contractor"]], ["Traveling", "Price", [3, "Travel Agency"]]]
     });  
- 
+
 
 
     questionsList.set("Price", {
@@ -388,9 +394,9 @@ function Questionaire(){
 
 
 
-    if(isSessionLoading){
-        return (<Loading message= "Fetching Session"/>)
-    }
+    // if(isSessionLoading){
+    //     return (<Loading message= "Fetching Session"/>)
+    // }
     return (
         <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 

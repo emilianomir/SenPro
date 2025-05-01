@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
-import { testExistingUser, addQuestion, getUser } from "./DBactions";
+//import { testExistingUser, addQuestion, getUser } from "./DBactions";
 import { useSearchParams } from "next/navigation";
 import SelectFavorites from "@/components/SelectFavorites";
 import Favorites_Section from "./Favorites_Section";
@@ -22,12 +22,9 @@ class Responses {
 function Question({theQuestion, current, func, changeLoading}){
     const [start, SetStart] = useState(false);
     const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
-    // const [valueSelect, valueSelected] = useState(''); //what the user sees and selects
-    // const [apiValue, setAPIvalue] = useState(''); //used if the value shown is going to be different for API call. Ex: Entertainment, Actual API Value: Entertainment and Recreation
     const [destSelect, changeDes] = useState("Begin"); //destination for map purposes
     const [prevKeys] = useState([]); //will store the map key and the user selected values as the user goes through questions
-    const [prevValues] = useState([]); //an array of arrays that will store in following order: types, textQuery values, api value for navigation through map
-    // const [mapKey, setKey] = useState(current);
+    const [prevValues] = useState([]); //an array of arrays that will store in following order: types, textQuery values
     const ques = theQuestion.get(destSelect); //this is how each question is rendered each time
     const [finished, setFinished] = useState(false); //used to make sure that all values are updated before moving to next page
     const [theTest, setTheTest] = useState(new Responses()); //the created object for API calls
@@ -35,9 +32,6 @@ function Question({theQuestion, current, func, changeLoading}){
     const [generalSearchP, setSearchP] = useState(false); //to show and hide the section for general searching
     const [nameSearch, setNameSearch] = useState(false); //to know when the user is ready to search for a service via name
     const [readyGeneralSearch, setGeneralSearch] = useState(false); //to know when a user is ready to search for a services via general search 
-    const [wentBack, setBack] = useState(false); //Forms submits when back button is pressed. This is used to stop that
-
-
 
     function gotoPrev() {
         if (prevKeys.length === 0) //this means we are at the first question, leave
@@ -47,8 +41,6 @@ function Question({theQuestion, current, func, changeLoading}){
         // console.log("prevValues: "); //debugging
         // console.log(prevValues);
         const theUserResponsesAPI = prevValues[prevValues.length-1]; //this is an array of arrays that records user respones that deals with API calls.
-        // if (theUserResponsesAPI[2] != undefined) //this checks to see if the user previous selected value has an api value. Used for when the user clicks enter without selecting the option again
-        //     setAPIvalue(theUserResponsesAPI[2]);  
         if (previousResponses[1] != "No Preference") { //the values did not change
             switch (prevQuestion.question[1]){ //this is the grouping
                 case 0: //if we are here, that means it the first question, which means full reset
@@ -87,17 +79,11 @@ function Question({theQuestion, current, func, changeLoading}){
         }
         console.log("After back:")
         console.log(theTest); //debugging
-        // console.log(mapKey);
         console.log(previousResponses);
-        changeDes(previousResponses[0]); //used in case the user wants to go forward with selected response (basically go back then forward)
-        // setKey(previousResponses[0]); //this is used to show previous questions and answers
-        // valueSelected(previousResponses[1]); //sets the value to be the previous user selected option
+        changeDes(previousResponses[0]); 
         prevKeys.pop();
         if (prevKeys.length == 0)
             setSearchP(false); //hides the text
-        setBack(true); //for some reason, the form would submit even though the back button is not a form button. This is to stop that from happening or at least from going through the whole function
-        //but I don't know why it wants to work and sometimes it does not 
-
     }
 
     const changeSpecLoc = (e) => { //to tell us that the user is ready to search with name
@@ -115,25 +101,8 @@ function Question({theQuestion, current, func, changeLoading}){
     }
 
 
-    function changeValue(theEvent){
-        const selectOptionDest = theEvent.target.selectedOptions[0].getAttribute("data-destination");  //gets the first select value (in this case, are only selected) then find the value of "data-other" 
-        const selectedAPIValue = theEvent.target.selectedOptions[0].getAttribute("data-valueforapi"); //this treats the tuple as a string. So if I have [3, Art Gallery], the value stored would be "3,Art Gallery"
-        valueSelected(theEvent.target.value);
-        changeDes(selectOptionDest); //this stores the key value in case the user presses enter on this option
-        setAPIvalue(selectedAPIValue);
-    }
-
     async function destValue(valueSelect, mapKey, apiValue){
         console.log(mapKey);
-        // theEvent.preventDefault();
-        // if (prevKeys.length == 0 && wentBack){ //to prevent form submission for the first question (IDK its weird why it does this for only the first option)
-        //     setBack(false);
-        //     return;
-        // }
-        // if (valueSelect == '') { //to prevent default value of select box to be selected
-        //     alert("Please choose an option")
-        //     return;
-        // }
         if (destSelect == current){ //to show text
             setSearchP(true);
         }
@@ -141,14 +110,12 @@ function Question({theQuestion, current, func, changeLoading}){
             switch (ques.question[1]){ //looks at the grouping index
                 case 0:
                     prevValues.push([theTest.main_category, theTest.textQuery]); //stores the previous values before change
-                    // apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null; //only add to the array if there is an api value 
                     theTest.main_category = valueSelect; 
                     theTest.textQuery = valueSelect;
                     break;
                 case 1: //this focuses on types changes and sometimes textQuery
                     let temp = null;
                     prevValues.push([theTest.types, theTest.textQuery]); //we push the previous values first
-                    // apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
                     
                     //always choosing the api value to be passed to object, otherwise if there is no API value, that means the value selected is the same as API value
                     //Ex: Value: "Arts", API value: "Culture". If apiValue == "" that means apiValue is the valueSelect, ex: Value: "Mexican" API value = "mexican"
@@ -158,13 +125,10 @@ function Question({theQuestion, current, func, changeLoading}){
                     For the following two sections, I made another addtional grouping to make it easier to change to the types and textQueries.
 
                         Note: For both cases, I checked to see if I have an api value. 
-                        As mentioned before, the tuple turns into a string so it is in this format: #,textValue (where # is the grouping number)
-                        So I have [4, "Outdoors Vehicles Store"], it converts to "4,Outdoors Vehicles Store".
-                        I then call this 
-                        if (apiValue.length > 1) 
-                            temp = apiValue.split(',')[1].toLowerCase();
-                        This means that if the string is more than 1 in length, there should be a value next to it. So I get the value by calling split function and making an array that holds the number and textValue seperate.
-                        In this case, it would be ["4", "Outdoors Vehicles Store"]. So temp would be outdoors vehicles store. The other code after is just formatting for api call
+                        The api value could be a tuple. That means that the string in index 1 is the string required for places API (it would cause a bad request since Places API needs the string to be exact)
+                        So say I have [4, "Outdoors Vehicles Store"]. The string shown to the user would be "Outdoors" but in reality the string that should be passed to 
+                        API should be outdoors_vehicles_store. The number at index 0 is the grouping
+                       
 
 
                         For Case 1 (types changing), the grouping is as follows:
@@ -191,12 +155,13 @@ function Question({theQuestion, current, func, changeLoading}){
                             1: We only want to replace the types property. Majority of the time it is null
                             2: This only concatenate the incoming value with the existing textQuery if applicable
                             3: This changes both the types and textQuery. We completely replace the types with incoming value and then set the textQuery with the newly changed type.
+                            4: Adds to beginning of the types string.
                     */
 
                     if (apiValue[0] != 0) { //0 would mean ignore
                         let actualAPIvalue;
                         if (apiValue[1])
-                            actualAPIvalue = apiValue[1]; //the tuple turns into a string, the first character is the case, and the second portion is the actual value
+                            actualAPIvalue = apiValue[1];
                         temp = actualAPIvalue? actualAPIvalue.toLowerCase(): valueSelect.toLowerCase();
                         switch (apiValue[0]) {
                             case 1:
@@ -232,7 +197,6 @@ function Question({theQuestion, current, func, changeLoading}){
                     break;
                 case 2:
                     prevValues.push([theTest.types, theTest.textQuery]);
-                    // apiValue != "" ? prevValues[prevValues.length-1].push(apiValue): null;
                     if (apiValue[0] == 1) {
                         let temp;
                         if (apiValue[1]) {
@@ -269,6 +233,18 @@ function Question({theQuestion, current, func, changeLoading}){
                         theTest.types = temp ? temp: valueSelect.toLowerCase();
                         theTest.textQuery =  theTest.types.replaceAll("_", " ");
                     }
+                    else if (apiValue[0] == 4) {
+                        let temp;
+                        if (apiValue[1]) {
+                            temp = apiValue[1].toLowerCase();
+                            temp = temp.replaceAll(" ", "_");
+                        }
+                        else if (valueSelect.includes(" ")) {
+                            temp = valueSelect.replaceAll(" ", "_").toLowerCase();
+                        }
+                        theTest.types? `${temp}_${theTest.types}`: theTest.types = temp;
+                        theTest.textQuery =  theTest.types.replaceAll("_", " ");
+                    }
                         
                     break;
                 case 3:
@@ -285,29 +261,27 @@ function Question({theQuestion, current, func, changeLoading}){
                     theTest.fuel_type = valueSelect.replaceAll(" ", "_");
             }   
         }
+
         // console.log("prevValues: "); //debugging
         // console.log(prevValues);
         console.log("theTest in Question component: ")
         console.log(theTest);
         prevKeys.push([destSelect, valueSelect]);
         changeDes(mapKey);
-        // valueSelected('');
       
-        if (userEmail != null) {
-            try {
-                const exists = await testExistingUser(userEmail[1]);
-                if (exists) {
-                    await addQuestion(userEmail[1], ques.question[0], valueSelect);
-                } else {
-                    console.error("user doesnt exist in db:", userEmail[1]);
-                }
-            } catch (e) {
-                console.error("error storing question and answer:", e);
-            }
-        }
+        // if (userEmail != null) {
+        //     try {
+        //         const exists = await testExistingUser(userEmail[1]);
+        //         if (exists) {
+        //             await addQuestion(userEmail[1], ques.question[0], valueSelect);
+        //         } else {
+        //             console.error("user doesnt exist in db:", userEmail[1]);
+        //         }
+        //     } catch (e) {
+        //         console.error("error storing question and answer:", e);
+        //     }
+        // }
 
-        // if (apiValue != '') //if there was an api value, reset it for next time
-        //     setAPIvalue('');
         if (mapKey == "End") { 
             setResponses(theTest);//to have the object in mulitple pages
             setFinished(true);
@@ -334,39 +308,39 @@ function Question({theQuestion, current, func, changeLoading}){
 
     return (
 
-        <div className="grid grid-cols-2 h-full">
-            <div className="w-full h-2/3">
-                <div className="flex flex-col justify-center items-center h-full p-3">
+        <div className={`grid ${userEmail && !start ? "grid-rows-2": "grid-rows-3"} lg:grid-cols-2 h-full`}>
+            <div className="w-full md:h-2/3 lg:row-span-3">
+                <div className={`flex flex-col mt-4 md:mt-10 lg:mt-0 ${generalSearchP && start ? "": "justify-center"} md:justify-center items-center h-full p-3`}>
                     {start ? 
                     <div className="w-full">
-                        <h1 className="text-5xl text-center font-extrabold">{ques.question[0]}</h1>
+                        <h1 className="text-xl md:text-3xl lg:text-5xl text-center font-extrabold">{ques.question[0]}</h1>
                         {prevKeys.length > 0 &&
                         <div className="text-center">
-                            <button onClick = {gotoPrev} className="outline outline-2 mt-10 w-1/2 text-xl p-3">Go To Previous Question</button>
+                            <button onClick = {gotoPrev} className="outline outline-2 mt-3 md:mt-10 w-3/4 md:w-1/2 text-base md:text-lg lg:text-xl md:p-3">Go To Previous Question</button>
                         </div>
                         }
                         {generalSearchP &&
-                        <div className="mt-10 text-2xl text-center">
-                            <div className="text-white mb-3 text-2xl">Ready to search for places?</div> 
-                            <div className="text-white mb-3 font-bold">Click below :</div>
+                        <div className="mt-2 md:mt-10 text-base md:text-xl lg:text-2xl text-center">
+                            <div className="text-white mb-1 md:mb-3">Ready to search for places?</div> 
+                            <div className="text-white mb-1 md:mb-3 font-bold">Click below :</div>
                             <div className="">
-                                <button className="outline outline-2 w-1/2 p-2" onClick={generalSearch} type = "button">Done</button>
+                                <button className="outline outline-2 w-1/2 md:p-2" onClick={generalSearch} type = "button">Done</button>
                             </div>
                         </div>
                         }
                     </div>
                     :
                     <div className="px-5">
-                        <div className="text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
+                        <div className="text-xl md:text-2xl lg:text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
                         <div className="mt-5 w-full"> 
                             <form onSubmit={changeSpecLoc}>
-                                <input className="w-3/4 text-center border-b-1 mr-2 text-2xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
-                                <button className="outline outline-1 text-2xl p-1 w-1/5" type= "submit">Enter</button>
+                                <input className="w-3/4 text-center border-b-1 mr-2 text-base md:text-xl lg:text-2xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
+                                <button className="outline outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
                         {(!generalSearchP && userEmail != null) &&
                         <>
-                            <div className="text-3xl text-white mt-20">Or select from one of your favorites to continue: </div>
+                            <div className="text-xl md:text-2xl lg:text-3xl text-white mt-5 md:mt-20 text-center">Or select from one of your favorites to continue: </div>
                             <SelectFavorites/>
                         </>
                         }
@@ -376,23 +350,23 @@ function Question({theQuestion, current, func, changeLoading}){
                 </div>
                 
             </div>
-            <div className="w-19/20 p-10 bg-slate-800/85 h-9/10 rounded-lg">
-                <div className="flex flex-col justify-center items-center h-full text-center">
+            <div className={`${userEmail && !start ? "": "row-span-2"} lg:row-span-3 lg:w-19/20 p-5 md:p-10 bg-slate-800/85 h-9/10 rounded-lg`}>
+                <div className="flex flex-col md:justify-center items-center h-full text-center">
                 {start ?
                     <div className="w-full grid grid-cols-2 gap-5 h-full">
                     {ques.answer.map((answer_array, index)=> (
-                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-3/4 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
+                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-4/5 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
                         let temp = answer_array[2] ? answer_array[2] : ""
                         destValue(answer_array[0], answer_array[1], temp);
                     }}>
-                        <div className="text-3xl text-black font-bold w-full px-3 break-words">
+                        <div className="text-base md:text-2xl lg:text-3xl text-black font-bold w-full px-3 break-words">
                             {answer_array[0]}
                         </div>
                     </div>))}
                 </div>
                 :
                 <>
-                    <div className="text-3xl/10">
+                    <div className="text-xl md:text-2xl lg:text-3xl/10">
                         <p>Need help deciding what service you would like? Try our questionnaire to create a search with you are looking for!
                         <span className="font-bold block mt-3">Click Start to begin! </span></p>
                     </div>
@@ -417,59 +391,3 @@ function Question({theQuestion, current, func, changeLoading}){
 
 export default Question;
 
- {/* 
-            
-            
-
-        <div className="grid grid-cols-2 h-full">
-            <div className="w-full h-2/3">
-                <div className="flex flex-col justify-center items-center h-full p-3">
-                    {start ? 
-                    <div>
-                        <h1 className="text-4xl text-center font-extrabold">{ques.question[0]}</h1>
-                    </div>
-                    :
-                    <>
-                        <div className="text-2xl text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
-                        <div className="mt-5 w-full"> 
-                            <form onSubmit={changeSpecLoc}>
-                                <input className="w-3/4 text-center border-b-1 mr-2 text-xl" placeholder="Enter your search here" value ={nameValue} onChange={changeNameValue} required></input>
-                                <button className="outline outline-1" type= "submit">Enter</button>
-                            </form>
-                        </div>
-                    </>
-                    }
-
-                </div>
-                
-            </div>
-            <div className="w-full p-10 bg-slate-800 h-full rounded-lg">
-                <div className="flex flex-col justify-center items-center h-full text-center">
-                {start ?
-                <div className="w-full grid grid-cols-2 gap-5 h-full">
-                    {ques.answer.map((answer_array, index)=> (
-                    <div key = {`${index} ${answer_array[0]}`} className="text-center h-3/4 bg-gray-300 flex justify-center items-center rounded-lg">
-                        <div className="text-2xl text-black font-bold" onClick={ () => {
-                            let temp = answer_array[2] ? answer_array[2] : ""
-                            destValue(answer_array[0], answer_array[1], temp);
-                        }}>
-                            {answer_array[0]}
-                        </div>
-                    </div>))}
-                </div>
-                :
-                <>
-                    <div>
-                        <p>Need help deciding what service you would like? Try our questionnaire to create a search with you are looking for!
-                        <span className="font-bold block mt-3">Click Start to begin! </span></p>
-                    </div>
-                    <div className="mt-4 w-full">
-                        <button onClick={()=> SetStart(true)} className="outline outline-2 w-1/2">Start</button>
-                    </div>
-                </>
-                }
-
-                </div>
-            </div>
-        </div>
-                */}
