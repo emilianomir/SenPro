@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AppContext = createContext();
 
@@ -10,6 +10,7 @@ export function AppWrapper ({children}){
     const [apiServices, setAPIServices] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
     const [guestAddress, setGuestAddress] = useState(null);
+    const [userAddress, setUserAddress] = useState(null);
     const [favorites, setFavorites] = useState(null);
 
     const contextValues = { //for better practice
@@ -25,8 +26,10 @@ export function AppWrapper ({children}){
         setUserEmail,
         guestAddress,
         setGuestAddress,
+        userAddress,
+        setUserAddress,
         favorites,
-        setFavorites
+        setFavorites,
     }
 
   return (

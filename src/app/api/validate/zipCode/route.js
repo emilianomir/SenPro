@@ -75,11 +75,6 @@ export async function POST(req) {
                 result = true;
             }
 
-            else {
-                result = false;
-            }
-
-
             return new Response(JSON.stringify({info: data, isValid: result }), {
                 status: 200,
                 headers: { "Content-Type": "application/json" },

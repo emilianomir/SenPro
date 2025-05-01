@@ -1,0 +1,302 @@
+.traffic-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.traffic-panel {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.panel-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.traffic-congestion {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.congestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.congestion-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.congestion-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.congestion-badge.low {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.congestion-badge.moderate {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.congestion-badge.high {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.congestion-meter-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.congestion-meter {
+    flex-grow: 1;
+    background-color: #e0e0e0; 
+    border-radius: 4px;
+    height: 12px; 
+    overflow: hidden;
+    position: relative; 
+}
+
+.congestion-level {
+    height: 100%; 
+    transition: width 0.5s ease;
+    max-width: 100%;
+}
+
+.congestion-level.low {
+    background-color: #4caf50;
+}
+
+.congestion-level.moderate {
+    background-color: #ff9800;
+}
+
+.congestion-level.high {
+    background-color: #f44336;
+}
+
+.congestion-percentage {
+    font-weight: bold;
+    font-size: 1.2rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.speeds-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 8px;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.speed-item {
+    text-align: center;
+    flex: 1;
+}
+
+.speed-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.speed-label {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    cursor: help;
+}
+
+.tooltip-icon {
+    font-size: 12px;
+    color: #6b7280;
+    opacity: 0.8;
+}
+
+/* Custom tooltip styling */
+.speed-label:hover {
+    color: #4b5563;
+}
+
+.speed-label:hover .tooltip-icon {
+    color: #3b82f6;
+    opacity: 1;
+}
+
+/* Native tooltip styling */
+.speed-label[title] {
+    position: relative;
+}
+
+.speed-label[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: #1f2937;
+    color: white;
+    font-size: 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.speed-label[title]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #1f2937;
+    z-index: 10;
+}
+
+.speed-divider {
+    width: 1px;
+    height: 40px;
+    background-color: #e0e0e0;
+}
+
+.traffic-incidents {
+    margin-top: 24px;
+}
+
+.traffic-incidents h4 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.no-incidents {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    text-align: center;
+    color: #666;
+}
+
+.incident-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.incident-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.incident-severity {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.incident-severity.low {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.incident-severity.moderate {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.incident-severity.high {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.incident-type {
+    font-weight: 600;
+    color: #333;
+}
+
+.incident-details {
+    font-size: 14px;
+}
+
+.incident-location {
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.incident-delay, .incident-length {
+    color: #444;
+    margin: 4px 0;
+}
+
+.incident-timing {
+    font-size: 12px;
+    color: #666;
+    margin: 8px 0;
+}
+
+.incident-status {
+    font-weight: 500;
+    color: #2196f3;
+    margin-top: 8px;
+}
+
+.road-closure {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.detail-item {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #2196f3;
+}
