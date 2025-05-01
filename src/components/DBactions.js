@@ -1,7 +1,7 @@
 "use server";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-import { eq, and, sql} from "drizzle-orm";
+import { eq, and, sql, min, max} from "drizzle-orm";
 
 import { NextResponse, userAgentFromString } from "next/server.js";
 
@@ -342,6 +342,28 @@ else{
   return true;
 }
 }
+export async function removeOldestService(email)
+{
+  const latestHistory = await db.select({createdAt: min(history.createdAt)}).from(history).where(eq(history.userEmail, email));
+  await db.delete(history).where(and(eq(history.createdAt,latestHistory[0].createdAt), eq(history.userEmail, email)));
+
+}
+
+
+// check remove
+export async function checkRemoveOldest(email)
+{
+  const limiter = 5;
+  const checkRemove = await db.select({email: history.userEmail , count: sql`count(${history.sAddress})`})
+  .from(history)
+  .where(eq(history.userEmail, email))
+  .groupBy(sql`${history.userEmail}`)
+  .having(sql`count(${history.sAddress}) > ${limiter}`);
+  if(checkRemove.length > 0)
+  {
+    return(await removeOldestService(checkRemove[0].email));
+  }
+}
 
   // Add
 export async function addHistoryService(services, email) {
@@ -350,6 +372,8 @@ try {
     services,
     email,
   });
+  // Limiting the amount of history 
+  const limiter = 2;
   const d2 = await db.select({total: sql`(CURRENT_TIMESTAMP)`, time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, email));
   if(await checkHistoryService(services, email, d2)) {
   await db.insert(history).values({
