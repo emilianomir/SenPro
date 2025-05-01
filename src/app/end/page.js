@@ -3,30 +3,22 @@ import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-<<<<<<< HEAD
 import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, checkRemoveOldest} from '@/components/DBactions';
-import "../css/end_page.css"
-=======
-import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI} from '@/components/DBactions';
->>>>>>> origin/main
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
 
 export default function End(){
-<<<<<<< HEAD
+
     const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-=======
+
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const googleMapURL = "https://www.google.com/maps/dir/";
     const addressURLS = userServices.map(service=> encodeURIComponent(service.formattedAddress.includes("#") ?
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
-
     const fullURL = googleMapURL + addressURLS.join('/');
->>>>>>> origin/main
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
