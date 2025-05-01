@@ -6,66 +6,50 @@ import { getUserSession } from '@/components/DBactions';
 import Loading from '@/components/Loading';
 
 function StartPage(){
-    const {userEmail, setNumberPlaces, setUserEmail} = useAppContext();
+    const {userEmail, setNumberPlaces, setUserEmail, userServices} = useAppContext();
     const router = useRouter();
-    const [yes, setyes] = useState(true);
-
-    
-    // const [sVal, setSearch] = useState(search);
-    // const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [goLogin, setLogin] = useState(false);
 
     // Gets the session
     useEffect(() => {
         const fetchProducts = async () => {
-        if (yes){
             try{
-            setyes(false);
-            let userName = await getUserSession();
-            if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
+            if (!userEmail) {
+                let userName = await getUserSession();
+                if (userName != null)
+                    setUserEmail([userName[0].username, userName[0].email]);
+                // else 
+                //     setLogin(true);
+            }
             } catch(error) {
+                
                 console.error("Error fetching DB:", error);
                 alert("There was an issue getting the data.");
-            } finally {
-            setLoading(false);
-            }
-        }
+                
+            } 
         }
         if(!userEmail) fetchProducts();
-    }, [yes]);
+    }, []);
 
+    useEffect(() => {
+        if (goLogin) {
+            router.replace("/login"); // replace() avoids back button issues
+        }
+      }, [goLogin]);
+    
+    if (goLogin) 
+        return;
 
-
-    // //[userName, other] = search.split('@');
-    //     useEffect(() => {
-    //         const fetchProducts = async () => {
-    //             try{
-    //                 if(await testExistingUser(sVal))
-    //                 {
-    //                     const data = await getUser(sVal);
-    //                     setProducts(data);
-    //                 }
-    //                 else 
-    //                 {
-    //                     setProducts([{username: "Guest User"}])
-    //                 }
-    //             } catch(error) {
-    //                 console.error("Error fetching DB:", error);
-    //                 alert("There was an issue getting the data.");
-    //             } finally {
-    //                 setLoading(false);
-    //             }
-    //         }
-
-    //         fetchProducts();
-    //     }, []);
     
 
     const formSubmit = (event)=>{
         const userNumber = event.target[0].value;
         setNumberPlaces(userNumber);
         event.preventDefault();
-        router.push("/questionaire")
+        if (userServices.length == userNumber)
+            router.push("/end");
+        else
+            router.push("/questionaire")
 
     }
 
@@ -96,12 +80,11 @@ function StartPage(){
                         </div>
                     </div>
                 </form>
-  
+        
+                </div>
             </div>
-        </div>
-       
         </>
-        :
+    :
         <Loading message= "Fetching Session"/>
     }
     </>

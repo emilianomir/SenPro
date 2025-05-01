@@ -1,5 +1,4 @@
 "use client"
-import "../css/address_page.css"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
@@ -54,7 +53,7 @@ function AddressPage(){
                 }
                 else {
                     if (userEmail == null){
-                        setGuestAddress(theInput);
+                        setGuestAddress([returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info]);  //holds the formatted address and second index holds the lat and long
                         router.push("/start");
                     }
                     else {
@@ -80,50 +79,34 @@ function AddressPage(){
         <>
         <div className="h-screen w-full flex justify-center">
         <div className="h-19/20 w-19/20 flex justify-center items-center bg-slate-900 p-5 mt-4">
-            <div className="grid grid-cols-2 gap-0">
-                <div className="w-full flex justify-end h-full">
-                    <img className="bg-slate-700/50 w-19/20 object-cover p-5 rounded-2xl opacity-70" src ="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt = "Map Image"/>
+            <div className="grid md:grid-cols-2 md:gap-0">
+                <div className="w-full flex justify-center md:justify-end h-full">
+                    <img className="bg-slate-700/50 w-3/4 md:w-19/20 object-cover p-5 rounded-2xl opacity-70" src ="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt = "Map Image"/>
                 </div>
 
                 <div >
-                    <h2 className="mt-10 px-10 text-5xl font-bold">Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h2>
-                    <p className="text-center mt-20 text-3xl pt-5 px-10 text-gray-500">Please enter either a physical address or a Zip Code to begin. This will be your starting point.</p>
-                    <p className="text-center text-3xl mt-2 text-gray-500">(Recommend address for best experience).</p>
-                    <div className="ml-10 mt-10 px-5">
+                    <h2 className="mt-3 md:mt-10 text-center px-10 text-xl md:text-3xl lg:text-5xl font-bold">Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h2>
+                    <p className="text-center lg:mt-20 text-lg md:text-2xl lg:text-3xl md:pt-5 px-10 text-gray-500">Please enter either a physical address or a Zip Code to begin. This will be your starting point.</p>
+                    <p className="text-center text-base md:text-xl lg:text-3xl mt-2 text-gray-500">(Recommend address for best experience).</p>
+                    <div className="md:ml-10 md:mt-10 px-5">
                             <form onSubmit={handleSubmit}>
-                                <label htmlFor="addressInput" className="form-label text-3xl">Address/ZipCode</label>
-                                <div className="grid grid-cols-6 mt-4">
+                                <label htmlFor="addressInput" className="form-label text-sm md:text-xl lg:text-3xl">Address/ZipCode</label>
+                                <div className="grid lg:grid-cols-6 mt-4">
                                     <div className="col-span-3">
-                                        <input id="addressInput" value={theInput} className="form-control border-b-4 w-full text-xl pb-1" onChange={handleChange} type="text" placeholder="Enter your address here" />
+                                        <input id="addressInput" value={theInput} className="form-control border-b-4 w-full text-base md:text-lg lg:text-3xl pb-1" onChange={handleChange} type="text" placeholder="Enter your address" />
                                     </div>
                                     <div className="col-span-2">
-                                        <select value={selectType} className="form-select outline outline-1 outline-white p-2 ml-4 w-3/4" onChange={(event) => setSelect(event.target.value)}>
-                                            <option value="" disabled>Select your type</option>
+                                        <select value={selectType} className="form-select outline outline-1 outline-white p-2 lg:ml-4 w-3/4 text-base md:text-lg lg:text-2xl" onChange={(event) => setSelect(event.target.value)}>
+                                            <option value="" disabled>Select type</option>
                                             <option className="text-black" value="zipCode">Zip Code</option>
                                             <option className="text-black" value="address">Address</option>
                                         </select>
                                     </div>
                                     <div className="w-full">
-                                        <button type="submit" className="outline outline-1 outline-white p-1 w-full">Enter</button>
+                                        <button type="submit" className="outline outline-1 outline-white p-1 w-full text-base md:text-lg lg:text-2xl">Enter</button>
                                     </div>
                                 </div>
                             </form>
-
-                            {userEmail &&
-                            <form onSubmit={formSubmit}>
-                                <div className="text-gray-500">
-                                    Please enter the number of services you want to plan for. Max is 5 and mininum is 1.
-                                </div>
-                                <div className="col  row row-cols-1" >
-                                    <div className="col d-flex justify-content-center">
-                                        <input type="number" className="fs-3 p-3 form-control w-25 h-25 text-center" min = "1" max = "5" required/>
-                                    </div>
-                                    <div className="col">
-                                        <button type="submit" className="btn btn-primary w-25">Enter</button>
-                                    </div>
-                                </div>
-                            </form>
-                            }
                             
                     </div>
                 </div>
@@ -131,41 +114,6 @@ function AddressPage(){
         </div>
 
         </div>
-
-
-
-
-            {/* <div className="bg-secondary-subtle">
-                <div className="text-center">
-                    <h1 className='fs-2 fw-bold'>Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h1>
-                </div>
-            </div>
-            <div className="d-flex justify-content-center align-items-center vh-100 bg-secondary">
-                <div className="bg-secondary-subtle main_container">
-                    <p className="text-center main_text text-wrap p-3">Please enter either a physical address or a Zip Code to begin. </p>
-                    <p className="text-center main_text fw-bold">(Recommend address for best experience).</p>
-                    <div className="ms-5 mt-5">
-                        <form onSubmit={handleSubmit}>
-                            <label htmlFor="addressInput" className="form-label fs-3">Address/ZipCode</label>
-                            <div className="row row-cols-3 m-0 p-0">
-                                <div className="col-8">
-                                    <input id="addressInput" value={theInput} className="form-control" onChange={handleChange} type="text" placeholder="Enter your address here" />
-                                </div>
-                                <div className="col-2">
-                                    <select value={selectType} className="form-select w-100" onChange={(event) => setSelect(event.target.value)}>
-                                        <option value="" disabled>Select your type</option>
-                                        <option value="zipCode">Zip Code</option>
-                                        <option value="address">Address</option>
-                                    </select>
-                                </div>
-                                <div className="col-1">
-                                    <button type="submit" className="btn btn-primary w-100">Enter</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>     */}
         </> 
     )
 

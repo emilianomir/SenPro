@@ -1,21 +1,22 @@
 "use client"
 import { useAppContext } from "@/context"
-import "../app/css/service_card.css"
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import { getFavorites } from '@/components/DBactions';
 import Favorites from "@/components/Favorites";
-import Image from "next/image"
-import "../app/css/services_page.css"
 import Link from "next/link";
+import Image from "next/image";
+
+import ServiceCard from "./ServiceCard";
 
 
-export default function Favorites_Section ({favoritesList}){
-    const {userEmail, userServices, favorites, setFavorites} = useAppContext();
+export default function Favorites_Section (){
+    const {userEmail, userServices, setServices, favorites, setFavorites} = useAppContext();
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [selection, setSelection] = useState(null);
-
+    console.log("FAVORITES: ")
+    console.log(favorites);
 
     useEffect(() => {
         const fetchInfo = async () => {
@@ -96,7 +97,7 @@ export default function Favorites_Section ({favoritesList}){
         })
         */
 
-
+  
         return (
             <>
             {favorites ? 
@@ -151,7 +152,7 @@ export default function Favorites_Section ({favoritesList}){
                                         
                                         
                                         <p className = "bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-sm dark:bg-blue-200 dark:text-blue-800 ms-3"> Rating: {service.rating ? service.rating : "N/A" }</p> 
-                                        {service.rating && <img className="ms-2 pb-3"  width = "10%" height = "50%" src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
+                    
                                     </div>
                                     <div className="flex items-center justify-between">
                                     {service.priceRange != null && <p className = "text-1x1 font-bold text-gray-900 dark:text-white">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
@@ -179,4 +180,5 @@ export default function Favorites_Section ({favoritesList}){
             }
             </>
         )
-    }
+    
+}
