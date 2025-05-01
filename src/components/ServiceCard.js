@@ -20,7 +20,6 @@ function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransi
     // }
 
     return (
-        // <Link href = {"/services/" + service.displayName.text} >
                 <div className={`h-full group max-w-xs rounded-xl bg-white shadow-lg ${haveTransition && "mt-5 transition ease-in-out delay-100 duration-400 hover:-translate-y-5"}`}>
                     <Image className = "h-1/2 w-full object-cover rounded-t-xl" src= {error || !service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": service.photo_image} width={300} height={300} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
                     <div className="h-1/2 rounded-b-xl border border-2 border-gray-200/50 group-hover:bg-gray-200/80 transition-colors ease-in-out duration-500">
@@ -72,7 +71,7 @@ function ServiceCard({service, has_fuel_type, currentLocation = null, haveTransi
 
                 </div>
            
-        //  </Link>
+    
         
         );
 }

@@ -5,7 +5,7 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
@@ -14,16 +14,75 @@ import Favorites from "@/components/Favorites";
 export default function Services(){
     const {userResponses, userServices, apiServices, guestAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
+    const [yes, setyes] = useState(true);
+    const [loading, setLoading] = useState(true);
+
+        
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) {
+                setUserEmail([userName[0].username, userName[0].email]);
+                if(!favorites){
+                    const favoritesList = await getFavAPI(userName[0].email);
+                    if(favoritesList) setFavorites(favoritesList);
+                }
+            }
+            let sessionValues = null;
+            if (numberPlaces <= 0) sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    let userR = "";
+                    if (userResponses){
+                        let fuel_type = userResponses.fuel_type;
+                        let main_category = userResponses.main_category;
+                        let name = userResponses.name;
+                        let priceLevel = userResponses.priceLevel;
+                        let rating = userResponses.rating;
+                        let textQuery = userResponses.textQuery;
+                        let types = userResponses.types;
+                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+                    }
+                    await createStatelessQ(numberPlaces, userServices, apiServices, userR, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    // for api
+                    setAPIServices(sessionValues.apiServices);
+                    setCurrentServices(sessionValues.apiServices);
+                }
+
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
     const [sortValue, setSortValue] = useState("Options");
     const [currentServices, setCurrentServices] = useState(apiServices);
-    const [yes, setyes] = useState(true);
-    const [loading, setLoading] = useState(true);
+
 
     const router = useRouter();
-    console.log("Ran")
 
     const getMoreInfo = async (id) =>{
         const desired_service = apiServices.find(obj => obj.id === id);
@@ -99,7 +158,6 @@ export default function Services(){
     // }, [yes]);
 
     const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : guestAddress ? [guestAddress[1].latitude, guestAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
-    console.log(referencePoint);
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
         if (asc){
             la1 = la1 ? la1 : 999
@@ -202,7 +260,6 @@ export default function Services(){
         }
         if (sort < 4)
             dropdownSet();
-        console.log("RAn")
         
 
     },[sort, asc] );
@@ -249,7 +306,7 @@ export default function Services(){
                                                     Rating Count
                                                 </li>
                                                 
-                                                {((userResponses.main_category == "Food and Drink") || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
+                                                {((userResponses.main_category == "Food and Drink") || (currentServices && currentServices.some(theService => theService.fuelOptions))) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
                                                     Price  
                                                 </li> }
 
@@ -271,49 +328,6 @@ export default function Services(){
                                 </div>
                             </div>
                         </div>
-                        {/* <div className="w-full flex justify-end">
-                            {currentServices && <div className="text-2xl flex mr-20 mt-3">
-                                <div className="mr-1">
-                                    Sort By: 
-                                </div>
-                                <div className="">
-                                    <div className="relative lg:ml-2">
-                                        <button type="button" className ={`w-50 p-1 text-black bg-white ${!hideDrop ? "rounded-t-lg": "rounded-lg" } text-lg`} onClick={()=>setDrop(!hideDrop)}>
-                                        {sortValue}
-                                        </button>
-                                        
-                                        <div className={`${hideDrop? "opacity-0 -z-2": "opacity-100 z-2"} transition-opacity ease-out duration-250 absolute w-50 bg-white text-center text-black rounded-b shadow text-lg py-2`} id = "dropdown">
-                                        <ul aria-labelledby = "dropdown">
-                                            <li className={` ${sort == 0 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(0)}>
-                                                Distance
-                                            </li>
-                                            <li className={` ${sort == 1 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(1)}>
-                                                Rating
-                                            </li>
-                                            <li className={` ${sort == 2 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=>setSort(2)}>
-                                                Rating Count
-                                            </li>
-                                            
-                                            {(userResponses.main_category == "Food and Drink" || currentServices.some(theService => theService.fuelOptions)) && <li className={` ${sort == 3 ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 py-1`} onClick={()=> setSort(3)}>
-                                                Price  
-                                            </li> }
-
-                                            <li className= {`${asc ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 p-1 mt-2`} onClick={() => setAsc(true)}>
-                                                Asecending
-                                            </li>
-
-                                            <li className={`${!asc ? "bg-blue-600/90 text-white hover:bg-blue-700" : "bg-white text-black hover:bg-gray-300"} transtion-colors ease-in-out duration-250 p-1 mt-2`} onClick={() => setAsc(false)}>
-                                                Descending
-                                            </li>
-                                            
-                                            
-                                        </ul>
-                                        </div>
-                                        
-                                    </div>
-
-                                </div>
-                            </div>} */}
                             <div className="">
                                 <div className="" >
                                     <div className="">

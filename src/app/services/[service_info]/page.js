@@ -15,7 +15,7 @@ import { users } from "@/db/schema/users";
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses, userEmail} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail, setGuestAddress} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
