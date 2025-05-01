@@ -1,6 +1,5 @@
 import { useState } from "react"
 import Image from "next/image";
-import "../app/css/gallery.css"
 export default function Service_Image ({url}){
     const [error, setError] = useState(false);
     return(

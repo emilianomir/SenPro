@@ -5,7 +5,7 @@ import { useAppContext } from "@/context";
 
 
 function Favorites({service, responses}){
-    const {userEmail} = useAppContext();
+    const {userEmail, favorites, setFavorites} = useAppContext();
     const [sVal, setSearch] = useState(userEmail[1]);
     // Stars
     const [star, setStar] = useState(true);
@@ -18,8 +18,11 @@ function Favorites({service, responses}){
         setStar(!star);
         
         checkFavoriteService(service.id, sVal).then((data) => {
-          if (data)
+          if (data) {
             addFavoriteService(info.id, JSON.stringify(response), sVal);
+            setFavorites(favorites ? [...favorites, service]: [service]);
+          }
+
         });
 
         if (!star)
@@ -27,6 +30,8 @@ function Favorites({service, responses}){
             checkFavoriteService(service.id, sVal).then((data) => {
                 if (!data){    
                     removeFavoriteService(info.id, sVal);
+                    let removeFavArray = favorites.filter(theFav => theFav.id != service.id);
+                    setFavorites(removeFavArray)
                 }
             });
         }
@@ -57,7 +62,6 @@ function Favorites({service, responses}){
 
         fetchProducts();
     }, []);
-
 
     
     if(loading)

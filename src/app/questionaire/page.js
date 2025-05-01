@@ -1,5 +1,4 @@
 "use client"
-import "../css/question_page.css"
 import Question from "@/components/Question";
 import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
@@ -257,7 +256,7 @@ function Questionaire(){
     });
     questionsList.set("SocialQ",{
         question: ["What type of social place are you looking for?", 1],
-        answer: [["Bowling Alley", "Rating", [3]], ["Community Center", "Rating", [3]], ["Cultural Center", "Rating", [3]], ["Movies", "Rating", [3, "Movies Theater"]], ["Philharmonic Hall", "Rating", [3]], ["No Preference", "Rating"]]
+        answer: [["Bowling Alley", "Rating", [3]], ["Community Center", "Rating", [3]], ["Cultural Center", "Rating", [3]], ["Movies", "Rating", [3, "Movie Theater"]], ["Philharmonic Hall", "Rating", [3]], ["No Preference", "Rating"]]
     });
     questionsList.set("TourQ", {
         question: ["What type of touring sites are you looking for?", 1],
@@ -299,7 +298,7 @@ function Questionaire(){
     });
     questionsList.set("RetQ", {
         question: ["What category of retail store are you looking for?", 2],
-        answer: [["Vehicle", "VecQ", [2]], ["Electronics", "ElectQ", [1]], ["Home", "HomeQ", [2]], ["Clothing and Goods", "ClothQ", [2]], ["Pet Store", "Price", [3]], ["Variety", "VaryQ", [2]]]
+        answer: [["Vehicle", "VecQ", [2]], ["Electronics", "ElectQ", [4]], ["Home", "HomeQ", [2]], ["Clothing and Goods", "ClothQ", [2]], ["Pet Store", "Price", [3]], ["Variety", "VaryQ", [2]]]
     });
 
     //Retail Store SubQuestions
@@ -394,9 +393,9 @@ function Questionaire(){
 
 
 
-    if(isSessionLoading){
-        return (<Loading message= "Fetching Session"/>)
-    }
+    // if(isSessionLoading){
+    //     return (<Loading message= "Fetching Session"/>)
+    // }
     return (
         <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 
