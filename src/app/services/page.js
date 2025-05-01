@@ -5,7 +5,7 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
@@ -14,16 +14,77 @@ import Favorites from "@/components/Favorites";
 export default function Services(){
     const {userResponses, userServices, apiServices, guestAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
-    const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
-    const [asc, setAsc] = useState(true);
-    const [hideDrop, setDrop] = useState(true);
-    const [sortValue, setSortValue] = useState("Options");
-    const [currentServices, setCurrentServices] = useState(apiServices);
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
 
+
+
+    
+        
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) {
+                setUserEmail([userName[0].username, userName[0].email]);
+                if(!favorites){
+                    const favoritesList = await getFavAPI(userName[0].email);
+                    if(favoritesList) setFavorites(favoritesList);
+                }
+            }
+            let sessionValues = null;
+            if (numberPlaces <= 0) sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    let userR = "";
+                    if (userResponses){
+                        let fuel_type = userResponses.fuel_type;
+                        let main_category = userResponses.main_category;
+                        let name = userResponses.name;
+                        let priceLevel = userResponses.priceLevel;
+                        let rating = userResponses.rating;
+                        let textQuery = userResponses.textQuery;
+                        let types = userResponses.types;
+                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+                    }
+                    await createStatelessQ(numberPlaces, userServices, apiServices, userR, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    // for api
+                    setAPIServices(sessionValues.apiServices);
+                    setCurrentServices(sessionValues.apiServices);
+                }
+
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
+    const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
+    const [asc, setAsc] = useState(true);
+    const [hideDrop, setDrop] = useState(true);
+    const [sortValue, setSortValue] = useState("Distance");
+    const [currentServices, setCurrentServices] = useState(apiServices);
+
     const router = useRouter();
-    console.log("Ran")
 
     const getMoreInfo = async (id) =>{
         const desired_service = apiServices.find(obj => obj.id === id);
@@ -191,7 +252,6 @@ export default function Services(){
         }
         if (sort < 4)
             dropdownSet();
-        console.log("RAn")
         
 
     },[sort, asc] );
@@ -277,12 +337,11 @@ export default function Services(){
                             {currentServices ? currentServices.map(service_object=>(
                                 <div className="inline-block mr-7 h-3/5" key ={service_object.id}>
                                     
-                                        <div className="h-full w-full" >
+                                        <div className="h-full" onClick={() => getMoreInfo(service_object.id)} >
                                             {userEmail != null && <Favorites service={service_object}/>}    
-                                            {sort === 0 && <div className="inline ml-2">{service_object.miles ? `Miles from $: ` +   service_object.miles : 0 }</div> }
-                                            <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
-                                                <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {guestAddress ? guestAddress[0] : "Placeholder" }  showMiles = {sort == 0 ? true: false}/> 
-                                            </div>
+                                            {/* <div>{service_object.miles ? service_object.miles : 0 }</div>    */}
+                                            {/* <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/>  */}
+                                            <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type}/> 
                                         </div>
                                    
                                     {/* <div className="card-footer">

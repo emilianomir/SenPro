@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, getInfoSession, createStatelessQ, deleteSession} from '@/components/DBactions';
+import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI} from '@/components/DBactions';
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
@@ -11,8 +11,7 @@ import { useQRCode } from 'next-qrcode';
 export default function End(){
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-    const {userServices, numberPlaces, userEmail, setUserEmail, setServices, setAPIServices, setFavorites,favorites, apiServices, userResponses, setResponses} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-
+    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const googleMapURL = "https://www.google.com/maps/dir/";
     const addressURLS = userServices.map(service=> encodeURIComponent(service.formattedAddress.includes("#") ?
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
@@ -20,45 +19,49 @@ export default function End(){
 
     const fullURL = googleMapURL + addressURLS.join('/');
     const [yes, setyes] = useState(true);
-    //const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
     
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //     if (yes){
-    //         try{
-    //         setyes(false);
-    //         let userName = await getUserSession();
-    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-    //         let sessionValues = await getInfoSession();
-    //         if(sessionValues == null || numberPlaces > 0)
-    //         {
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) {
+                setUserEmail([userName[0].username, userName[0].email]);
+                if(!favorites){
+                    const favoritesList = await getFavAPI(userName[0].email);
+                    if(favoritesList) setFavorites(favoritesList);
+                }
+            }
+            let sessionValues = null;
+            if (numberPlaces <= 0) sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+            {
 
-    //             if(numberPlaces > 0) await deleteSession('Qsession');
-    //             let email = "HASHTHIS";
-    //             if(userName)
-    //             {
-    //                 email = userName[0].email;
-    //             }
-    //             console.log(await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email));
-    //         }
-    //         else
-    //         {
-    //             setFavorites(sessionValues.favorites);
-    //             setServices(sessionValues.userServices);
-    //             setResponses(sessionValues.userResponses);
-    //             setAPIServices(sessionValues.apiServices);
-    //         }
-    //         } catch(error) {
-    //             console.error("Error fetching DB:", error);
-    //             alert("There was an issue getting the data.");
-    //         } finally {
-    //         setLoading(false);
-    //         }
-    //     }
-    //     }
-    //     fetchProducts();
-    // }, [yes]);
+                if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                let email = "HASHTHIS";
+                if(userName)
+                {
+                    email = userName[0].email;
+                }
+                await createStatelessQ(numberPlaces, userServices, [], [], email);
+            }
+            else
+            {
+                setServices(sessionValues.userServices);
+            }
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
             
     
 
