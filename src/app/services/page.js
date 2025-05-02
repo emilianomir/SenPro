@@ -5,25 +5,85 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, createStatelessQ, getInfoSession, deleteSession } from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI } from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, guestAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
+    const [yes, setyes] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
     const [sortValue, setSortValue] = useState("Options");
     const [currentServices, setCurrentServices] = useState(apiServices);
-    const [yes, setyes] = useState(true);
-    const [loading, setLoading] = useState(true);
-
     const router = useRouter();
-    console.log("Ran")
+
+
+
+    
+        
+    useEffect(() => {
+        const fetchProducts = async () => {
+        if (yes){
+            try{
+            setyes(false);
+            let userName = await getUserSession();
+            if (userName != null) {
+                setUserEmail([userName[0].username, userName[0].email]);
+                if(!favorites){
+                    const favoritesList = await getFavAPI(userName[0].email);
+                    if(favoritesList) setFavorites(favoritesList);
+                }
+            }
+            let sessionValues = null;
+            if (numberPlaces <= 0) sessionValues = await getInfoSession();
+            if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    let userR = "";
+                    if (userResponses){
+                        let fuel_type = userResponses.fuel_type;
+                        let main_category = userResponses.main_category;
+                        let name = userResponses.name;
+                        let priceLevel = userResponses.priceLevel;
+                        let rating = userResponses.rating;
+                        let textQuery = userResponses.textQuery;
+                        let types = userResponses.types;
+                        userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
+                    }
+                    await createStatelessQ(numberPlaces, userServices, apiServices, userR, email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setServices(sessionValues.userServices);
+                    setResponses(sessionValues.userResponses);
+                    // for api
+                    setAPIServices(sessionValues.apiServices);
+                    setCurrentServices(sessionValues.apiServices);
+                }
+
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
+            setLoading(false);
+            }
+        }
+        }
+        fetchProducts();
+    }, [yes]);
 
     const getMoreInfo = async (id) =>{
         const desired_service = apiServices.find(obj => obj.id === id);
@@ -48,58 +108,8 @@ export default function Services(){
         router.push("/services/" + desired_service.displayName.text);
     }
 
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //     if (yes){
-    //         try{
-    //         setyes(false);
-    //         let userName = await getUserSession();
-    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
 
-    //         let sessionValues = await getInfoSession();
-    //         if(sessionValues == null || numberPlaces > 0)
-    //             {
-                    
-    //                 if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
-    //                 let email = "HASHTHIS";
-    //                 if(userName)
-    //                 {
-    //                     email = userName[0].email;
-    //                 }
-    //                 let userR = "";
-    //                 if (userResponses){
-    //                     let fuel_type = userResponses.fuel_type;
-    //                     let main_category = userResponses.main_category;
-    //                     let name = userResponses.name;
-    //                     let priceLevel = userResponses.priceLevel;
-    //                     let rating = userResponses.rating;
-    //                     let textQuery = userResponses.textQuery;
-    //                     let types = userResponses.types;
-    //                     userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
-    //                 }
-    //                 await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
-    //             }
-    //             else
-    //             {
-    //                 setNumberPlaces(sessionValues.numberPlaces);
-    //                 setFavorites(sessionValues.favorites);
-    //                 setServices(sessionValues.userServices);
-    //                 setResponses(sessionValues.userResponses);
-    //                 setAPIServices(sessionValues.apiServices);
-    //             }
-    //     } catch(error) {
-    //         console.error("Error fetching DB:", error);
-    //         alert("There was an issue getting the data.");
-    //     } finally {
-    //         setLoading(false);
-    //         }
-    //     }
-    //     }
-    //     fetchProducts();
-    // }, [yes]);
-
-    const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : guestAddress ? [guestAddress[1].latitude, guestAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
-    console.log(referencePoint);
+    const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : userAddress ? [userAddress[1].latitude, userAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
         if (asc){
             la1 = la1 ? la1 : 999
@@ -190,7 +200,6 @@ export default function Services(){
         }
         if (sort < 4)
             dropdownSet();
-        console.log("RAn")
         
 
     },[sort, asc] );
@@ -282,7 +291,7 @@ export default function Services(){
                                             <div className="h-full w-full" >
                                                 {userEmail != null && <Favorites service={service_object}/>}    
                                                 <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
-                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : guestAddress[0] } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
+                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : userAddress[0] } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
                                                 </div>
                                             </div>
                                     

@@ -1,7 +1,7 @@
 "use server";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-import { eq, and, sql} from "drizzle-orm";
+import { eq, and, sql, min, max} from "drizzle-orm";
 
 import { NextResponse, userAgentFromString } from "next/server.js";
 
@@ -185,6 +185,7 @@ export async function getAPI(id) {
           const image_url = `https://places.googleapis.com/v1/${service_result.photos[0].name}/media?key=${api_key}&maxHeightPx=400&maxWidthPx=400`; //(`/api/maps/places?thePhoto=` + service_result.photos[0].name);
           const image_response = await fetch(image_url);
           service_result.photoURL = image_response.url;
+          service_result.photo_image = image_response.url;
           
       }catch(error) {
           console.error("Error fetching image for id " + id + ":", error);
@@ -301,6 +302,20 @@ export async function getFavorites(email)
     throw e;
   }
 }
+ // Get with api Call
+ export async function getFavAPI(email)
+ {
+  let ids = await getFavorites(email);
+  let data = [];
+  if(ids.length > 0){
+    for(const element of ids)
+    {
+      var service = await getAPI(element.info);
+      data.push(service);
+    }
+  }
+  return data;
+ }
 
 
 // History Calls
@@ -327,6 +342,28 @@ else{
   return true;
 }
 }
+export async function removeOldestService(email)
+{
+  const latestHistory = await db.select({createdAt: min(history.createdAt)}).from(history).where(eq(history.userEmail, email));
+  await db.delete(history).where(and(eq(history.createdAt,latestHistory[0].createdAt), eq(history.userEmail, email)));
+
+}
+
+
+// check remove
+export async function checkRemoveOldest(email)
+{
+  const limiter = 5;
+  const checkRemove = await db.select({email: history.userEmail , count: sql`count(${history.sAddress})`})
+  .from(history)
+  .where(eq(history.userEmail, email))
+  .groupBy(sql`${history.userEmail}`)
+  .having(sql`count(${history.sAddress}) > ${limiter}`);
+  if(checkRemove.length > 0)
+  {
+    return(await removeOldestService(checkRemove[0].email));
+  }
+}
 
   // Add
 export async function addHistoryService(services, email) {
@@ -335,6 +372,8 @@ try {
     services,
     email,
   });
+  // Limiting the amount of history 
+  const limiter = 2;
   const d2 = await db.select({total: sql`(CURRENT_TIMESTAMP)`, time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, email));
   if(await checkHistoryService(services, email, d2)) {
   await db.insert(history).values({
@@ -360,12 +399,16 @@ export async function selectHistory(email)
   const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, email));
   for (const element of val1){
       const val2 = JSON.parse(element.services)
+      // Used to Call API
+      
+    
       const val3 = [];
       for(const element of val2){
           let service = await db.select({ info: services.address } ).from(services).where(eq(services.address, element));
           service =  await getAPI(service[0].info);
           val3.push(service);
       }
+  
       let valMap = { "date": new Date (element.date), "services": val3 };
       fullArray.push(valMap);
   }
@@ -506,14 +549,6 @@ export async function getInfoSession()
   let userResponses = JSON.parse(datavalues[0].userResponses);
 
   let data = [];
-  if(info.favorites.length > 0){
-    for(const element of info.favorites)
-    {
-      var service = await getAPI(element);
-      data.push(service);
-    }
-    info.favorites = data;
-  }
 
   if(info.userServices.length > 0){
     data = [];
@@ -551,10 +586,10 @@ export async function hasInfoSession(email)
 
 
 // Session for Questionaire
-export async function createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email)
+export async function createStatelessQ(numberPlaces, userServices, apiServices, userResponses, email)
 {
   var currEmail = email;
-  if (email == "HASHTHIS")
+  if (currEmail == "HASHTHIS")
   {
     currEmail = await bcrypt.hash(email, 5);
   }
@@ -563,12 +598,6 @@ export async function createStatelessQ(numberPlaces, favorites, userServices, ap
   var values = {numberPlaces};
   // getting the id from each 
   let data = [];
-  if(favorites){
-    favorites.forEach((val) =>
-    {
-        data.push(val.id);
-    });
-  }
   
   values.favorites = data;
   data = [];
@@ -633,6 +662,46 @@ export async function createStatelessQ(numberPlaces, favorites, userServices, ap
   }
   
 
+}
+
+
+// User Cords
+// Add Cords
+export async function addCords(email, cords) {
+  try {
+    if(await getUser(email)){
+      await db
+      .update(users)
+      .set({ cords: JSON.stringify(cords) })
+      .where(eq(users.email, email));
+      console.log("cords added successfully");
+    }
+    else
+    {
+      console.log("No such user Exists");
+    }
+  } catch (e) {
+    console.error("error adding cords:", e);
+    throw e;
+  }
+}
+// get Cords
+export async function getCords(email){
+  try {
+    console.log("getting cords from given email:", {
+      email,
+    });
+    if(await getUser(email)){
+      const value = await db.select({ cords: users.cords })
+      .from(users)
+      .where(eq(users.email, email));
+      return JSON.parse(value[0].cords);
+      
+    } else return null;
+  } catch (e) {
+    console.error("error in in service selection:", e);
+    throw e;
+  }
 }
 
 /*

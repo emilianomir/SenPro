@@ -2,12 +2,35 @@
 import Link from "next/link";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
-import { checkLogin, createSession, getUser } from "@/components/DBactions";
+import { checkLogin, createSession, getUser, getCords } from "@/components/DBactions";
+import { useEffect} from "react";
+import { getUserSession} from "@/components/DBactions";
+
 
 export default function FormLayout ({typeForm}){
     console.log("Ran Form")
     const router = useRouter();
-    const {setUserEmail, setGuestAddress} = useAppContext();
+    const {setUserEmail, setUserAddress, userEmail} = useAppContext();
+    
+    // Gets the session
+    useEffect(() => {
+      const fetchProducts = async () => {
+          try{
+            let userName
+            if (!userEmail)
+              userName = await getUserSession();
+            if(userEmail || userName != null){
+              router.push("/home");
+            }
+          } catch(error) {
+              console.error("Error fetching DB:", error);
+              alert("There was an issue getting the data.");
+          } finally {
+          }
+        }
+      
+      fetchProducts();
+    }, []);
 
     const submitForm = async (event) => {
         event.preventDefault();
@@ -37,8 +60,9 @@ export default function FormLayout ({typeForm}){
               await createSession(theUserName);
               let userName = await getUser(theUserName);
               setUserEmail([userName[0].username, userName[0].email]);
-              const temp = [26.1509653, -98.1884949];
-              setGuestAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
+              const temp = await getCords(userName[0].email);
+              console.log(temp)
+              setUserAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
               router.push("/home");
             }
             else

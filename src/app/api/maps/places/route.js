@@ -39,7 +39,7 @@ export async function POST(req){
         }
         console.log("The textBody: ") ///debugging purposes
         console.log(textBody);
-    
+
 
         const headers = {
             "Content-Type": "application/json",

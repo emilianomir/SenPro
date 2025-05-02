@@ -6,7 +6,6 @@ import { getUserSession } from '@/components/DBactions';
 import Loading from '@/components/Loading';
 
 function StartPage(){
-    console.log("Start ran")
     const {userEmail, setNumberPlaces, setUserEmail, userServices} = useAppContext();
     const router = useRouter();
     const [goLogin, setLogin] = useState(false);
@@ -15,13 +14,13 @@ function StartPage(){
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-            if (!userEmail) {
+            
                 let userName = await getUserSession();
                 if (userName != null)
                     setUserEmail([userName[0].username, userName[0].email]);
                 // else 
                 //     setLogin(true);
-            }
+            
             } catch(error) {
                 
                 console.error("Error fetching DB:", error);
@@ -29,7 +28,7 @@ function StartPage(){
                 
             } 
         }
-        fetchProducts();
+        if(!userEmail) fetchProducts();
     }, []);
 
     useEffect(() => {
@@ -56,43 +55,39 @@ function StartPage(){
 
     return (
         <>
-        {/* {userEmail ?  */}
-            <>
-                <div className = "" >
-                    <div className = "text-center">
-                        <h1 className='text-4xl font-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
-                        <div className='w-full h-1 bg-white' />
-                    </div>
-                </div>
+        {userEmail ?
+        <>
         
-                <div className="flex justify-center text-center mt-20">
-                    <div className = "border border-2 bg-slate-800">
-                        <div className="p-3">
-                            <h1 className="w-50 text-xl">How many places do you want to visit? </h1>
+        <div className = "" >
+            <div className = "text-center">
+                <h1 className='text-4xl font-bold'>Hello {userEmail != null ? userEmail[0] : "Guest"}</h1>
+                <div className='w-full h-1 bg-white' />
+            </div>
+        </div>
+
+        <div className="flex justify-center text-center mt-20">
+            <div className = "border border-2 bg-slate-800">
+                <div className="p-3">
+                    <h1 className="w-50 text-xl">How many places do you want to visit? </h1>
+                </div>
+                <form onSubmit={formSubmit}>
+                    <div className="" >
+                        <div className="my-2">
+                            <input type="number" className="border-b-2 w-25 text-center" min = "1" max = "5" required/>
                         </div>
-                        <form onSubmit={formSubmit}>
-                            <div className="" >
-                                <div className="my-2">
-                                    <input type="number" className="border-b-2 w-25 text-center" min = "1" max = "5" required/>
-                                </div>
-                                <div className="mb-2">
-                                    <button type="submit" className="outline outline-2 w-25">Enter</button>
-                                </div>
-                            </div>
-                        </form>
-          
+                        <div className="mb-2">
+                            <button type="submit" className="outline outline-2 w-25">Enter</button>
+                        </div>
                     </div>
-                </div>
-               
-            </>
-            {/* :
-            <Loading message= "Fetching Session"/>
-        } */}
-        </>
-
-
-
+                </form>
         
+                </div>
+            </div>
+        </>
+    :
+        <Loading message= "Fetching Session"/>
+    }
+    </>
     );
 
 }

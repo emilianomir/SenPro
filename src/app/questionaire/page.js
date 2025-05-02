@@ -4,15 +4,15 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
-import { createStatelessQ, getInfoSession, deleteSession, getUserSession} from "@/components/DBactions";
-
+import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI} from "@/components/DBactions";
+import { ConsoleLogWriter } from "drizzle-orm";
 
 
 function Questionaire(){
 
     console.log("Questionnaire ran")
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, guestAddress} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
     const [yes, setyes] = useState(true);
@@ -34,8 +34,8 @@ function Questionaire(){
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : guestAddress[0], 
-                        location: userServices.length> 0 ? userServices.location : guestAddress[1]})
+                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : userAddress[0], 
+                        location: userServices.length> 0 ? userServices.location : userAddress[1]})
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -56,8 +56,10 @@ function Questionaire(){
                     ])
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
+                /*
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
+                */
                 // if (change){
                 setAPIServices(services_result);
                 router.push("/services");
@@ -85,45 +87,49 @@ function Questionaire(){
 
 
     // Gets the session
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //         if (yes){
-    //         try{
-    //             setyes(false);
-    //             let userName = await getUserSession();
-    //             if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-    //             let sessionValues = await getInfoSession();
-    //             if(sessionValues == null || numberPlaces > 0)
-    //             {
+    useEffect(() => {
+        const fetchProducts = async () => {
+            if (yes){
+            try{
+                setyes(false);
+                let userName = await getUserSession();
+                if (userName != null) {
+                    setUserEmail([userName[0].username, userName[0].email]);
+                    if(!favorites){
+                        const favoritesList = await getFavAPI(userName[0].email);
+                        if(favoritesList) setFavorites(favoritesList);
+                    }
+                }
+                let sessionValues = null;
+                if (numberPlaces <= 0) sessionValues = await getInfoSession();
+                if(sessionValues == null || numberPlaces > 0)
+                {
                     
-    //                 if(numberPlaces > 0) await deleteSession('Qsession');
-    //                 let email = "HASHTHIS";
-    //                 if(userName)
-    //                 {
-    //                     email = userName[0].email;
-    //                 }
-    //                 await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email);
-    //             }
-    //             else
-    //             {
-    //                 setNumberPlaces(sessionValues.numberPlaces);
-    //                 setFavorites(sessionValues.favorites);
-    //                 setServices(sessionValues.userServices);
-    //                 setResponses(sessionValues.userResponses);
-    //                 setAPIServices(sessionValues.apiServices);
-    //             }
+                    if(numberPlaces > 0) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    await createStatelessQ(numberPlaces, userServices, [], [], email);
+                }
+                else
+                {
+                    setNumberPlaces(sessionValues.numberPlaces);
+                    setServices(sessionValues.userServices);
+                }
 
-    //         } catch(error) {
-    //             console.error("Error fetching DB:", error);
-    //             alert("There was an issue getting the data.");
-    //         } finally {
-    //             setSessionLoad(false);
-    //         }
-    //         }
-    //     }
-    //     fetchProducts();
-    //     }, [yes]);
 
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            } finally {
+                setSessionLoad(false);
+            }
+            }
+        }
+        fetchProducts();
+        }, [yes]);
 
 
     // const goToNext = ()=>{
