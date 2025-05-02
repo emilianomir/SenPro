@@ -54,7 +54,7 @@ function Questionaire(){
                             }
                         })
                     ])
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await new Promise(resolve => setTimeout(resolve, 800));
                 }
                 /*
                 console.log("Service result in services page: "); //debugging purposes
