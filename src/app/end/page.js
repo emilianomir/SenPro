@@ -10,7 +10,7 @@ import { useQRCode } from 'next-qrcode';
 
 export default function End(){
 
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, guestAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
 
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
@@ -19,7 +19,7 @@ export default function End(){
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
 
-    const fullURL = googleMapURL + guestAddress[0] + "/" + addressURLS.join('/');
+    const fullURL = googleMapURL + userAddress[0] + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -120,7 +120,6 @@ export default function End(){
     // if(loading){
     //     return (<Loading message= "Fetching Session"/>)
     // }
-
     return(
         <div>
             <ServicePageHeading />

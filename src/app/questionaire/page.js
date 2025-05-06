@@ -9,8 +9,10 @@ import { ConsoleLogWriter } from "drizzle-orm";
 
 
 function Questionaire(){
+
+    console.log("Questionnaire ran")
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, guestAddress, userAddress} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
     const [yes, setyes] = useState(true);
@@ -32,8 +34,8 @@ function Questionaire(){
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : guestAddress[0], 
-                        location: userServices.length> 0 ? userServices.location : guestAddress[1]})
+                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : userAddress[0], 
+                        location: userServices.length> 0 ? userServices.location : userAddress[1]})
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -41,18 +43,18 @@ function Questionaire(){
         
                 const {services_result} = await response.json();
                 if (services_result) {
-                    for (let i of services_result) {
-                        if (i.photos) {
-                            const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
-                            if (result.ok) {
-                                const photoURL= result;
-                                i.photo_image = photoURL.url;
+                    await Promise.all([
+                        services_result.map(async i => {
+                            if (i.photos) {
+                                const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
+                                if (result.ok) {
+                                    const photoURL= result;
+                                    i.photo_image = photoURL.url;
+                                }
                             }
-                               
-                            // await new Promise(resolve => setTimeout(resolve, 100));
-                        }
-    
-                    }
+                        })
+                    ])
+                    await new Promise(resolve => setTimeout(resolve, 800));
                 }
                 /*
                 console.log("Service result in services page: "); //debugging purposes

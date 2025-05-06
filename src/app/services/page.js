@@ -12,11 +12,20 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, guestAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
+    const [asc, setAsc] = useState(true);
+    const [hideDrop, setDrop] = useState(true);
+    const [sortValue, setSortValue] = useState("Options");
+    const [currentServices, setCurrentServices] = useState(apiServices);
+    const router = useRouter();
 
+
+
+    
         
     useEffect(() => {
         const fetchProducts = async () => {
@@ -75,14 +84,6 @@ export default function Services(){
         }
         fetchProducts();
     }, [yes]);
-    const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
-    const [asc, setAsc] = useState(true);
-    const [hideDrop, setDrop] = useState(true);
-    const [sortValue, setSortValue] = useState("Options");
-    const [currentServices, setCurrentServices] = useState(apiServices);
-
-
-    const router = useRouter();
 
     const getMoreInfo = async (id) =>{
         const desired_service = apiServices.find(obj => obj.id === id);
@@ -107,57 +108,8 @@ export default function Services(){
         router.push("/services/" + desired_service.displayName.text);
     }
 
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //     if (yes){
-    //         try{
-    //         setyes(false);
-    //         let userName = await getUserSession();
-    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
 
-    //         let sessionValues = await getInfoSession();
-    //         if(sessionValues == null || numberPlaces > 0)
-    //             {
-                    
-    //                 if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
-    //                 let email = "HASHTHIS";
-    //                 if(userName)
-    //                 {
-    //                     email = userName[0].email;
-    //                 }
-    //                 let userR = "";
-    //                 if (userResponses){
-    //                     let fuel_type = userResponses.fuel_type;
-    //                     let main_category = userResponses.main_category;
-    //                     let name = userResponses.name;
-    //                     let priceLevel = userResponses.priceLevel;
-    //                     let rating = userResponses.rating;
-    //                     let textQuery = userResponses.textQuery;
-    //                     let types = userResponses.types;
-    //                     userR = { fuel_type,main_category,name,priceLevel,rating,textQuery,types };
-    //                 }
-    //                 await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userR, email);
-    //             }
-    //             else
-    //             {
-    //                 setNumberPlaces(sessionValues.numberPlaces);
-    //                 setFavorites(sessionValues.favorites);
-    //                 setServices(sessionValues.userServices);
-    //                 setResponses(sessionValues.userResponses);
-    //                 setAPIServices(sessionValues.apiServices);
-    //             }
-    //     } catch(error) {
-    //         console.error("Error fetching DB:", error);
-    //         alert("There was an issue getting the data.");
-    //     } finally {
-    //         setLoading(false);
-    //         }
-    //     }
-    //     }
-    //     fetchProducts();
-    // }, [yes]);
-
-    const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : guestAddress ? [guestAddress[1].latitude, guestAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
+    const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : userAddress ? [userAddress[1].latitude, userAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
         if (asc){
             la1 = la1 ? la1 : 999
@@ -202,10 +154,6 @@ export default function Services(){
                 hasValue2 = hasValue2 ? Number(hasValue2): asc ? 1000000000000000: 0;
                 return asc ? hasValue1 - hasValue2 : hasValue2 - hasValue1;
             })
-                // a[property] && b[property] ? 
-                //     asc ? a[property]- b[property]: 
-                //     b[property] - a[property] 
-                // : a[property] - 0 : 0 - b[property]? b[property]: 0) //fix this to sort correctly
     }
     
     useEffect(() => {
@@ -213,14 +161,6 @@ export default function Services(){
             switch(sort) {
                 case 0:
                     setCurrentServices(theSort(currentServices, "miles"));
-                    // if (asc){
-                    //     //dummyArray = dummyArray.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a.lat, a.long) -  distanceCalculate(referencePoint[0], referencePoint[1], b.lat, b.long));
-                    //     setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude ) -  distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude)));
-                    // }
-                    // else {
-                    //     console.log("I ran des");
-                    //     setCurrentServices(currentServices.sort((a,b) => distanceCalculate(referencePoint[0], referencePoint[1], b?.location?.latitude, b?.location?.longitude) - distanceCalculate(referencePoint[0], referencePoint[1], a?.location?.latitude, a?.location?.longitude)));    
-                    // }
                     setSortValue("Distance")
                     break;
                 case 1:
@@ -281,7 +221,7 @@ export default function Services(){
                     <>
                         <div className="md:grid md:grid-cols-2">
                             <div className="ml-2 mt-2 text-center md:text-start">
-                                <Link href={"/questionaire"}><button className="outline outline-2 text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link>
+                                {currentServices && <Link href={"/questionaire"}><button className="outline outline-2 text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link> }
                             </div>
                             <div className="w-4/5 flex justify-end mt-2">
                                 <div className="text-2xl grid md:grid-cols-2">
@@ -328,17 +268,6 @@ export default function Services(){
                                 </div>
                             </div>
                         </div>
-                            <div className="">
-                                <div className="" >
-                                    <div className="">
-                                        {/* <div className="d-flex justify-content-center align-items-center h-100 fs-5 text-center">
-                                            {userResponses.name ? userResponses.name: userResponses.main_category}
-                                        </div> */}
-                                    </div>
-                                </div>
-                            </div>
-
-                        {/* </div> */}
                         <div className="mt-5 bg-slate-800/10 h-screen">
                             <div className="text-center text-2xl lg:text-3xl py-4 font-bold">
                                 Choose your service:
@@ -362,7 +291,7 @@ export default function Services(){
                                             <div className="h-full w-full" >
                                                 {userEmail != null && <Favorites service={service_object}/>}    
                                                 <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
-                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : guestAddress[0] } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
+                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : userAddress[0] } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
                                                 </div>
                                             </div>
                                     

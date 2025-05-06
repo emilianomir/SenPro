@@ -16,7 +16,7 @@ import TravelMode from "@/components/TravelMode";
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses, userEmail, guestAddress, userAddress, setGuestAddress} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail, userAddress, setGuestAddress} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
@@ -25,7 +25,7 @@ export default function ServiceInfo(){
     const [isOpen, setIsOpen] = useState(false);
     const current_service = userServices[userServices.length-1];
     const prevService = userServices.length > 1 ? userServices[userServices.length-2] : null; // check if there is a previous service, used for the travelmode.js component
-    const originAddressToUse = prevService ? prevService.formattedAddress : (userAddress || guestAddress); // if there is a previous service, use the previous service's address as the origin, otherwise use the user's address or guest address
+    const originAddressToUse = prevService ? prevService.formattedAddress : userAddress[0]; // if there is a previous service, use the previous service's address as the origin, otherwise use the user's address or guest address
     const router = useRouter();
     const [addServices, setYes] = useState(false)
     const [clickedPop, setClickedPop] = useState(false);
@@ -65,18 +65,21 @@ export default function ServiceInfo(){
         setLoading(true);
         setIsOpen(true);
         if (current_service.photo_images_urls == undefined) { //this checks to see if we already made a call and have the photos stored in object
-            const temp = []; 
-            for (let i = 1; i < current_service.photos.length; i ++) { //we start at 1 since we already have cover photo
-                const response = await fetch('/api/maps/places?thePhoto=' + current_service.photos[i].name); //need to make a get request for each photo that is not cover (max: 9)
-                if (response.ok) {
-                    const photoURL = response;
-                    temp.push(photoURL.url);
-                }
-                    
-                //await new Promise(resolve => setTimeout(resolve, 100)); //waits for 300 ms until next request (to avoid 429 error)
-            }
-        current_service.photo_images_urls = temp; //this holds the array of photos url
-        setLoading(false);
+            const temp = [];
+            await Promise.all([
+                current_service.photos.map(async (thePhoto, i) => {
+                    if (i > 0){
+                        const response = await fetch('/api/maps/places?thePhoto=' + thePhoto.name); //need to make a get request for each photo that is not cover (max: 9)
+                        if (response.ok) {
+                            const photoURL = response;
+                            temp.push(photoURL.url);
+                        }
+                    }
+                })
+            ])
+            await new Promise(resolve => setTimeout(resolve, 800)); //waits for 300 ms until next request (to avoid 429 error)
+            current_service.photo_images_urls = temp; //this holds the array of photos url
+            setLoading(false);
     }
         else { //this means we already have photos stored
             setLoading(false);
@@ -276,7 +279,7 @@ export default function ServiceInfo(){
 
 
                 </div>
-                <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                <div className={`${isOpen ? "opacity-100 z-10" : "opacity-0 -z-10"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
                     <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-white p-6 rounded-lg shadow-lg h-9/10 md:h-5/6  md:w-5/6`}>
                         <h2 className="text-3xl font-bold text-black">Gallery:</h2>
                         <div className="h-4/5">

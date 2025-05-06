@@ -1,92 +1,80 @@
 "use client"
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
-import { checkLogin, createSession, getUser } from "@/components/DBactions";
-import Loading from "@/components/Loading";
-import { check } from "drizzle-orm/mysql-core";
+import { checkLogin, createSession, getUser, getCords } from "@/components/DBactions";
+import { useEffect} from "react";
+import { getUserSession} from "@/components/DBactions";
+
 
 export default function FormLayout ({typeForm}){
-    console.log("Ran login")
+    console.log("Ran Form")
     const router = useRouter();
-    const {setUserEmail, setGuestAddress} = useAppContext();
-    const [yes, setYes] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [formData, changeFormData] = useState(()=>
-    {
-        const formDefault = {
-            inputEmail: "",
-            inputPass: "",
+    const {setUserEmail, setUserAddress, userEmail} = useAppContext();
+    
+    // Gets the session
+    useEffect(() => {
+      const fetchProducts = async () => {
+          try{
+            let userName
+            if (!userEmail)
+              userName = await getUserSession();
+            if(userEmail || userName != null){
+              router.push("/home");
+            }
+          } catch(error) {
+              console.error("Error fetching DB:", error);
+              alert("There was an issue getting the data.");
+          } finally {
+          }
         }
-        if (typeForm.third)
-            formDefault.confirmPass= "";
-        return formDefault;
+      
+      fetchProducts();
+    }, []);
 
-    });
-
-    const changeData = (event) => {
-        const { id, value } = event.target;
-        changeFormData((oldData) => ({
-        ...oldData,
-        [id]: value,
-        }));
-    };
-
-    const submitForm = (event) => {
+    const submitForm = async (event) => {
         event.preventDefault();
+        const theUserName = event.target.inputEmail.value;
+        const thePass = event.target.inputPass.value;
         if (typeForm.name == 'Register') {
-            if (!formData.inputEmail || !formData.inputPass || !formData.confirmPass) {
+            const theConfirmPass = event.target.confirmPass.value
+            if (!theUserName || !thePass || !theConfirmPass) {
                 alert("Please fill out all fields");
                 return;
             }
-            if (formData.inputPass != formData.confirmPass) {
+            if (thePass != theConfirmPass) {
                 alert("Passwords are not the same");
                 return;
           }
-
         }
         else {
-            if (!formData.inputEmail || !formData.inputPass) {
+            if (!theUserName || !thePass) {
                 alert("Please fill out all fields");
                 return;
             }
             
         }
-        setYes(true);
+
+        try{
+            if(await checkLogin(theUserName, thePass)){
+              await createSession(theUserName);
+              let userName = await getUser(theUserName);
+              setUserEmail([userName[0].username, userName[0].email]);
+              const temp = await getCords(userName[0].email);
+              console.log(temp)
+              setUserAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
+              router.push("/home");
+            }
+            else
+            {
+              alert("Invalid email or pass");
+              return;
+            }
+        } catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } 
     };
-
-    useEffect(() => {
-      const fetchProducts = async () => {
-        if (yes){
-          try{
-              setYes(false);
-              setLoading(true);
-              if(await checkLogin(formData.inputEmail, formData.inputPass)){
-                await createSession(formData.inputEmail);
-                let userName = await getUser(formData.inputEmail);
-                setUserEmail([userName[0].username, userName[0].email]);
-                const temp = [26.1509653, -98.1884949];
-                setGuestAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
-                router.push("/home");
-              }
-              else
-              {
-                alert("Invalid email or pass");
-                return;
-              }
-          } catch(error) {
-              console.error("Error fetching DB:", error);
-              alert("There was an issue getting the data.");
-          } finally {
-            setLoading(false);
-          }
-        }
-      }
-      fetchProducts();
-    }, [yes, formData]);
-
-
 
     return (    
     <div className= "w-full h-full flex justify-center items-center">
@@ -102,8 +90,6 @@ export default function FormLayout ({typeForm}){
                     Username:{" "}
                   </label>
                   <input
-                    value={formData.inputEmail}
-                    onChange={changeData}
                     type="email"
                     placeholder="Enter your username"
                     className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
@@ -117,9 +103,7 @@ export default function FormLayout ({typeForm}){
                     Password:{" "}
                   </label>
                   <input
-                    value={formData.inputPass}
                     type="password"
-                    onChange={changeData}
                     placeholder="Enter your password"
                     className=" border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                     id="inputPass"
@@ -132,16 +116,12 @@ export default function FormLayout ({typeForm}){
                     Confirm Password:{" "}
                   </label>
                   <div className="flex items-center">
-                        
-                            <input
-                                value={formData.confirmPass}
-                                onChange={changeData}
-                                type="password"
-                                placeholder="Re-enter your password"
-                                className="border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
-                                id="confirmPass"
-                            />
-                        
+                    <input
+                        type="password"
+                        placeholder="Re-enter your password"
+                        className="border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
+                        id="confirmPass"
+                    />
                     </div>
                 </div> }
               </div>
