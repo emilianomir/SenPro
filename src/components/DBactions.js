@@ -321,26 +321,31 @@ export async function getFavorites(email)
 // History Calls
   // Check
 export async function checkHistoryService(primaryKey, email, d2) {
-const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(history).where(and(eq(history.sAddress, primaryKey), eq(history.userEmail, email)));
-if (data.length == 0){
-  return true
-}
-else{
-  data.forEach(element => {
-    if(d2[0].date == element.date)
-    {
-      let [h1, m1, s1] = element.time.split(':');
-      let [h2, m2, s2] =  d2[0].time.split(':');
-      let val1 = ((h1*60)*60) + (m1*60) + s1;
-      let val2 = ((h2*60)*60) + (m2*60) + s2;    
+  var notfalse = true
+  const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(history).where(and(eq(history.sAddress, primaryKey), eq(history.userEmail, email)));
+  if (data.length == 0){
+    return true
+  }
+  else{
+    data.forEach(element => {
+      if(d2[0].date == element.date)
+      {
+        let [h1, m1, s1] = element.time.split(':');
+        let [h2, m2, s2] =  d2[0].time.split(':');
+        let val1 = ((h1*60)*60) + (m1*60) + s1;
+        let val2 = ((h2*60)*60) + (m2*60) + s2;    
 
-      difference = val1 - val2;
-      if (difference <= 10)
-        return false;
-    }
-  });
-  return true;
-}
+        const difference = val1 - val2;
+        if (difference <= 10)
+          notfalse = false;
+          return false;
+      }
+    });
+    if(notfalse)
+      return true;
+      else
+      return false
+  }
 }
 export async function removeOldestService(email)
 {
