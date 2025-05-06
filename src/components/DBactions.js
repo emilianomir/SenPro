@@ -591,7 +591,7 @@ export async function createStatelessQ(numberPlaces, userServices, apiServices, 
   var currEmail = email;
   if (currEmail == "HASHTHIS")
   {
-    currEmail = await bcrypt.hash(email, 5);
+    currEmail = "testuser";
   }
 
   const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Holds for 30 minutes

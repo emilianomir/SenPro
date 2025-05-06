@@ -5,14 +5,14 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI } from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI,  getCords} from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces, setUserAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
@@ -35,6 +35,8 @@ export default function Services(){
             let userName = await getUserSession();
             if (userName != null) {
                 setUserEmail([userName[0].username, userName[0].email]);
+                const cords = await getCords(userName[0].email);
+                setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
                 if(!favorites){
                     const favoritesList = await getFavAPI(userName[0].email);
                     if(favoritesList) setFavorites(favoritesList);

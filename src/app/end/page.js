@@ -3,14 +3,14 @@ import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, checkRemoveOldest} from '@/components/DBactions';
+import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, checkRemoveOldest, getCords} from '@/components/DBactions';
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
 
 export default function End(){
 
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress, setUserAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
 
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
@@ -73,6 +73,8 @@ export default function End(){
             let userName = await getUserSession();
             if (userName != null) {
                 setUserEmail([userName[0].username, userName[0].email]);
+                const cords = await getCords(userName[0].email);
+                setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
                 if(!favorites){
                     const favoritesList = await getFavAPI(userName[0].email);
                     if(favoritesList) setFavorites(favoritesList);
