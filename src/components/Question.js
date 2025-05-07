@@ -305,34 +305,34 @@ function Question({theQuestion, current, func, changeLoading}){
                 <div className={`flex flex-col mt-4 md:mt-10 lg:mt-0 ${generalSearchP && start ? "": "justify-center"} md:justify-center items-center h-full p-3`}>
                     {start ? 
                     <div className="w-full">
-                        <h1 className="text-xl md:text-3xl lg:text-5xl text-center font-extrabold">{ques.question[0]}</h1>
+                        <h1 className="text-xl md:text-3xl lg:text-5xl text-center font-extrabold text-content-text">{ques.question[0]}</h1>
                         {prevKeys.length > 0 &&
                         <div className="text-center">
-                            <button onClick = {gotoPrev} className="outline outline-2 mt-3 md:mt-10 w-3/4 md:w-1/2 text-base md:text-lg lg:text-xl md:p-3">Go To Previous Question</button>
+                            <button onClick = {gotoPrev} className="outline-content-text text-content-text outline-2 mt-3 md:mt-10 w-3/4 md:w-1/2 text-base md:text-lg lg:text-xl md:p-3">Go To Previous Question</button>
                         </div>
                         }
                         {generalSearchP &&
-                        <div className="mt-2 md:mt-10 text-base md:text-xl lg:text-2xl text-center">
-                            <div className="text-white mb-1 md:mb-3">Ready to search for places?</div> 
-                            <div className="text-white mb-1 md:mb-3 font-bold">Click below :</div>
+                        <div className="mt-2 md:mt-10 text-base md:text-xl lg:text-2xl text-center text-content-text">
+                            <div className="mb-1 md:mb-3">Ready to search for places?</div> 
+                            <div className="mb-1 md:mb-3 font-bold">Click below :</div>
                             <div className="">
-                                <button className="outline outline-2 w-1/2 md:p-2" onClick={generalSearch} type = "button">Done</button>
+                                <button className="outline-text-content outline-2 w-1/2 md:p-2" onClick={generalSearch} type = "button">Done</button>
                             </div>
                         </div>
                         }
                     </div>
                     :
                     <div className="px-5">
-                        <div className="text-xl md:text-2xl lg:text-3xl/10 text-white">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
+                        <div className="text-xl md:text-2xl lg:text-3xl/10 text-content-text">Have a specific name or search in mind? Enter it below and see if its near your area!</div>
                         <div className="mt-5 w-full"> 
                             <form onSubmit={changeSpecLoc}>
-                                <input className="w-3/4 text-center border-b-1 mr-2 text-base md:text-xl lg:text-2xl" placeholder="Enter your search here" id="nameSearch" required></input>
-                                <button className="outline outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
+                                <input className="w-3/4 text-center border-b-1 mr-2 text-base md:text-xl lg:text-2xl text-content-text" placeholder="Enter your search here" id="nameSearch" required></input>
+                                <button className="outline-content-text text-content-text outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
                         {(!generalSearchP && userEmail != null) &&
                         <>
-                            <div className="text-xl md:text-2xl lg:text-3xl text-white mt-5 md:mt-20 text-center">Or select from one of your favorites to continue: </div>
+                            <div className="text-xl md:text-2xl lg:text-3xl text-content-text mt-5 md:mt-20 text-center">Or select from one of your favorites to continue: </div>
                             <SelectFavorites/>
                         </>
                         }
@@ -342,28 +342,28 @@ function Question({theQuestion, current, func, changeLoading}){
                 </div>
                 
             </div>
-            <div className={`${userEmail && !start ? "": "row-span-2"} lg:row-span-3 lg:w-19/20 p-5 md:p-10 bg-slate-800/85 h-9/10 rounded-lg`}>
+            <div className={`${userEmail && !start ? "": "row-span-2"} lg:row-span-3 lg:w-19/20 p-5 md:p-10 bg-question-info/85 h-9/10 rounded-lg`}>
                 <div className="flex flex-col md:justify-center items-center h-full text-center">
                 {start ?
                     <div className="w-full grid grid-cols-2 gap-5 h-full">
                     {ques.answer.map((answer_array, index)=> (
-                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-4/5 bg-gray-100 flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
+                    <div key = {`${index} ${answer_array[0]}`} className="text-center max-h-50 h-4/5 bg-land-card flex justify-center items-center rounded-lg shadow-lg inset-shadow-sm" onClick={ () => {
                         let temp = answer_array[2] ? answer_array[2] : ""
                         destValue(answer_array[0], answer_array[1], temp);
                     }}>
-                        <div className="text-base md:text-2xl lg:text-3xl text-black font-bold w-full px-3 break-words">
+                        <div className="text-base md:text-2xl lg:text-3xl text-black font-bold w-full px-3 break-words text-content-text">
                             {answer_array[0]}
                         </div>
                     </div>))}
                 </div>
                 :
                 <>
-                    <div className="text-xl md:text-2xl lg:text-3xl/10">
+                    <div className="text-xl md:text-2xl lg:text-3xl/10 text-white">
                         <p>Need help deciding what service you would like? Try our questionnaire to create a search with you are looking for!
                         <span className="font-bold block mt-3">Click Start to begin! </span></p>
                     </div>
-                    <div className="mt-4 w-full text-3xl">
-                        <button onClick={()=> SetStart(true)} className="outline outline-2 w-1/2">Start</button>
+                    <div className="mt-4 w-full text-3xl text-white">
+                        <button onClick={()=> SetStart(true)} className="outline-white outline-2 w-1/2">Start</button>
                     </div>
                 </>
                 }

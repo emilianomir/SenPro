@@ -4,16 +4,214 @@
 @tailwind utilities;
 
 
+.light {
+  --background: 255 255 255; 
+  --scheme: 0 0 0;
+  --content: 255 255 255;
+  --content-secondary: var(--content);
+  --content-hover: 209 213 219;
+  --content-text: 0 0 0;
+  --heading: 29 78 216;
+  --heading-border: 203 213 225;
+  --content-outline: 229 231 235;
+
+  --page-heading: var(--heading);
+
+  --first-bg: 255 255 255;
+  --land-card: 243 244 246;
+  --land-sec-bg: 226 232 240;
+  --land-hover: var(--heading-border);
+
+  --gradient-lr: var(--background);
+  --gradient-m: var(--content);
+
+  --address-bg: 241, 245, 249;
+  --address-img-bg: 59 130 246;
+  --address-text: 75 85 99;
+
+  --home-h-bg: 37 99 235;
+  --home-s-h: var(--home-h-bg);
+
+  --question-cover: var(--land-sec-bg);
+  --question-info: var(--home-h-bg);
+
+  --card-sec: 55 65 81;
+  --card-hover: var(--content-outline);
+
+  --end-sec-text: var(--card-sec);
+
+
+  --account-o-bg: var(--land-card);
+  --account-o-text: 55 65 81;
+  --account-o-hover: var(--content-outline);
+  --theme-btn: 37 99 235;
+  --theme-btn-hover: 29 78 216;
+
+  --account-sec-text: 75 85 99;
+
+  --ind-border: var(--content-hover);
+  --ind-label: 107 114 128;
+  --t-label: 75 85 99;
+  --ind-head-text: 31 41 55;
+  --ind-sec-bg: 229 231 235;
+  --ind-w-stext: 136 136 136;
+  --ind-t-card: 255 255 255;
+  --ind-hover-btn: var(--ind-sec-bg);
+  --select-focus: var(--address-img-bg);
+
+
+
+  /* bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 */
+}
+
+.dark {
+  --background: 15 23 42;
+  --scheme: 255 255 255;
+  --content: 31 41 55; 
+  --content-text: 255 255 255;
+  --content-secondary: 55, 65, 81;  /* bg-gray-700 */
+  --content-hover: 243 244 246;
+  --heading: 51 65 85;
+  --heading-border: 107, 114, 128;
+  --content-outline: var(--content);
+
+  --page-heading: 15 23 42;
+
+  --first-bg: 15 23 42;
+  --land-card: 55 65 81;
+  --land-sec-bg: 51 65 85;
+  --land-hover: 100 116 139;
+
+  --gradient-lr: 17 24 39;
+  --gradient-m: 30 41 59;
+
+  --address-bg: var(--content);
+  --address-img-bg: 30 64 175;
+  --address-text: 156 163 175;
+
+  --home-h-bg: 71 85 105;
+  --home-s-h: 59, 130, 246;
+
+  --question-cover: 30 41 59;
+  --question-info: var(--question-cover);
+
+  --card-sec: 226 232 240;
+  --card-hover: 31 41 55;
+
+  --account-o-bg: var(--card-hover);
+  --account-o-text: 229 231 235;
+  --account-o-hover: 107 114 128;
+  --theme-btn: 29 78 216;
+  --theme-btn-hover: 37 99 235;
+
+  --account-sec-text: 156 163 175;
+
+  --end-sec-text: 229 231 235;
+
+  --ind-border: var(--card-hover);
+  --ind-label: var(--end-sec-text);
+  --t-label: var(--end-sec-text);
+  --ind-head-text: 243 244 246;
+  --ind-sec-bg: 17 24 39;
+  --ind-w-stext: 136 136 136;
+  --ind-t-card: var(--land-card);
+  --ind-hover-btn: 75 85 99;
+  --select-focus: 156 163 175;
+
+
+
+
+
+}
+
+@theme {
+  --color-textscheme: rgba(var(--scheme));
+  --color-content-back: rgba(var(--content));
+  --color-content-second: rgba(var(--content-secondary));
+  --color-heading-bg: rgba(var(--heading));
+  --color-heading-border: rgba(var(--heading-border));
+  --color-outline: rgba(var(--content-outline));
+  --color-content-text: rgba(var(--content-text));
+  --color-content-hover: rgba(var(--content-hover));
+
+  --color-page-heading: rgba(var(--page-heading));
+
+  --color-first-bg: rgba(var(--first-bg));
+  --color-land-card: rgba(var(--land-card));
+  --color-land-sec-bg: rgba(var(--land-sec-bg));
+  --color-land-hover: rgba(var(--land-hover));
+
+  --color-gradient-lr: rgba(var(--gradient-lr));
+  --color-gradient-m: rgba(var(--gradient-m));
+
+  --color-address-bg: rgba(var(--address-bg));
+  --color-address-img-bg: rgba(var(--address-img-bg));
+  --color-address-text: rgba(var(--address-text));
+
+  --color-home-h-bg: rgba(var(--home-h-bg));
+  --color-home-s-h: rgba(var(--home-s-h));
+
+  --color-question-cover: rgba(var(--question-cover));
+  --color-question-info: rgba(var(--question-info));
+
+  --color-card-sec: rgba(var(--card-sec));
+  --color-card-hover: rgba(var(--card-hover));
+
+  --color-account-o-bg: rgba(var(--account-o-bg));
+  --color-account-o-text: rgba(var(--account-o-text));
+  --color-account-o-hover: rgba(var(--account-o-hover));
+  --color-theme-btn: rgba(var(--theme-btn));
+  --color-theme-btn-hover: rgba(var(--theme-btn-hover));
+
+  --color-account-sec-text: rgba(var(--account-sec-text));
+
+  --color-end-sec-text: rgba(var(--end-sec-text));
+
+  --color-ind-border: rgba(var(--ind-border));
+  --color-ind-label: rgba(var(--ind-label));
+  --color-t-label: rgba(var(--t-label));
+  --color-ind-head-text: rgba(var(--ind-head-text));
+  --color-ind-sec-bg: rgba(var(--ind-sec-bg));
+  --color-ind-w-stext: rgba(var(--ind-w-stext));
+  --color-ind-t-card: rgba(var(--ind-t-card));
+  --color-ind-hover-btn: rgba(var(--ind-hover-btn));
+  --color-select-focus: rgba(var(--select-focus));
+
+}
+
+/* @media (prefers-color-scheme: dark) {
   :root {
-    /* --background: oklch(0.446 0.043 257.281); */
     --background: oklch(0.372 0.044 257.287);
-    /* --background: oklch(0.208 0.042 265.755); */
+    --back: 250 201 21
+  }
+} */
+
+body {
+  background: rgba(var(--background));
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply transition ease-in-out delay-100 duration-400;
+  }
+}
+
+
+
+
+
+/* 
+  :root {
+     --background: oklch(0.446 0.043 257.281); 
+    --background: oklch(0.372 0.044 257.287);
+     --background: oklch(0.208 0.042 265.755); 
     --foreground: #ededed;
     --card_bg: #333d50;
     --textContent: #ffffff;
     --border_col: #626978;  
     --p1: 103, 198, 226;
-    /* --p2: #81cee6; */
+     --p2: #81cee6; 
   }
   
   @media (prefers-color-scheme: dark) {
@@ -32,11 +230,6 @@
 
 
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
 
-
+ */
 

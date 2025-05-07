@@ -77,12 +77,12 @@ export default function FormLayout ({typeForm}){
     };
 
     return (    
-    <div className= "w-full h-full flex justify-center items-center">
-          <div className="border border-3 border-slate-500 mt-5 bg-gray-900/20 w-4/5 md:w-3/5 h-3/5 md:h-4/5">
-            <h1 className="text-white text-center text-4xl md:text-5xl pt-3 mt-4 mb-3">{typeForm.name}</h1>
-            <div className="w-full flex justify-center">
-              <div className="w-5/6 h-1 mt-0 bg-white opacity-75"></div>
-            </div>
+    <div className= "w-full h-full flex justify-center items-center text-content-text">
+          <div className="border-3 border-outline mt-5 w-4/5 md:w-3/5 h-3/5 md:h-4/5 bg-land-sec-bg/25 rounded-xl">
+            <h1 className="text-center text-4xl md:text-5xl pt-3 mt-4 mb-3 text-blue-400">{typeForm.name}</h1>
+            {/* <div className="w-full flex justify-center">
+              <div className="w-5/6 h-1 mt-0 bg-blue-400 opacity-75"></div>
+            </div> */}
             <form className="mt-4 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitForm}>
               <div className="ml-10">
                 <div className="grid grid-cols-1">
@@ -126,21 +126,21 @@ export default function FormLayout ({typeForm}){
                 </div> }
               </div>
               <div className="flex justify-center w-full">
-                <button type="submit" className="mt-3 md:mt-5 px-5 outline-2 outline-white w-1/2">
+                <button type="submit" className="mt-3 md:mt-5 px-5 shadow-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg w-1/2">
                   {typeForm.submit_name}
                 </button>
               </div>
             </form>
             
-            <h2 className="mt-2 md:mt-7 text-center text-lg md:text-2xl grid grid-cols-1 md:block md:pb-5">{typeForm.text}        
-              <Link className="md:ml-4 underline" href={typeForm.link}>
+            <h2 className="mt-2 md:mt-7 text-center text-lg md:text-2xl grid grid-cols-1 md:block md:pb-5 ">{typeForm.text}        
+              <Link className="md:ml-4 underline text-blue-400 hover:text-blue-500" href={typeForm.link}>
                   {typeForm.link_name}
               </Link></h2>
             
             {typeForm.name == "Login" &&
             <>
                 <div className="w-full mt-3 flex justify-center pb-3">
-                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline text-center md:text-left">Here</Link></div>
+                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline text-center md:text-left text-blue-400 hover:text-blue-500">Here</Link></div>
                 </div>
 
             </>

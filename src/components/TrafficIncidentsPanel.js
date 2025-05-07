@@ -62,12 +62,12 @@ const TrafficIncidentsPanel = ({ location }) => { // this object will have latit
     }, [location]);
 
     if (isLoading) {
-        return <div className="incidents-panel loading">Loading traffic incidents...</div>;
+        return <div className="incidents-panel loading text-content-text/90">Loading traffic incidents...</div>;
     }
 
     return (
-        <div className="incidents-panel">
-            <h3 className="panel-title">Traffic Incidents</h3>
+        <div className="incidents-panel bg-land-card/35">
+            <h3 className="panel-title text-content-text/90">Traffic Incidents</h3>
             
             {error && (
                 <div className="incidents-warning">
@@ -83,7 +83,7 @@ const TrafficIncidentsPanel = ({ location }) => { // this object will have latit
                     ))}
                 </div>
             ) : (
-                <div className="no-incidents">
+                <div className="no-incidents bg-ind-sec-bg/20 border-ind-border/20 border-1 text-content-text/80">
                     <p>{error ? "Unable to retrieve incidents" : "No traffic incidents reported in this area."}</p>
                 </div>
             )}

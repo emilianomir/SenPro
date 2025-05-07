@@ -24,44 +24,6 @@ export default function End(){
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     
-
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //     if (yes){
-    //         try{
-    //         setyes(false);
-    //         let userName = await getUserSession();
-    //         if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-    //         let sessionValues = await getInfoSession();
-    //         if(sessionValues == null || numberPlaces > 0)
-    //         {
-
-    //             if(numberPlaces > 0) await deleteSession('Qsession');
-    //             let email = "HASHTHIS";
-    //             if(userName)
-    //             {
-    //                 email = userName[0].email;
-    //             }
-    //             console.log(await createStatelessQ(numberPlaces, favorites, userServices, apiServices, userResponses, email));
-    //         }
-    //         else
-    //         {
-    //             setFavorites(sessionValues.favorites);
-    //             setServices(sessionValues.userServices);
-    //             setResponses(sessionValues.userResponses);
-    //             setAPIServices(sessionValues.apiServices);
-    //         }
-    //         } catch(error) {
-    //             console.error("Error fetching DB:", error);
-    //             alert("There was an issue getting the data.");
-    //         } finally {
-    //         setLoading(false);
-    //         }
-    //     }
-    //     }
-    //     fetchProducts();
-    // }, [yes]);
-            
     
 
     useEffect(() => {
@@ -121,15 +83,15 @@ export default function End(){
     //     return (<Loading message= "Fetching Session"/>)
     // }
     return(
-        <div>
+        <div className="bg-land-sec-bg h-screen">
             <ServicePageHeading />
-            <div className="px-3 text-center text-white text-3xl mt-3 font-bold">Here is your services list:</div>
+            <div className="px-3 text-center text-content-text text-3xl mt-3 font-bold">Here is your services list:</div>
             <div className="flex justify-center mt-3">
                 <Image
                 text={fullURL}
                 />
             </div>
-            <div className="text-center text-xl px-3 mt-3">Scan the QR Code above on your phone for Google Maps Link. Or Click <a className="text-blue-200 hover:underline" href={fullURL} target="_blank" rel="noopener">Here </a></div>
+            <div className="text-center text-xl px-3 mt-3 text-content-text">Scan the QR Code above on your phone for Google Maps Link. Or Click <a className="text-blue-400 hover:underline" href={fullURL} target="_blank" rel="noopener">Here </a></div>
             <div className="w-full flex justify-center">
                 <table className="w-3/4 mt-1 mb-3">
                     <tbody >
@@ -142,10 +104,10 @@ export default function End(){
                                     </svg>
                                 </td>
                                 <td className="pl-2 border-b-2 border-b-gray-300">
-                                    <div className="font-bold text-4xl my-4">
+                                    <div className="font-bold text-4xl my-4 text-content-text">
                                         {theService.displayName.text}
                                     </div>
-                                    <div className="text-3xl text-gray-200 pb-3">
+                                    <div className="text-3xl text-end-sec-text pb-3 ">
                                         {theService.formattedAddress}
                                     </div>
                                 </td>

@@ -57,12 +57,12 @@ export default function Account_Modal({email}){
 
         <div className="mt-6">
 
-            <button className='outline-5 outline-gray-800/80 p-2 bg-red-600 text-gray-100 hover:bg-red-700/90 text-xl md:text-3xl' 
+            <button className=' p-2 bg-red-600 text-gray-100 hover:bg-red-700/90 text-xl md:text-3xl' 
             onClick={()=>{Reset();
                           setIsOpen(true)}}>Change Password</button>
         </div>
         
-        <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+        <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50 text-content-text`}>
             <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-gray-700 p-6 rounded-lg shadow-lg w-3/4 h-100 relative`}>
             <h2 className="mt-3 md: mt-0 text-3xl md:text-4xl font-bold border-b-2 border-gray-200 pb-2 mb-6">Change your password</h2>
             <div>

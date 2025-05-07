@@ -1,23 +1,20 @@
 .container {
     max-width: 1024px;
-    margin: 50px auto 0;
+    margin: auto ;
     padding: 16px;
 }
 
 /* Stylish Route Header with From/To */
 .route-header {
-    background-color: white;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
 }
 
 .route-title {
     font-size: 24px;
     font-weight: 700;
-    color: #1f2937;
     margin-bottom: 20px;
     text-align: center;
 }
@@ -30,15 +27,14 @@
 
 .address-card {
     flex: 1;
-    background-color: #f9fafb;
     border-radius: 8px;
     padding: 16px;
-    border: 1px solid #e5e7eb;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 12px;
     animation: fadeIn 0.4s ease;
+
 }
 
 @keyframes fadeIn {
@@ -78,17 +74,16 @@
 .address-label {
     font-size: 14px;
     font-weight: 600;
-    color: #6b7280;
     margin-bottom: 6px;
 }
 
 .address-value {
     font-size: 16px;
     font-weight: 500;
-    color: #111827;
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 85%;
 }
 
 .route-connector {
@@ -147,11 +142,9 @@
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-top: 32px;
-    background-color: white;
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
 }
 
 .control-group {
@@ -162,23 +155,18 @@
 
 .label {
     font-weight: 600;
-    color: #4b5563;
     font-size: 14px;
 }
 
 .select, .input {
     padding: 10px 12px;
-    border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 15px;
     transition: all 0.2s ease;
-    background-color: #f9fafb;
-    color: #1f2937;
 }
 
 .select:focus, .input:focus {
     outline: none;
-    border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
@@ -199,18 +187,17 @@
 }
 
 .info {
-    background-color: white;
     border-radius: 12px;
     padding: 20px;
     margin-top: 32px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
+
 }
 
 .info-title {
     font-size: 20px;
     font-weight: 600;
-    color: #1f2937;
+ 
     margin-bottom: 20px;
     position: relative;
     padding-bottom: 12px;
@@ -243,7 +230,7 @@
 .info-value {
     font-size: 24px;
     font-weight: 600;
-    color: #1f2937;
+
 }
 
 .traffic-toggle-btn {
@@ -276,20 +263,15 @@
 
 .toggle-btn {
     padding: 10px 16px;
-    border: 1px solid #e5e7eb;
+
     border-radius: 6px;
-    background-color: #f9fafb;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s ease;
-    color: #4b5563;
     flex: 1;
 }
 
-.toggle-btn:hover {
-    background-color: #f3f4f6;
-    border-color: #d1d5db;
-}
+
 
 .toggle-btn.active {
     background-color: #3b82f6;
@@ -320,13 +302,11 @@
 .weather-container-panel {
     position: relative;
     width: 100%;
-    background-color: white;
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     animation: slideIn 0.3s ease;
     z-index: 10;
-    border: 1px solid #e5e7eb;
 }
 
 .with-traffic-panel .traffic-container,
@@ -345,19 +325,18 @@
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
-    background-color: #f3f4f6;
-    border: 1px solid #e5e7eb;
+
     border-radius: 8px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #4b5563;
+    /* color: #4b5563; */
 }
 
-.back-button:hover {
+/* .back-button:hover {
     background-color: #e5e7eb;
     color: #1f2937;
-}
+} */
 
 .back-button::before {
     content: "←";
@@ -366,7 +345,6 @@
 
 .traffic-panel {
     width: 100%;
-    background-color: white;
     transition: all 0.3s ease;
 }
 
@@ -387,8 +365,7 @@
     margin-bottom: 20px;
     padding: 16px;
     border-radius: 8px;
-    background-color: #f9fafb;
-    border: 1px solid #e5e7eb;
+
 }
 
 .congestion-header {
@@ -415,8 +392,7 @@
 }
 
 .speed-label {
-    font-size: 14px;
-    color: #6b7280;
+
 }
 
 /* travel mode traffic panel */
@@ -432,7 +408,7 @@
     margin-bottom: 16px;
     padding: 12px;
     border-radius: 4px;
-    background-color: #f5f5f5;
+
 }
 
 .incident {
@@ -465,7 +441,7 @@
 
 .weather-content {
     padding: 15px;
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -508,14 +484,13 @@
     display: flex;
     flex-direction: column;
     padding: 10px;
-    background-color: #ffffff;
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .weather-detail-label {
     font-size: 0.8rem;
-    color: #888;
+    /* color: #888; */
     margin-bottom: 5px;
     display: flex;
     align-items: center;
@@ -807,9 +782,9 @@
 }
 
 /* Wind speed indicator styles */
-.wind-safe, .wind-moderate, .wind-warning, .wind-danger, .wind-severe {
+/* .wind-safe, .wind-moderate, .wind-warning, .wind-danger, .wind-severe {
     color: #1f2937;
-}
+} */
 
 .wind-safe.wind-alert-badge,
 .wind-moderate.wind-alert-badge,
@@ -847,7 +822,7 @@
 }
 
 .ice-low, .ice-moderate, .ice-high {
-    color: #1f2937;
+    /* color: #1f2937; */
     position: relative;
     padding-left: 18px;
 }
@@ -983,7 +958,6 @@
 }
 
 .forecast-day {
-    background-color: #ffffff;
     border-radius: 8px;
     padding: 12px;
     text-align: center;
@@ -998,7 +972,6 @@
 .forecast-date {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #555;
     margin-bottom: 8px;
 }
 
@@ -1083,6 +1056,5 @@
 .loading-weather {
     padding: 20px;
     text-align: center;
-    color: #666;
     font-style: italic;
 } 

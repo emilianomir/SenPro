@@ -37,11 +37,11 @@ export default function SelectFavorites(){
 
     return (
         <div className="mt-5 md:mt-10 w-full flex justify-center">
-            <button className="outline outline-2 text-xl md:text-2xl py-2 px-3" onClick={()=>setIsOpen(true)}>View Favorites</button>
+            <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3" onClick={()=>setIsOpen(true)}>View Favorites</button>
             
             <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
-                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-slate-700 p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
-                    <h2 className="text-3xl font-bold ">{clicked ? "Loading..." : "Choose your service:"}</h2>
+                <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
+                    <h2 className="text-3xl font-bold text-content-text">{clicked ? "Loading..." : "Choose your service:"}</h2>
                     <div className="overflow-x-auto whitespace-nowrap h-9/10">
                         {favorites && favorites.length > 0 ? favorites.map((service_object)=>(
                         <div className="inline-block mr-3" key ={service_object.id}>
@@ -59,8 +59,8 @@ export default function SelectFavorites(){
                         </div>
                             
                         )):    
-                        <div className="text-center mt-4"> 
-                            <div className="text-xl mb-5 text-black">No favorites yet</div>
+                        <div className="text-center mt-4 h-full flex items-center justify-center"> 
+                            <div className="text-xl md:text-3xl mb-5 text-black text-content-text/70">No favorites yet</div>
                         </div>
                         }
         

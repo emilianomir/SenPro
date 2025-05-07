@@ -16,14 +16,14 @@ export default function ServicePageHeading(){
     }
 
     return (
-        <div className="rounded-t-lg bg-slate-900">
+        <div className="bg-page-heading">
             {userEmail != null ? 
             <>
                 <div className = "pb-2 grid grid-cols-8 md:grid-cols-3">
                     <div className = "col-span-2 md:col-span-1 flex items-center justify-center md:justify-start md:pl-5 md:pt-2 w-full" onClick={resetUserServices} >
                         <div className="w-1/2 md:w-2/5 lg:w-3/20">
                             <Link href={"/home"} >
-                            <img className="md:ml-10 w-auto" src ="https://www.nicepng.com/png/full/17-178841_home-png-home-icon-free.png" alt = "home icon" />
+                            <img className="md:ml-10 w-auto" src ="/imgs/home-head.png" alt = "home icon" />
                             </Link>
                         </div>
                     </div> 
@@ -34,11 +34,11 @@ export default function ServicePageHeading(){
 
                 
                     <div className="col-span-2 md:col-span-1 pt-2 flex items-center justify-center md:justify-end">
-                        <img className = "md:relative md:mr-20 w-1/2 md:w-2/5 lg:w-3/20" onClick={toggleOverlay}  src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png"  alt = "profileIcon" /> 
+                        <img className = "md:relative md:mr-20 w-1/2 md:w-2/5 lg:w-3/20" onClick={toggleOverlay}  src = "/imgs/avatar-head.png"  alt = "profileIcon" /> 
                         {isVisible && <Account_Overlay />}
                     </div>
                 </div>
-                <div className="h-2 bg-gray-500"/>
+                <div className="h-2 bg-heading-border"/>
             </>
 
             
@@ -47,7 +47,7 @@ export default function ServicePageHeading(){
                 <div className="text-center pt-5 pb-8">
                     <h1 className={`${userEmail ? "text-xl": "text-4xl"} font-extrabold text-white`}>Services Menu</h1>
                 </div>
-                <div className="h-2 bg-gray-500"/>
+                <div className="h-2 bg-heading-border"/>
             </>
 
             }
