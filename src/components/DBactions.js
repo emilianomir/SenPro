@@ -12,6 +12,7 @@ import { favorites } from "../db/schema/favorites.js";
 import { history } from "../db/schema/history.js";
 import { sessions } from "../db/schema/sessions.js";
 import { datasession } from "../db/schema/datasession.js";
+import { addresses } from "../db/schema/addresses.js";
 
 // encryption
 import bcrypt from "bcryptjs";
@@ -707,6 +708,33 @@ export async function getCords(email){
     console.error("error in in service selection:", e);
     throw e;
   }
+}
+
+
+// Guest Address
+export async function inputGuestAddress(inputAddress)
+{
+  try
+  {
+    console.log("saving guest address:", {
+      inputAddress,
+    });
+    await db.update(addresses)
+    .set({ address: inputAddress[0], cords: JSON.stringify(inputAddress[1])
+    })
+    .where(eq(addresses.userEmail, 'guest'))
+
+  } catch (e) {
+  console.error("error in in service selection:", e);
+  throw e;
+  }
+}
+
+export async function getGuestAddress()
+{
+  var fullAddress = await db.select({address: addresses.address, cords: addresses.cords}).from(addresses).where(eq(addresses.userEmail, 'guest'));
+  fullAddress[0].cords = JSON.parse(fullAddress[0].cords);
+  return fullAddress[0]
 }
 
 /*

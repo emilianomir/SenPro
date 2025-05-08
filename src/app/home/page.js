@@ -6,6 +6,7 @@ import { useEffect, useState} from "react";
 import { getUserSession, getCords} from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
+import { redirect } from 'next/navigation'
 
 const info = [
     {heading: "Plan Trip", text: "Create a List of Services for Your Next Trip Plan", location:"/start"},
@@ -28,7 +29,6 @@ export default function Begin(){
             setLoading(true)
             let userName = await getUserSession();
             if(userName == null){
-                setUserEmail(["Redirecting", "Redirecting"])
                 setBack(true);
             }
             else {

@@ -4,7 +4,7 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
-import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI, getCords} from "@/components/DBactions";
+import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI, getCords, getGuestAddress} from "@/components/DBactions";
 import { ConsoleLogWriter } from "drizzle-orm";
 
 
@@ -12,7 +12,7 @@ function Questionaire(){
 
     console.log("Questionnaire ran")
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress, setGuestAddress, guestAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
     const [yes, setyes] = useState(true);
@@ -34,8 +34,8 @@ function Questionaire(){
                 const response = await fetch('/api/maps/places', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : userAddress[0], 
-                        location: userServices.length> 0 ? userServices.location : userAddress[1]})
+                    body: JSON.stringify({userResponses, userAddress: userServices.length ? userServices[userServices.length-1].formattedAddress : (guestAddress? guestAddress[0] : userAddress[0]), 
+                        location: userServices.length> 0 ? userServices.location : (guestAddress? guestAddress[1] : userAddress[1])})
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -101,6 +101,11 @@ function Questionaire(){
                         const favoritesList = await getFavAPI(userName[0].email);
                         if(favoritesList) setFavorites(favoritesList);
                     }
+                }
+                else if(guestAddress) setUserEmail(["guest", "guest"]);
+                else{
+                    const guestAddress = await getGuestAddress();
+                    setGuestAddress([guestAddress.address, guestAddress.cords]);
                 }
                 let sessionValues = null;
                 if (numberPlaces <= 0) sessionValues = await getInfoSession();

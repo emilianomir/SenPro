@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
-import { addUser, updateUserAddress } from "@/components/DBactions";
+import { addUser, inputGuestAddress, updateUserAddress } from "@/components/DBactions";
 import Image from "next/image";
 function AddressPage(){
     const router = useRouter();
@@ -55,7 +55,9 @@ function AddressPage(){
                 }
                 else {
                     if (userEmail == null){
-                        setGuestAddress([returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info]);  //holds the formatted address and second index holds the lat and long
+                        var fullAddress = [returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info];
+                        await inputGuestAddress(fullAddress);
+                        setGuestAddress(fullAddress);  //holds the formatted address and second index holds the lat and long
                         router.push("/start");
                     }
                     else {

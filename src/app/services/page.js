@@ -5,14 +5,14 @@ import { useAppContext } from "@/context";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI,  getCords} from '@/components/DBactions';
+import { getUserSession, createStatelessQ, getInfoSession, deleteSession, getFavAPI,  getCords, getGuestAddress} from '@/components/DBactions';
 import Link from "next/link";
 import Favorites from "@/components/Favorites";
 
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces, setUserAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
+    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces, setUserAddress, setGuestAddress, guestAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(true);
@@ -41,6 +41,11 @@ export default function Services(){
                     const favoritesList = await getFavAPI(userName[0].email);
                     if(favoritesList) setFavorites(favoritesList);
                 }
+            }
+            else if(guestAddress) setUserEmail(["guest", "guest"]);
+            else{
+                const guestAddress = await getGuestAddress();
+                setGuestAddress([guestAddress.address, guestAddress.cords]);
             }
             let sessionValues = null;
             if (numberPlaces <= 0) sessionValues = await getInfoSession();
@@ -206,9 +211,9 @@ export default function Services(){
 
     },[sort, asc] );
 
-    // if(loading){
-    //     return (<Loading message= "Fetching Session"/>)
-    // }
+        if(loading){
+            return (<Loading message= "Fetching Session"/>)
+        }
     return (
         <div className="">
             <ServicePageHeading />
@@ -293,7 +298,7 @@ export default function Services(){
                                             <div className="h-full w-full" >
                                                 {userEmail != null && <Favorites service={service_object}/>}    
                                                 <div className="h-full" onClick={() => getMoreInfo(service_object.id)}>
-                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : userAddress[0] } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
+                                                    <ServiceCard service = {service_object} has_fuel_type={userResponses.fuel_type} currentLocation = {userServices.length > 0 ? userServices[userServices.length-1].formattedAddress : (guestAddress? guestAddress[0] : userAddress[0]) } showFuel = {userResponses.fuel_type && sort != 0}  showFood = {userResponses.main_category == "Food and Drink" && sort != 0}/> 
                                                 </div>
                                             </div>
                                     
