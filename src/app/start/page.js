@@ -20,6 +20,8 @@ function StartPage(){
                 let userName = await getUserSession();
                 if (userName != null) 
                     setUserEmail([userName[0].username, userName[0].email]);
+                else 
+                    setUserEmail("Guest"); 
                 // else 
                 //     setLogin(true);
             

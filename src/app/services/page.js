@@ -216,16 +216,14 @@ export default function Services(){
             <ServicePageHeading />
                 <div className="h-[115vh] md:h-screen bg-land-sec-bg">
                     {clickedService ?
-                    <div>
-                        <div className="text-center flex flex-col justify-center items-center h-100"> 
-                            <div className="text-wrap text-3xl text-4xl mb-5 px-2 text-content-text">Fetching additional information. Loading... </div>
-                        </div>
-                    </div>
+                
+                    <Loading message={"Fetching Additional info"} />
+                    
                     :
                     <>
                         <div className="md:grid md:grid-cols-2">
                             <div className="ml-2 pt-2 text-center md:text-start">
-                                {currentServices && <Link href={"/questionaire"}><button className="outline-text-content outline-1 text-content-text text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link> }
+                                {currentServices && <Link href={"/questionaire"}><button className="bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border/50 border-1 p-2 rounded-lg text-content-text text-xl px-3 py-2">Search Another</button></Link> }
                             </div>
                             <div className="w-4/5 flex justify-end mt-2">
                                 <div className="text-2xl grid md:grid-cols-2">

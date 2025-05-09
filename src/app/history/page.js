@@ -4,10 +4,11 @@ import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import { useState, useEffect, act } from "react";
 import { selectHistory, getUserSession, checkService, getAPI  } from "@/components/DBactions";
-import Favorites from "@/components/Favorites";
+// import Favorites from "@/components/Favorites";
 import Loading from "@/components/Loading";
 import Image from "next/image";
 import { checkIsRoutePPREnabled } from "next/dist/server/lib/experimental/ppr";
+import ServicePageHeading from "@/components/ServicePageHeading";
 
 
 
@@ -41,6 +42,35 @@ export default function History(){
                 const history = await selectHistory(userName[0].email);
                 console.log("HISTORY:")
                 console.log(history);
+                // const updatedService = await Promise.all([                           
+                //     history[0].map(async service => {
+                //     const response = await fetch(`/api/maps/places?id=${service}&basic=true`); 
+                //     const {service_result} = await response.json();
+                //     return service_result;
+                // })]);
+                // history[0] = {
+                //     ...history[0],
+                //     services: 
+                // }
+                // const history2 = await Promise.all(
+                //     history.map(async (info) => {
+                //       const updatedServices = await Promise.all(
+                //         info.services.map(async serviceId => {
+                //           const response = await fetch(`/api/maps/places?id=${serviceId}&basic=true`);
+                //           const {service_result} = await response.json();
+                //           return service_result;
+                //         })
+                //       );
+                  
+                //       return {
+                //         ...info,
+                //         services: updatedServices,
+                //       };
+                //     })
+                //   );
+               
+                console.log("AFTER API");
+                console.log(history);
                 const past_array =  [];
                 let upcoming_array = [];
                 const group_past_array = [];   
@@ -67,6 +97,30 @@ export default function History(){
                 })
                 console.log("GROUP PAST ARRAY")
                 console.log(group_past_array)
+                const firstHistory = group_past_array[0][0];
+
+                const serviceArray = await Promise.all(
+                    firstHistory.services.map(async serviceId => {
+                        const response = await fetch(`/api/maps/places?id=${serviceId}&basic=true`); 
+                        const {service_result} = await response.json();
+                        service_result.id = serviceId
+                        return service_result;
+                    })
+                )
+                group_past_array[0][0].services = serviceArray;
+
+                const secondHistory = group_past_array[1][0];
+
+                const theArray = await Promise.all(
+                    secondHistory.services.map(async serviceId => {
+                        const response = await fetch(`/api/maps/places?id=${serviceId}&basic=true`); 
+                        const {service_result} = await response.json();
+                        service_result.id = serviceId
+                        return service_result;
+                    })
+                )
+                group_past_array[1][0].services = theArray;
+
                 setData(group_past_array);
                 const sorted_future = upcoming_array.sort((a,b)=>a.date-b.date);
                 sorted_future.map((theCurrent) => {
@@ -111,14 +165,14 @@ export default function History(){
 
     const tabContent = {
         pastTab: (
-            <div className="md:flex">
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0 py-5">
+            <div className="md:flex bg-land-card/50 rounded-bl-xl h-4/5">
+            <ul className="flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 mb-4 md:mb-0 py-5 pl-6.5">
             
                 {data.map((info, index) => (
                     <li key={index}> 
-                    <a className={`inline-flex items-center px-4 py-3 ${pastActiveTab === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"}`} 
+                    <a className={`inline-flex items-center px-4 py-3 ${pastActiveTab === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "rounded-lg hover:text-gray-900 bg-heading-border hover:bg-ind-hover-btn text-content-text/75 border-ind-border border-1 w-full "}`} 
                     aria-current="page" onClick={() => setPastActiveTab(index)}>
-                    <svg className="w-4 h-4 me-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 me-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
                         <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
                     </svg>
                     {`${info[0].date.getMonth() + 1}/${info[0].date.getDate()}`}
@@ -131,7 +185,7 @@ export default function History(){
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No History</h3>
             </div>
             :
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0 py-5">
+            <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0 py-5 px-1">
                 {data[pastActiveTab].map((info, index) => (
                     <li key={index}> 
                     <a className={`inline-flex items-center px-4 py-3 ${pastActiveSection === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"}`} 
@@ -150,48 +204,75 @@ export default function History(){
             <>
             </>
             :
-             <div className="flex flex-row gap-4 overflow-y-auto">
+             <div className=" gap-2 overflow-y-auto w-full bg-land-sec-bg">
              {data[pastActiveTab][pastActiveSection].services.map((service, index) => (
-                        <div key ={index} className="">
-                            <div className="">
-                            {userEmail != null && <Favorites service={service}/>}
-                            </div> 
-                            <div className="w-full max-w-2xs bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 shadow-lg transition ease-in-out delay-100 duration-400 hover:-translate-y-5 mt-5">
-                        
-                            <Image className = "size-75 object-cover rounded-t-xl" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
-                            <div className="flex items-center px-5 pb-5"> 
-                                <h4 className = {`${service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} font-semibold tracking-tight text-gray-900 dark:text-white`}>{service.displayName.text}</h4>
+                <div className="ml-4 w-9/10 h-1/3" key = {service.id}>
+                    <div className="w-full bg-history-card/80 rounded-xl h-4/5 shadow-lg">
+                        <div className="grid grid-cols-12 w-full h-full gap-2">
+                            <div className="col-span-1 text-content-text/75 bg-history-card-sec/85 text-5xl flex justify-center items-center h-full rounded-l-lg">
+                                {index + 1}
                             </div>
-                            <div className="flex items-center mt-2.5 mb-5">
-                                <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                                    <svg className={service.rating >= 1? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 2? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 3? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 4? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 5? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
+                            <div className={`${service.displayName.text.length > 25 ? "col-span-7" : "col-span-6"} flex flex-col h-full justify-center pl-5`}>
+                                <div className="font-extrabold text-3xl text-content-text rounded-lg mb-2">
+                                    {service.displayName.text}
                                 </div>
-                                
-                                
-                                <p className = "bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-sm dark:bg-blue-200 dark:text-blue-800 ms-3"> Rating: {service.rating ? service.rating : "N/A" }</p> 
-                                {service.rating && <img className="ms-2 pb-3"  width = "10%" height = "50%" src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
+                                <div className="text-content-text/70 font-semibold text-2xl">
+                                    {service.formattedAddress}
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                            {service.priceRange != null && <p className = "text-1x1 font-bold text-gray-900 dark:text-white">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
-                                                                            {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
-                                                                            }</p>}
+                            <div className="col-span-2 flex justify-center items-center">
+                                <p className = "bg-blue-600 text-white text-center text-2xl font-semibold px-2.5 py-1.5 rounded-sm ms-3"> 
+                                    Rating: {service.rating ? service.rating : "N/A" }
+                                        <svg className="w-4 h-4 text-yellow-300 inline mb-1 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                    </svg>
+                                </p> 
                             </div>
-                        </div> 
                         </div>
+                    </div>
+                </div>
+                        // <div key ={index} className="">
+                        //     <div className="">
+                        //     {/* {userEmail != null && <Favorites service={service}/>} */}
+                        //     </div> 
+                        //     <div className="w-full max-w-2xs bg-land-card rounded-lg shadow-sm shadow-lg transition ease-in-out delay-100 duration-400 hover:-translate-y-5 hover:bg-card-hover/80 mt-5 rounded-lg">
+                        
+                        //     <Image className = "size-75 object-cover rounded-t-xl" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
+                        //     <div className="flex items-center px-5 pb-5"> 
+                        //         <h4 className = {`${service.displayName && service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} font-semibold tracking-tight text-content-text`}>{service.displayName.text}</h4>
+                        //     </div>
+                        //     <div className="flex items-center mt-2.5 mb-5">
+                        //         {service.rating &&
+                        //         <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                                
+                        //             <svg className={service.rating >= 1? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                        //             <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                        //             </svg>
+                        //             <svg className={service.rating >= 2? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                        //             <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                        //             </svg>
+                        //             <svg className={service.rating >= 3? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                        //             <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                        //             </svg>
+                        //             <svg className={service.rating >= 4? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                        //             <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                        //             </svg>
+                        //             <svg className={service.rating >= 5? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                        //             <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                        //             </svg>
+                        //         </div> }
+                                
+                                
+                        //         <p className = "bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-sm dark:bg-blue-200 dark:text-blue-800 ms-3"> Rating: {service.rating ? service.rating : "N/A" }</p> 
+                        //         {service.rating && service.rating && <img className="ms-2 pb-3"  width = "10%" height = "50%" src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
+                        //     </div>
+                        //     <div className="flex items-center justify-between">
+                        //     {service.priceRange != null && <p className = "text-1x1 font-bold text-gray-900 dark:text-white">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
+                        //                                                     {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
+                        //                                                     }</p>}
+                        //     </div>
+                        // </div> 
+                        // </div>
                         
                     ))
                     }  
@@ -241,50 +322,7 @@ export default function History(){
             </>
             :
              <div className="flex flex-row gap-4 overflow-y-auto">
-             {futureDate[todayActiveTab][todayActiveSection].services.map((service, index) => (
-                        <div key ={index} className="">
-                            <div className="">
-                            {userEmail != null && <Favorites service={service}/>}
-                            </div> 
-                            <div className="w-full max-w-2xs bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 shadow-lg transition ease-in-out delay-100 duration-400 hover:-translate-y-5 mt-5">
-                        
-                            <Image className = "size-75 object-cover rounded-t-xl" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
-                            <div className="flex items-center px-5 pb-5"> 
-                                <h4 className = {`${service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} font-semibold tracking-tight text-gray-900 dark:text-white`}>{service.displayName.text}</h4>
-                            </div>
-                            <div className="flex items-center mt-2.5 mb-5">
-                                <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                                    <svg className={service.rating >= 1? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 2? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 3? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 4? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                    <svg className={service.rating >= 5? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-                                    <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-                                    </svg>
-                                </div>
-                                
-                                
-                                <p className = "bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-sm dark:bg-blue-200 dark:text-blue-800 ms-3"> Rating: {service.rating ? service.rating : "N/A" }</p> 
-                                {service.rating && <img className="ms-2 pb-3"  width = "10%" height = "50%" src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
-                            </div>
-                            <div className="flex items-center justify-between">
-                            {service.priceRange != null && <p className = "text-1x1 font-bold text-gray-900 dark:text-white">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
-                                                                            {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
-                                                                            }</p>}
-                            </div>
-                        </div> 
-                        </div>
-                        
-                    ))
-                    }  
+  
                 </div>
                 }
         </div>
@@ -297,15 +335,9 @@ export default function History(){
     }
     else { 
         return(
-            <>
-            <a href="/home"
-            className="inline-flex items-center border text-white-600 border-b-2 border-blue-600 rounded-md hover:bg-indigo-300 ">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-6 w-6">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16l-4-4m0 0l4-4m-4 4h18">
-            </path>
-            </svg>
-            <span className="ml-1 font-bold text-lg"> Home </span>
-            </a>
+            <div className="h-screen bg-land-sec-bg">
+            <ServicePageHeading heading ={"History"}/>
+            
             {(data.length === 0 && futureDate.length === 0) ?
             <div className="container w-100 vh-100 mt-4">   
             <div>
@@ -314,24 +346,88 @@ export default function History(){
             </div>
             </div>
             :
-            <div>
+            <div className="h-full">
 
 
                 
-                <div className="flex flex-wrap boarder-b">
+                <div className="flex flex-wrap boarder-b w-2/11 bg-land-card/50 pl-2 rounded-tl-2xl">
                     {tabs.map((tab) => (
                         <button key={tab.id} className={`inline-block p-4 ${activeTab === tab.id ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500" 
-                            : "border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"}`} onClick={() => setActiveTab(tab.id)}>
+                            : "border-b-2 border-transparent text-content-text rounded-t-lg hover:text-content-text/60 hover:border-gray-300"}`} onClick={() => setActiveTab(tab.id)}>
                                 {tab.label}
                             </button>
                     ))}
                 </div>
-                <div>
+                <div className="h-full">
                     {tabContent[activeTab]}
                 </div>
             </div>
             }
-            </>
+            </div>
         )
     }
 }
+
+
+
+// {futureDate[todayActiveTab][todayActiveSection].services.map((service, index) => (
+//     <div className="w-1/2" key = {service.id}>
+//         <div className="w-full bg-blue-300/50 rounded-xl">
+//             <div className="grid grid-cols-2">
+//                 <div className="col-span-3 outline-white outline-1">
+//                     {index}
+//                 </div>
+//                 <div className="col-span-9">
+//                     <div className="font-bold text-3xl text-black">
+//                         {service.displayName.text}
+//                     </div>
+//                     <div className="text-white/40 text-2xl">
+//                         {service.formattedAddress}
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>
+//             <div key ={index} className="">
+//                 <div className="">
+//                 {/* {userEmail != null && <Favorites service={service}/>} */}
+//                 </div> 
+//                 <div className="w-full max-w-2xs bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 shadow-lg transition ease-in-out delay-100 duration-400 hover:-translate-y-5 mt-5">
+            
+//                 <Image className = "size-75 object-cover rounded-t-xl" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
+//                 <div className="flex items-center px-5 pb-5"> 
+//                     <h4 className = {`${service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} font-semibold tracking-tight text-gray-900 dark:text-white`}>{service.displayName.text}</h4>
+//                 </div>
+//                 <div className="flex items-center mt-2.5 mb-5">
+//                     <div className="flex items-center space-x-1 rtl:space-x-reverse">
+//                         <svg className={service.rating >= 1? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+//                         </svg>
+//                         <svg className={service.rating >= 2? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+//                         </svg>
+//                         <svg className={service.rating >= 3? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+//                         </svg>
+//                         <svg className={service.rating >= 4? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+//                         </svg>
+//                         <svg className={service.rating >= 5? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+//                         </svg>
+//                     </div>
+                    
+                    
+//                     <p className = "bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-sm dark:bg-blue-200 dark:text-blue-800 ms-3"> Rating: {service.rating ? service.rating : "N/A" }</p> 
+//                     {service.rating && <img className="ms-2 pb-3"  width = "10%" height = "50%" src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
+//                 </div>
+//                 <div className="flex items-center justify-between">
+//                 {service.priceRange != null && <p className = "text-1x1 font-bold text-gray-900 dark:text-white">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
+//                                                                 {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
+//                                                                 }</p>}
+//                 </div>
+//             </div> 
+//             </div>
+            
+//         ))
+//         }

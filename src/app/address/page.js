@@ -6,7 +6,7 @@ import { addUser, updateUserAddress } from "@/components/DBactions";
 import Image from "next/image";
 function AddressPage(){
     const router = useRouter();
-    const {userEmail, setGuestAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
+    const {userEmail, setUserAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
     const [theInput, setInput] = useState('');
     const [selectType, setSelect] = useState('');
 
@@ -55,7 +55,7 @@ function AddressPage(){
                 }
                 else {
                     if (userEmail == null){
-                        setGuestAddress([returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info]);  //holds the formatted address and second index holds the lat and long
+                        setUserAddress([returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info]);  //holds the formatted address and second index holds the lat and long
                         router.push("/start");
                     }
                     else {

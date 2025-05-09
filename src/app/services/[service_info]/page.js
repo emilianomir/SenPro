@@ -217,7 +217,7 @@ export default function ServiceInfo(){
                         <div className={`${!isLargeScreen && "h-[25vh]" } relative group`}>
                             <Image className = "rounded-lg object-cover object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} fill alt = "Service image" unoptimized = {true} />
 
-                            {(current_service.photos.length > 5) &&
+                            {(current_service && current_service.photos.length > 5) &&
                                 <div onClick={goToGallery } className= {`h-full w-full md:opacity-0 md:group-hover:opacity-100 bg-gray-500/35 absolute top-0 z-10 transition-opacity duration-300 flex justify-center items-center text-gray-100 text-4xl font-bold`}>Gallery</div>}
                         </div>
                         <div className="mt-4 px-3">
@@ -260,10 +260,10 @@ export default function ServiceInfo(){
                     :
                     current_service.websiteUri != undefined &&
                         <div className="mt-4 text-content-text">
-                            <div className="px-3 text-lg md:text-xl">Visit their website here:
+                            <div className="px-3 text-lg md:text-xl">Visit their website: 
                                 <span>
                                 <a href={current_service.websiteUri} target="_blank" rel="noopener">
-                                    <div className= "p-2 px-4 border-2 border-gray-200 inline ml-3 hover:bg-content-hover">Website</div>
+                                    <div className= "p-2 px-4 inline bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg">Website</div>
                                 </a>
                                 </span> 
                             </div>
@@ -276,10 +276,10 @@ export default function ServiceInfo(){
 
                     <div className="w-full flex justify-center">
                         <div className="grid grid-cols-2 gap-4 text-2xl md:text-3xl mt-7 w-3/4 text-center text-content-text">
-                            <div onClick={handleBack} className="border-2 border-gray-200 p-2">
+                            <div onClick={handleBack} className="cursor-pointer bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg">
                                 Back
                             </div>
-                            <div onClick={handleEnter} className="border-2 border-gray-200 p-2">
+                            <div onClick={handleEnter} className="cursor-pointer bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg">
                                 {numberPlaces == userServices.length ? "Finish": "Next"}
                             </div>  
                         </div>

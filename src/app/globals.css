@@ -14,6 +14,8 @@
   --heading: 29 78 216;
   --heading-border: 203 213 225;
   --content-outline: 229 231 235;
+  --history-card: 147 197 253;
+  --history-card-sec: 229 231 235;
 
   --page-heading: var(--heading);
 
@@ -74,6 +76,8 @@
   --heading: 51 65 85;
   --heading-border: 107, 114, 128;
   --content-outline: var(--content);
+  --history-card: 30 64 175;
+  --history-card-sec: 100 116 139;
 
   --page-heading: 15 23 42;
 
@@ -133,6 +137,8 @@
   --color-outline: rgba(var(--content-outline));
   --color-content-text: rgba(var(--content-text));
   --color-content-hover: rgba(var(--content-hover));
+  --color-history-card: rgba(var(--history-card));
+  --color-history-card-sec: rgba(var(--history-card-sec));
 
   --color-page-heading: rgba(var(--page-heading));
 

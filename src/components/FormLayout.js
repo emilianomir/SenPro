@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { checkLogin, createSession, getUser, getCords } from "@/components/DBactions";
-import { useEffect} from "react";
+import { useEffect, useState} from "react";
 import { getUserSession} from "@/components/DBactions";
 
 
@@ -11,6 +11,58 @@ export default function FormLayout ({typeForm}){
     console.log("Ran Form")
     const router = useRouter();
     const {setUserEmail, setUserAddress, userEmail} = useAppContext();
+    const [message, setMessage] = useState(null);
+    console.log(message);
+
+    const alertPop = (message) => {
+      return(
+        <div
+          className="bg-red-50 border border-red-400 rounded text-red-800 text-sm p-4 flex items-start"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <div className="w-full flex flex-col justify-center">
+            <p>
+              <span className="font-bold">{message[0]}:</span>
+              {message[1]}
+            </p>
+            <button onClick={()=> setMessage(null)}
+              className="border-red-400 bg-white hover:bg-gray-50 px-4 py-2 mt-4 border rounded font-bold"
+            >
+              OK
+            </button>
+          </div>
+          <div className="">
+            <svg onClick={()=> setMessage(null)}
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        </div>
+      )
+    }
     
     // Gets the session
     useEffect(() => {
@@ -39,17 +91,17 @@ export default function FormLayout ({typeForm}){
         if (typeForm.name == 'Register') {
             const theConfirmPass = event.target.confirmPass.value
             if (!theUserName || !thePass || !theConfirmPass) {
-                alert("Please fill out all fields");
+                setMessage(["Alert", "Please Fill Out All Fields"]);
                 return;
             }
             if (thePass != theConfirmPass) {
-                alert("Passwords are not the same");
+                setMessage(["Alert", "Passwords are not the same"]);
                 return;
           }
         }
         else {
             if (!theUserName || !thePass) {
-                alert("Please fill out all fields");
+                setMessage(["Alert", "Please fill out all fields"]);
                 return;
             }
             
@@ -67,17 +119,21 @@ export default function FormLayout ({typeForm}){
             }
             else
             {
-              alert("Invalid email or pass");
+              setMessage(["Alert", "Invalid email or pass"]);
               return;
             }
         } catch(error) {
             console.error("Error fetching DB:", error);
-            alert("There was an issue getting the data.");
+            setMessage(["Error", "There was an issue getting the data."]);
         } 
     };
 
     return (    
     <div className= "w-full h-full flex justify-center items-center text-content-text">
+          {message ?
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+            {alertPop(message)}
+          </div> : null}
           <div className="border-3 border-outline mt-5 w-4/5 md:w-3/5 h-3/5 md:h-4/5 bg-land-sec-bg/25 rounded-xl">
             <h1 className="text-center text-4xl md:text-5xl pt-3 mt-4 mb-3 text-blue-400">{typeForm.name}</h1>
             {/* <div className="w-full flex justify-center">
@@ -140,7 +196,7 @@ export default function FormLayout ({typeForm}){
             {typeForm.name == "Login" &&
             <>
                 <div className="w-full mt-3 flex justify-center pb-3">
-                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline text-center md:text-left text-blue-400 hover:text-blue-500">Here</Link></div>
+                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <span onClick={()=> {router.push("/address");}} className="underline text-center md:text-left text-blue-400 hover:text-blue-500">Here</span></div>
                 </div>
 
             </>

@@ -397,22 +397,30 @@ export async function selectHistory(email)
     });
   const fullArray = []
   const val1 = await db.select({services: history.sAddress, date: history.createdAt }).from(history).where(eq(history.userEmail, email));
-  for (const element of val1){
-      const val2 = JSON.parse(element.services)
-      // Used to Call API
+  console.log("VAL1: ")
+  console.log(val1);
+  for (const element2 of val1){
+    element2.date =  new Date (element2.date)
+    element2.services = JSON.parse(element2.services);
+  }
+  console.log("VAL1: ")
+  console.log(val1);
+  // for (const element of val1){
+  //     const val2 = JSON.parse(element.services)
+  //     // Used to Call API
       
     
-      const val3 = [];
-      for(const element of val2){
-          let service = await db.select({ info: services.address } ).from(services).where(eq(services.address, element));
-          service =  await getAPI(service[0].info);
-          val3.push(service);
-      }
+  //     const val3 = [];
+  //     for(const element of val2){
+  //         let service = await db.select({ info: services.address } ).from(services).where(eq(services.address, element));
+  //         service =  await getAPI(service[0].info);
+  //         val3.push(service);
+  //     }
   
-      let valMap = { "date": new Date (element.date), "services": val3 };
-      fullArray.push(valMap);
-  }
-  return fullArray;
+  //     let valMap = { "date": new Date (element.date), "services": val3 };
+  //     fullArray.push(valMap);
+  // }
+  return val1;
 
   } catch (e) {
     console.error("error in in service adding:", e);

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useAppContext } from "@/context"
 import Link from "next/link";
 
-export default function ServicePageHeading(){
+export default function ServicePageHeading({heading}){
     const [isVisible, setIsVisible] = useState(false);
     const {userEmail, setServices} = useAppContext();
     const toggleOverlay = () => {
@@ -29,7 +29,7 @@ export default function ServicePageHeading(){
                     </div> 
 
                     <div className="col-span-4 md:col-span-1 flex justify-center py-3 text-center md:pt-5 md:pb-8">
-                        <h1 className="text-3xl md:text-4xl font-extrabold text-white">Services Menu</h1>
+                        <h1 className="text-3xl md:text-4xl font-extrabold text-white">{heading ? heading : "Services Menu"}</h1>
                     </div>
 
                 

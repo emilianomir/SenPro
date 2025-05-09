@@ -82,13 +82,14 @@ export async function GET (req) {
     const theName = searchParams.get("thePhoto");
     const places_id = searchParams.get("id");
     const part = searchParams.get("partial");
+    const basic=searchParams.get('basic');
     const api_key = process.env.GOOGLE_API_KEY;
     if (places_id) {
         try {
             const headers = {
                 "Content-Type": "application/json",
                 "X-Goog-Api-Key": api_key,
-                "X-Goog-FieldMask": part ? "websiteUri,regularOpeningHours": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
+                "X-Goog-FieldMask": basic ? "displayName,formattedAddress,rating":  part ? "websiteUri,regularOpeningHours": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
             };
             const resp = await fetch(`https://places.googleapis.com/v1/places/${places_id}`,{
                 method: "GET",
