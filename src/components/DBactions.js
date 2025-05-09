@@ -367,7 +367,7 @@ export async function checkRemoveOldest(email)
   .having(sql`count(${history.sAddress}) > ${limiter}`);
   if(checkRemove.length > 0)
   {
-    return(await removeOldestService(checkRemove[0].email));
+    await removeOldestService(checkRemove[0].email);
   }
 }
 
@@ -378,8 +378,6 @@ try {
     services,
     email,
   });
-  // Limiting the amount of history 
-  const limiter = 2;
   const d2 = await db.select({total: sql`(CURRENT_TIMESTAMP)`, time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, email));
   if(await checkHistoryService(services, email, d2)) {
   await db.insert(history).values({
@@ -387,6 +385,7 @@ try {
     sAddress:  JSON.stringify(services),
     createdAt: d2.total,
   })
+  await checkRemoveOldest(email);
 }
 } catch (e) {
   console.error("error in in service adding:", e);

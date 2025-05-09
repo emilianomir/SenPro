@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, checkRemoveOldest, getCords, getGuestAddress} from '@/components/DBactions';
+import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, getCords, getGuestAddress} from '@/components/DBactions';
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
@@ -82,7 +82,6 @@ export default function End(){
             }
             else if(userEmail){
                 userName = [{username: userEmail[0], email:userEmail[1]}];
-                if(userName[0].email != 'guest') await checkRemoveOldest(userName[0].email);
             }
             else
             {
