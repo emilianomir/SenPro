@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import { useRouter, redirect } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState} from "react";
-import { getUserSession, getCords} from "@/components/DBactions";
+import { getUserSession, getCords, getPosts} from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
 import { useQRCode } from 'next-qrcode';
@@ -67,6 +67,28 @@ export default function Begin(){
       }
       if(!userEmail)fetchProducts();
 }, [yes]);
+
+    useEffect(() => {
+      const fetchPosts = async () => {
+        try{
+            setLoading(true)
+            const values = await getPosts()
+            setCardInfo(values)
+
+
+          }
+        
+    
+        catch(error) {
+            console.error("Error fetching DB:", error);
+            alert("There was an issue getting the data.");
+        } finally {
+          setLoading(false);
+        }
+        
+      }
+      fetchPosts();
+    }, []);
 
     const getServices = async (index)=> {
         setOverlay(index);
