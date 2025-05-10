@@ -23,6 +23,8 @@ export default function End(){
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+
+    console.log(userServices)
     
     
 

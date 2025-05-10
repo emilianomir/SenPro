@@ -165,12 +165,12 @@ export default function History(){
 
     const tabContent = {
         pastTab: (
-            <div className="md:flex bg-land-card/50 rounded-bl-xl h-4/5">
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 mb-4 md:mb-0 py-5 pl-6.5">
+            <div className="md:flex bg-history-side/50 rounded-bl-xl h-4/5">
+            <ul className="flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 md:mb-4 md:mb-0 py-5 md:pl-6 w-full md:w-1/10">
             
                 {data.map((info, index) => (
                     <li key={index}> 
-                    <a className={`inline-flex items-center px-4 py-3 ${pastActiveTab === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "rounded-lg hover:text-gray-900 bg-heading-border hover:bg-ind-hover-btn text-content-text/75 border-ind-border border-1 w-full "}`} 
+                    <a className={`inline-flex items-center px-4 py-3 ${pastActiveTab === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "cursor-pointer rounded-lg hover:text-content-text/75 bg-heading-border hover:bg-ind-hover-btn text-content-text/75 w-full "}`} 
                     aria-current="page" onClick={() => setPastActiveTab(index)}>
                     <svg className="w-4 h-4 me-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 20 20">
                         <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
@@ -185,10 +185,10 @@ export default function History(){
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No History</h3>
             </div>
             :
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0 py-5 px-1">
+            <ul className="flex-column space-y space-y-4 text-sm font-medium  md:me-4 md:mb-4 md:mb-0 py-5 px-1 w-1/2 md:w-1/7">
                 {data[pastActiveTab].map((info, index) => (
                     <li key={index}> 
-                    <a className={`inline-flex items-center px-4 py-3 ${pastActiveSection === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"}`} 
+                    <a className={`inline-flex items-center px-4 py-3 ${pastActiveSection === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "cursor-pointer rounded-lg hover:text-content/70 bg-heading-border hover:bg-ind-hover-btn text-content-text/75 w-full"}`} 
                     aria-current="page" onClick={() => setPastActiveSection(index)}>
                     <svg className="w-4 h-4 me-2 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
@@ -206,24 +206,24 @@ export default function History(){
             :
              <div className=" gap-2 overflow-y-auto w-full bg-land-sec-bg">
              {data[pastActiveTab][pastActiveSection].services.map((service, index) => (
-                <div className="ml-4 w-9/10 h-1/3" key = {service.id}>
+                <div className="ml-4 w-9/10 h-1/3 max-sm:pt-3" key = {service.id}>
                     <div className="w-full bg-history-card/80 rounded-xl h-4/5 shadow-lg">
-                        <div className="grid grid-cols-12 w-full h-full gap-2">
-                            <div className="col-span-1 text-content-text/75 bg-history-card-sec/85 text-5xl flex justify-center items-center h-full rounded-l-lg">
+                        <div className="grid grid-cols-3 max-sm:grid-rows-2 md:grid-cols-12 w-full h-full gap-2">
+                            <div className="row-span-2 md:col-span-1 text-content-text/75 bg-history-card-sec/85 text-2xl md:text-5xl flex justify-center items-center h-full rounded-l-lg">
                                 {index + 1}
                             </div>
-                            <div className={`${service.displayName.text.length > 25 ? "col-span-7" : "col-span-6"} flex flex-col h-full justify-center pl-5`}>
-                                <div className="font-extrabold text-3xl text-content-text rounded-lg mb-2">
+                            <div className={`${service.displayName.text.length > 25 ? "col-span-2 md:col-span-7" : "col-span-2 md:col-span-6"} flex flex-col h-full justify-center pl-5`}>
+                                <div className="font-extrabold text-xl md:text-3xl text-content-text rounded-lg mb-2">
                                     {service.displayName.text}
                                 </div>
-                                <div className="text-content-text/70 font-semibold text-2xl">
+                                <div className="text-content-text/70 font-semibold text-lg md:text-2xl">
                                     {service.formattedAddress}
                                 </div>
                             </div>
-                            <div className="col-span-2 flex justify-center items-center">
-                                <p className = "bg-blue-600 text-white text-center text-2xl font-semibold px-2.5 py-1.5 rounded-sm ms-3"> 
+                            <div className="col-span-1 md:col-span-2 md:col-end-12 flex justify-center items-center w-full">
+                                <p className = "bg-blue-600 text-white text-center text-base md:text-2xl font-semibold px-2 py-1.5 rounded-sm ms-3 w-full"> 
                                     Rating: {service.rating ? service.rating : "N/A" }
-                                        <svg className="w-4 h-4 text-yellow-300 inline mb-1 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                        <svg className="w-4 h-4 text-yellow-300 inline mb-1 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
                                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
                                     </svg>
                                 </p> 
@@ -302,7 +302,7 @@ export default function History(){
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No History</h3>
             </div>
             :
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0 py-5">
+            <ul className="flex-column space-y space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 md:mb-4 md:mb-0 py-5">
                 {futureDate[todayActiveTab].map((info, index) => (
                     <li key={index}> 
                     <a className={`inline-flex items-center px-4 py-3 ${todayActiveSection === index? "text-white bg-blue-700 rounded-lg active w-full dark:bg-blue-600" : "rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"}`} 
@@ -350,10 +350,10 @@ export default function History(){
 
 
                 
-                <div className="flex flex-wrap boarder-b w-2/11 bg-land-card/50 pl-2 rounded-tl-2xl">
+                <div className="flex flex-wrap boarder-b w-full md:w-14/65 bg-history-side/50 pl-2 rounded-tl-2xl">
                     {tabs.map((tab) => (
-                        <button key={tab.id} className={`inline-block p-4 ${activeTab === tab.id ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500" 
-                            : "border-b-2 border-transparent text-content-text rounded-t-lg hover:text-content-text/60 hover:border-gray-300"}`} onClick={() => setActiveTab(tab.id)}>
+                        <button key={tab.id} className={`inline-block p-4 text-xl ${activeTab === tab.id ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500" 
+                            : "cursor-pointer border-b-2 border-transparent text-content-text rounded-t-lg hover:text-content-text/60 hover:border-gray-300"}`} onClick={() => setActiveTab(tab.id)}>
                                 {tab.label}
                             </button>
                     ))}
