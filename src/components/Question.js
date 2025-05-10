@@ -330,7 +330,7 @@ function Question({theQuestion, current, func, changeLoading}){
                                 <button className="outline outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
-                        {(!generalSearchP && userEmail != null) &&
+                        {(!generalSearchP && userEmail != null && userEmail[0] != "guest") &&
                         <>
                             <div className="text-xl md:text-2xl lg:text-3xl text-white mt-5 md:mt-20 text-center">Or select from one of your favorites to continue: </div>
                             <SelectFavorites/>

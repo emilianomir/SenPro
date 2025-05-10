@@ -3,9 +3,10 @@ import { useAppContext } from "@/context"
 import { useRouter } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState} from "react";
-import { getUserSession} from "@/components/DBactions";
+import { getUserSession, getCords} from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
+import { redirect } from 'next/navigation'
 
 const info = [
     {heading: "Plan Trip", text: "Create a List of Services for Your Next Trip Plan", location:"/start"},
@@ -13,7 +14,7 @@ const info = [
 ]
 
 export default function Begin(){
-    const {userEmail, setUserEmail} = useAppContext();
+    const {userEmail, setUserEmail,  setUserAddress} = useAppContext();
     const [goLogin, setLogin] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -28,10 +29,13 @@ export default function Begin(){
             setLoading(true)
             let userName = await getUserSession();
             if(userName == null){
-                setUserEmail(["Redirecting", "Redirecting"])
                 setBack(true);
             }
-            else setUserEmail([userName[0].username, userName[0].email]);
+            else {
+                setUserEmail([userName[0].username, userName[0].email]);
+                const cords = await getCords(userName[0].email);
+                setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
+            }
           }
         
     

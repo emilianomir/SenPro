@@ -12,6 +12,7 @@ import { favorites } from "../db/schema/favorites.js";
 import { history } from "../db/schema/history.js";
 import { sessions } from "../db/schema/sessions.js";
 import { datasession } from "../db/schema/datasession.js";
+import { addresses } from "../db/schema/addresses.js";
 
 // encryption
 import bcrypt from "bcryptjs";
@@ -321,26 +322,31 @@ export async function getFavorites(email)
 // History Calls
   // Check
 export async function checkHistoryService(primaryKey, email, d2) {
-const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(history).where(and(eq(history.sAddress, primaryKey), eq(history.userEmail, email)));
-if (data.length == 0){
-  return true
-}
-else{
-  data.forEach(element => {
-    if(d2[0].date == element.date)
-    {
-      let [h1, m1, s1] = element.time.split(':');
-      let [h2, m2, s2] =  d2[0].time.split(':');
-      let val1 = ((h1*60)*60) + (m1*60) + s1;
-      let val2 = ((h2*60)*60) + (m2*60) + s2;    
+  var notfalse = true
+  const data = await db.select({time: sql`time(created_at)`, date: sql`date(created_at)`}).from(history).where(and(eq(history.sAddress, primaryKey), eq(history.userEmail, email)));
+  if (data.length == 0){
+    return true
+  }
+  else{
+    data.forEach(element => {
+      if(d2[0].date == element.date)
+      {
+        let [h1, m1, s1] = element.time.split(':');
+        let [h2, m2, s2] =  d2[0].time.split(':');
+        let val1 = ((h1*60)*60) + (m1*60) + s1;
+        let val2 = ((h2*60)*60) + (m2*60) + s2;    
 
-      difference = val1 - val2;
-      if (difference <= 10)
-        return false;
-    }
-  });
-  return true;
-}
+        const difference = val1 - val2;
+        if (difference <= 10)
+          notfalse = false;
+          return false;
+      }
+    });
+    if(notfalse)
+      return true;
+      else
+      return false
+  }
 }
 export async function removeOldestService(email)
 {
@@ -361,7 +367,7 @@ export async function checkRemoveOldest(email)
   .having(sql`count(${history.sAddress}) > ${limiter}`);
   if(checkRemove.length > 0)
   {
-    return(await removeOldestService(checkRemove[0].email));
+    await removeOldestService(checkRemove[0].email);
   }
 }
 
@@ -372,8 +378,6 @@ try {
     services,
     email,
   });
-  // Limiting the amount of history 
-  const limiter = 2;
   const d2 = await db.select({total: sql`(CURRENT_TIMESTAMP)`, time: sql`time(CURRENT_TIMESTAMP)`, date: sql`date(CURRENT_TIMESTAMP)`}).from(users).where(eq(users.email, email));
   if(await checkHistoryService(services, email, d2)) {
   await db.insert(history).values({
@@ -381,6 +385,7 @@ try {
     sAddress:  JSON.stringify(services),
     createdAt: d2.total,
   })
+  await checkRemoveOldest(email);
 }
 } catch (e) {
   console.error("error in in service adding:", e);
@@ -591,7 +596,7 @@ export async function createStatelessQ(numberPlaces, userServices, apiServices, 
   var currEmail = email;
   if (currEmail == "HASHTHIS")
   {
-    currEmail = await bcrypt.hash(email, 5);
+    currEmail = "testuser";
   }
 
   const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Holds for 30 minutes
@@ -702,6 +707,33 @@ export async function getCords(email){
     console.error("error in in service selection:", e);
     throw e;
   }
+}
+
+
+// Guest Address
+export async function inputGuestAddress(inputAddress)
+{
+  try
+  {
+    console.log("saving guest address:", {
+      inputAddress,
+    });
+    await db.update(addresses)
+    .set({ address: inputAddress[0], cords: JSON.stringify(inputAddress[1])
+    })
+    .where(eq(addresses.userEmail, 'guest'))
+
+  } catch (e) {
+  console.error("error in in service selection:", e);
+  throw e;
+  }
+}
+
+export async function getGuestAddress()
+{
+  var fullAddress = await db.select({address: addresses.address, cords: addresses.cords}).from(addresses).where(eq(addresses.userEmail, 'guest'));
+  fullAddress[0].cords = JSON.parse(fullAddress[0].cords);
+  return fullAddress[0]
 }
 
 /*

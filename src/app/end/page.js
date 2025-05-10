@@ -3,14 +3,14 @@ import { useAppContext } from "@/context"
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
-import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, checkRemoveOldest} from '@/components/DBactions';
+import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, getCords, getGuestAddress} from '@/components/DBactions';
 import { useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
 
 export default function End(){
 
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress, setUserAddress, guestAddress, setGuestAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
 
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
@@ -19,7 +19,7 @@ export default function End(){
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
 
-    const fullURL = googleMapURL + userAddress[0] + "/" + addressURLS.join('/');
+    const fullURL = googleMapURL + (guestAddress? guestAddress[0] : (userAddress ? userAddress[0]: "")) + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -73,13 +73,24 @@ export default function End(){
             let userName = await getUserSession();
             if (userName != null) {
                 setUserEmail([userName[0].username, userName[0].email]);
+                const cords = await getCords(userName[0].email);
+                setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
                 if(!favorites){
                     const favoritesList = await getFavAPI(userName[0].email);
                     if(favoritesList) setFavorites(favoritesList);
                 }
             }
-            else userName = [{username: userEmail[0], email:userEmail[1]}];
-            await checkRemoveOldest(userName[0].email);
+            else if(userEmail){
+                userName = [{username: userEmail[0], email:userEmail[1]}];
+            }
+            else
+            {
+                setUserEmail(["guest", "guest"])
+                const guestAddress = await getGuestAddress();
+                setGuestAddress([guestAddress.address, guestAddress.cords]);
+            }
+
+
             let sessionValues = null;
             if (numberPlaces <= 0) sessionValues = await getInfoSession();
             if(sessionValues == null || numberPlaces > 0)
