@@ -670,9 +670,6 @@ export async function createStatelessQ(numberPlaces, userServices, apiServices, 
   }
   values.apiServices = data;
 
-
-
-
   // adding to the DB
   try {
     console.log("adding session to the info DB:", {
@@ -715,6 +712,13 @@ export async function createStatelessQ(numberPlaces, userServices, apiServices, 
   
 
 }
+
+export async function deleteUserSession(email)
+{
+  await deleteSession('session')
+  db.delete(sessions).where(eq(sessions.userEmail, email))
+}
+
 
 
 // User Cords
