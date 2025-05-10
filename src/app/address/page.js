@@ -6,7 +6,7 @@ import { addUser, inputGuestAddress, updateUserAddress } from "@/components/DBac
 import Image from "next/image";
 function AddressPage(){
     const router = useRouter();
-    const {userEmail, setGuestAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
+    const {userEmail, setUserAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
     const [theInput, setInput] = useState('');
     const [selectType, setSelect] = useState('');
 
