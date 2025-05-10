@@ -467,15 +467,15 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
     }; //! END OF ICE UI
 
     return (
-        <div className="container">
-            <div className="route-header">
-                <h2 className="route-title">Route Directions</h2>
-                <div className="addresses-container">
-                    <div className="address-card">
+        <div className="container h-[160vh]">
+            <div className="route-header bg-content-back border-ind-border border-1">
+                <h2 className="route-title text-ind-head-text">Route Directions</h2>
+                <div className="addresses-container max-sm:flex-col">
+                    <div className="address-card bg-land-card border-ind-border border-1 max-sm:w-9/10">
                         <div className="address-marker">A</div>
                         <div className="address-content">
-                            <div className="address-label">From:</div>
-                            <div className="address-value">{travelInfo.startAddress || addresses.origin}</div>
+                            <div className="address-label text-ind-label">From:</div>
+                            <div className="address-value text-content-text">{travelInfo.startAddress || addresses.origin}</div>
                         </div>
                     </div>
                     <div className="route-connector">
@@ -484,32 +484,32 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                             <span className="swap-icon">⇄</span>
                         </button>
                     </div>
-                    <div className="address-card">
+                    <div className="address-card bg-land-card border-ind-border border-1 max-sm:w-9/10">
                         <div className="address-marker">B</div>
                         <div className="address-content">
-                            <div className="address-label">To:</div>
-                            <div className="address-value">{travelInfo.endAddress || addresses.destination}</div>
+                            <div className="address-label text-ind-label">To:</div>
+                            <div className="address-value text-content-text">{travelInfo.endAddress || addresses.destination}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className={`content-wrapper ${showTraffic ? 'with-traffic-panel' : ''} ${showWeather ? 'with-weather-panel' : ''}`}>
-                <div className="main-content">
+            <div className={`bg-content-back rounded content-wrapper ${showTraffic ? 'with-traffic-panel' : ''} ${showWeather ? 'with-weather-panel' : ''}`}>
+                <div className="main-content bg">
                     <div 
                         ref={mapRef} 
                         className="map"
                         role="region"
                     />
 
-                    <div className="controls">
+                    <div className="controls bg-content-back border-ind-border border-1">
                         <div className="control-group">
-                            <label className="label">
+                            <label className="label text-t-label">
                                 Travel Mode
                             </label>
                             <select 
                                 id="mode"
-                                className="select"
+                                className="select bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 focus:border-select-focus"
                             >
                                 <option value="DRIVING">Driving</option>
                                 <option value="WALKING">Walking</option>
@@ -517,19 +517,19 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                             </select>
                         </div>
                         <div className="control-group">
-                            <label className="label">
+                            <label className="label text-t-label">
                                 Display Options
                             </label>
                             <div className="button-group">
                                 <button 
                                     onClick={toggleTraffic}
-                                    className={`toggle-btn ${showTraffic ? 'active' : ''}`}
+                                    className={`bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 toggle-btn ${showTraffic ? 'active' : ''}`}
                                 >
                                     {showTraffic ? 'Hide Traffic' : 'Show Traffic'}
                                 </button>
                                 <button 
                                     onClick={toggleWeather}
-                                    className={`toggle-btn ${showWeather ? 'active' : ''}`}
+                                    className={`bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 toggle-btn ${showWeather ? 'active' : ''}`}
                                 >
                                     {showWeather ? 'Hide Weather' : 'Show Weather'}
                                 </button>
@@ -537,20 +537,20 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         </div>
                     </div>
 
-                    <div className="info">
-                        <h3 className="info-title">
+                    <div className="info bg-content-back border-ind-border border-1">
+                        <h3 className="info-title text-ind-head-text">
                             Travel Information
                         </h3>
                         <div className="info-grid">
                             <div>
                                 <p className="info-label">Distance</p>
-                                <p className="info-value">
+                                <p className="info-value text-ind-head-text">
                                     {travelInfo.distance || 'Calculating...'}
                                 </p>
                             </div>
                             <div>
                                 <p className="info-label">Duration</p>
-                                <p className="info-value">
+                                <p className="info-value text-ind-head-text">
                                     {travelInfo.duration || 'Calculating...'}
                                 </p>
                             </div>
@@ -564,7 +564,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                         <div className="back-to-map">
                             <button 
                                 onClick={toggleTraffic}
-                                className="back-button"
+                                className="back-button bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1"
                             >
                                 Back to Map
                             </button>
@@ -576,37 +576,37 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                     </div>
                 )}
                 {showWeather && (
-                    <div className="weather-container-panel">
+                    <div className="weather-container-panel bg-content-back border-ind-border border-1">
                         <div className="back-to-map">
                             <button 
                                 onClick={toggleWeather}
-                                className="back-button"
+                                className="back-button bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1"
                             >
                                 Back to Map
                             </button>
                         </div>
-                        <h3 className="panel-title">Weather at Destination</h3>
+                        <h3 className="panel-title text-content-text">Weather at Destination</h3>
                         
                         {weatherInfo ? (
-                            <div className="weather-content">
+                            <div className="weather-content bg-ind-sec-bg/20">
                                 {/* current weather ui */}
                                 <div className="weather-header">
                                     <div className="weather-icon">
                                         {getWeatherIcon(weatherInfo.current.weathercode, weatherInfo.current.is_day === 1)} {/* takes in a weather code and returns an icon of the weather, 1 is daytime, 0 is nighttime */}
                                     </div>
-                                    <div className="weather-main">
+                                    <div className="weather-main text-content-text">
                                         <div className="weather-temp">{Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))}°F</div>
                                         <div className="weather-desc">{getWeatherDescription(weatherInfo.current.weathercode)}</div>
                                     </div>
                                 </div>
                                 <div className="weather-details-grid">
-                                    <div className="weather-detail-item">
-                                        <span className="weather-detail-label" title="The current wind speed at destination location">
+                                    <div className="weather-detail-item bg-land-card">
+                                        <span className="weather-detail-label text-content-text/90" title="The current wind speed at destination location">
                                             Wind Speed
                                             <span className="tooltip-icon">ⓘ</span>
                                         </span>
                                         <div className="wind-speed-container">
-                                            <span className={`weather-detail-value ${getWindSpeedClass(kmhToMph(weatherInfo.current.windspeed))}`} 
+                                            <span className={`weather-detail-value text-content-text/75 ${getWindSpeedClass(kmhToMph(weatherInfo.current.windspeed))}`} 
                                                 title={getWindSpeedDescription(kmhToMph(weatherInfo.current.windspeed))}>
                                                 {kmhToMph(weatherInfo.current.windspeed)} mph
                                             </span>
@@ -621,35 +621,35 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="weather-detail-item">
-                                        <span className="weather-detail-label" title="The direction from which the wind is blowing">
+                                    <div className="weather-detail-item bg-land-card">
+                                        <span className="weather-detail-label text-content-text/90" title="The direction from which the wind is blowing">
                                             Wind Direction
                                             <span className="tooltip-icon">ⓘ</span>
                                         </span>
-                                        <span className="weather-detail-value">
+                                        <span className="weather-detail-value text-content-text">
                                             {getWindDirection(weatherInfo.current.winddirection)} ({weatherInfo.current.winddirection}°) {/* takes in a degree and returns the direction of the wind */}
                                         </span>
                                     </div>
-                                    <div className="weather-detail-item">
-                                        <span className="weather-detail-label" title="Fog conditions at destination location">
+                                    <div className="weather-detail-item bg-land-card">
+                                        <span className="weather-detail-label text-content-text/90" title="Fog conditions at destination location">
                                             Fog Conditions
                                             <span className="tooltip-icon">ⓘ</span>
                                         </span>
                                         <div className="fog-condition-container">
-                                            <span className="weather-detail-value" 
+                                            <span className="weather-detail-value text-content-text" 
                                                 title={getFogDescription(weatherInfo.current.weathercode)}>
                                                 {getFogCautionLevel(weatherInfo.current.weathercode)}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="weather-detail-item">
-                                        <span className="weather-detail-label" title="Risk of ice on roads at destination location">
+                                    <div className="weather-detail-item bg-land-card">
+                                        <span className="weather-detail-label text-content-text/90" title="Risk of ice on roads at destination location">
                                             Ice Risk
                                             <span className="tooltip-icon">ⓘ</span>
                                         </span>
                                         <div className="ice-risk-container">
                                             <span 
-                                                className={`weather-detail-value ${getIceCautionClass(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}`}
+                                                className={`weather-detail-value text-content-text/75 ${getIceCautionClass(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}`}
                                                 title={getIceDescription(getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature))))}
                                             >
                                                 {getIceRiskLevel(weatherInfo.current.weathercode, Math.round(celsiusToFahrenheit(weatherInfo.current.temperature)))}
@@ -666,12 +666,12 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                                         </div>
                                     </div>
                                 </div>
-                                <h4 className="forecast-title">3-Day Forecast</h4>
+                                <h4 className="forecast-title text-content-text">3-Day Forecast</h4>
                                 <div className="forecast-container"> 
                                     {/* //! slice the first 3 days of the forecast, can change the number of days */}
                                     {weatherInfo.daily.time.slice(0, 3).map((date, index) => (
-                                        <div key={date} className="forecast-day">
-                                            <div className="forecast-date">
+                                        <div key={date} className="forecast-day bg-land-card">
+                                            <div className="forecast-date text-content-text/75">
                                                 {new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                             </div>
                                             <div className="forecast-icon">
@@ -689,7 +689,7 @@ const TravelMode = ({ origin, destination, originAddress, destinationAddress }) 
                                 </div>
                             </div>
                         ) : (
-                            <div className="loading-weather">
+                            <div className="loading-weather text-content-text/90">
                                 <p>Loading weather information...</p>
                             </div>
                         )}

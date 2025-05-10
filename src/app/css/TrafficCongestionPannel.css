@@ -7,22 +7,21 @@
 
 .traffic-panel {
     padding: 20px;
-    background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
 }
 
 .panel-title {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 1.4rem;
-    color: #333;
+
 }
 
 .traffic-congestion {
     margin-bottom: 24px;
     padding: 16px;
-    background-color: #f9f9f9;
     border-radius: 8px;
 }
 
@@ -36,7 +35,7 @@
 .congestion-header h4 {
     margin: 0;
     font-size: 1.1rem;
-    color: #333;
+
 }
 
 .congestion-badge {
@@ -108,7 +107,6 @@
     align-items: center;
     margin-top: 8px;
     padding: 12px;
-    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
@@ -121,12 +119,10 @@
 .speed-value {
     font-size: 1.4rem;
     font-weight: 600;
-    color: #333;
 }
 
 .speed-label {
     font-size: 0.8rem;
-    color: #777;
     margin-top: 4px;
     display: flex;
     align-items: center;
@@ -204,10 +200,8 @@
 
 .no-incidents {
     padding: 16px;
-    background-color: #f9f9f9;
     border-radius: 8px;
     text-align: center;
-    color: #666;
 }
 
 .incident-card {

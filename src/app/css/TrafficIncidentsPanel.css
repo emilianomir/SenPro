@@ -1,6 +1,5 @@
 .incidents-panel {
     padding: 20px;
-    background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     margin: 20px 0;
@@ -10,14 +9,12 @@
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 1.4rem;
-    color: #333;
 }
 
 .incidents-panel.loading,
 .incidents-panel.error {
     text-align: center;
     padding: 30px;
-    color: #666;
 }
 
 .incidents-panel.error {
@@ -47,8 +44,6 @@
 
 .no-incidents {
     padding: 16px;
-    background-color: #f9f9f9;
     border-radius: 8px;
     text-align: center;
-    color: #666;
 } 

@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${geistMono.variable}`}>
+    <html lang="en" className={`${geistMono.variable} light `}>
 
 
       <body className="">

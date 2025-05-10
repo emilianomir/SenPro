@@ -97,17 +97,17 @@ const TrafficCongestionPanel = ({ origin, destination }) => {
     }, [origin, destination]);
 
     if (isLoading) {
-        return <div>Loading traffic data...</div>;
+        return <div className='text-content-text/90'>Loading traffic data...</div>;
     }
 
     return (
-        <div className="traffic-container">
-            <div className="traffic-panel">
-                <h3 className="panel-title">Traffic Insights</h3>
+        <div className="traffic-container bg-ind-sec-bg/20 border-ind-border border-1">
+            <div className="traffic-panel bg-land-card/35 ">
+                <h3 className="panel-title text-content-text">Traffic Insights</h3>
                 
-                <div className="traffic-congestion">
+                <div className="traffic-congestion bg-ind-sec-bg/20 border-ind-border/20 border-1">
                     <div className="congestion-header">
-                        <h4>Traffic Congestion</h4>
+                        <h4 className='text-content-text/90'>Traffic Congestion</h4>
                         <span className={`congestion-badge ${
                             trafficInfo.congestionPercentage < 30 ? 'low' : 
                             trafficInfo.congestionPercentage < 70 ? 'moderate' : 
@@ -120,7 +120,7 @@ const TrafficCongestionPanel = ({ origin, destination }) => {
                     <div className="congestion-meter-container">
                         <div className="congestion-meter">
                             <div 
-                                className={`congestion-level ${
+                                className={`congestion-level  ${
                                     trafficInfo.congestionPercentage < 30 ? 'low' : 
                                     trafficInfo.congestionPercentage < 70 ? 'moderate' : 
                                     'high'
@@ -130,23 +130,23 @@ const TrafficCongestionPanel = ({ origin, destination }) => {
                                 }}
                             ></div>
                         </div>
-                        <div className="congestion-percentage">
+                        <div className="congestion-percentage text-content-text">
                             {trafficInfo.congestionPercentage}%
                         </div>
                     </div>
                     
-                    <div className="speeds-container">
+                    <div className="speeds-container bg-ind-t-card">
                         <div className="speed-item">
-                            <div className="speed-value">{trafficInfo.currentSpeed}</div>
-                            <div className="speed-label" title="The current average speed with traffic conditions">
+                            <div className="speed-value text-content-text/90">{trafficInfo.currentSpeed}</div>
+                            <div className="speed-label text-content-text/80" title="The current average speed with traffic conditions">
                                 Current mph
                                 <span className="tooltip-icon">ⓘ</span>
                             </div>
                         </div>
                         <div className="speed-divider"></div>
                         <div className="speed-item">
-                            <div className="speed-value">{trafficInfo.freeFlowSpeed}</div>
-                            <div className="speed-label" title="The expected speed without any traffic">
+                            <div className="speed-value text-content-text/90">{trafficInfo.freeFlowSpeed}</div>
+                            <div className="speed-label text-content-text/80" title="The expected speed without any traffic">
                                 Normal mph
                                 <span className="tooltip-icon">ⓘ</span>
                             </div>

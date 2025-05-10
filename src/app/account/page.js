@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAppContext } from '@/context';
 import { getUser, testExistingUser, deleteSession} from '@/components/DBactions';
 import Account_Modal from '@/components/Modals/Account_Modal';
+import Loading from '@/components/Loading';
 
 
 
@@ -19,6 +20,7 @@ export default function Account(){
     const [loading, setLoading] = useState(true);
     const [smallScreen, setIsSmallScreen] = useState(true);
     const [clickedBars, setClickedBars] = useState(false);
+    const [theme, setTheme] = useState('Light');
 
 
     // Using effect to pull necessary data from the db
@@ -51,6 +53,31 @@ export default function Account(){
         // Clean up event listener
         return () => window.removeEventListener("resize", handleResize);
       }, []);
+
+    useEffect(()=> {
+        const handleTheme = () => {
+            const htmlElement = document.documentElement;
+
+            if (htmlElement.classList.contains('dark')) {
+              setTheme("Dark")
+            } else if (htmlElement.classList.contains('light')) {
+              setTheme("Light")
+            } 
+        }
+        handleTheme();
+    }, []);
+
+    const changeTheme = ()=> {
+        const htmlElement = document.documentElement;
+
+        if (htmlElement.classList.contains('dark')) {
+          htmlElement.classList.replace('dark', 'light');
+          setTheme('Light');
+        } else if (htmlElement.classList.contains('light')) {
+            htmlElement.classList.replace('light', 'dark');
+            setTheme('Dark');
+        } 
+    }
     
 
     // Logout
@@ -59,18 +86,20 @@ export default function Account(){
     }
 
 
+
+
     if(loading)
-        return <p>loading...</p>
+        return <Loading message={"Getting Account Details"} />
 
     return (
         <div className='w-full h-screen flex justify-center items-center'>
-            <div className='bg-slate-800 w-[95%] h-[95%] rounded-xl flex flex-col'>
+            <div className='bg-land-sec-bg w-[95%] h-[95%] rounded-xl flex flex-col'>
                 <div className='w-full border-b-3 border-gray-400 grid grid-cols-2'>
-                    <div className='text-4xl font-extrabold ml-6 py-6'>
+                    <div className='text-4xl font-extrabold ml-6 py-6 text-content-text'>
                         Settings
                     </div>
                     <div className='flex justify-end items-center py-6 mr-2 md:mr-6 text-lg md:text-2xl'>
-                        <div onClick={()=>router.back()} className='text-center w-1/2 md:w-1/5 border-2 font-bold p-2'>
+                        <div onClick={()=>router.back()} className='text-center w-1/2 md:w-1/5 border-2 font-bold p-2 text-content-text'>
                             Back
                         </div>
                     </div>
@@ -109,20 +138,16 @@ export default function Account(){
                         <div className='w-full flex justify-center'>
                             <img width="50%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "w-2/5 md: w-1/2" alt = "profileIcon" /> 
                         </div>
-                        <div className='font-bold text-2xl mt-2 text-center'>Hi {products[0].username}!</div>
-                        <div className='text-xl text-gray-300 text-center'>{products[0].email}</div>
+                        <div className='font-bold text-2xl mt-2 text-center text-content-text'>Hi {products[0].username}!</div>
+                        <div className='text-xl text-account-sec-text text-center'>{products[0].email}</div>
                     </div>
                     <div className='mr-5 text-end text-3xl mt-10'>
                         <div className='mb-10 text-blue-500'>
                             Account
                         </div>
-                        <div className='hover:text-blue-300'>
-                            Reviews
-                            
-                        </div>
                     </div>
                     <div className='mt-5 md:mt-30 w-full flex justify-center md:justify-end text-center'>
-                            <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl p-3 mr-2 hover:bg-red-700/95'>
+                            <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl text-white p-3 mr-2 hover:bg-red-700/95'>
                                 Log Out
                             </div>
                     </div>
@@ -133,33 +158,39 @@ export default function Account(){
                     </div>
                     <div className={`${clickedBars ? "hidden" : "visible col-span-8 md:col-span-7 lg:col-span-8"}`}>
                         <div className=' p-6'>
-                            <div className='text-4xl font-bold w-[95%] pb-3 pl-2 border-b-3 border-gray-400/25 '>
+                            <div className='text-4xl font-bold w-[95%] pb-3 pl-2 border-b-3 border-account-sec-text/25 text-content-text'>
                                 Account
-                                <div className='text-base text-gray-400'>
+                                <div className='text-base text-account-sec-text'>
                                     View or Update Your Existing Information Below
                                 </div>
                             </div>
                             <div className='mt-5 md:mt-10 pl-2'>
-                                <div className='text-2xl md:text-4xl font-bold'>
+                                <div className='text-2xl md:text-4xl font-bold text-content-text'>
                                     UserName:                                 
-                                    <div className='md:inline md:ml-2 text-gray-400/90'>
+                                    <div className='md:inline md:ml-2 text-account-sec-text/90'>
                                         {products[0].username}
                                     </div>
                                 </div>
-                                <div className='text-2xl md:text-4xl font-bold mt-4'>
+                                <div className='text-2xl md:text-4xl font-bold mt-4 text-content-text'>
                                     Email: 
-                                    <div className='md:inline md:ml-2 text-gray-400/90 break-words'>
+                                    <div className='md:inline md:ml-2 text-account-sec-text/90 break-words'>
                                         {products[0].email} 
                                     </div>
                                 </div>
                                 <Account_Modal email={products[0].email}/>
-                                <div className="mt-6 text-2xl md:text-4xl">
+                                <div className="mt-6 text-2xl md:text-4xl text-content-text">
                                     <div className='font-bold inline'>
                                         Address:
                                     </div> 
                                     <div className='md:ml-2 md:inline md:border-b-2'>
                                         {products[0].address}
                                     </div>
+                                </div>
+                                <div className="mt-6">
+                                    <button className='rounded-lg p-2 bg-theme-btn text-gray-100 group hover:bg-theme-btn-hover text-xl md:text-3xl' 
+                                    onClick={changeTheme}>
+                                        {theme + " Mode" }
+                                    </button>
                                 </div>
                             </div>
 

@@ -7,7 +7,7 @@ function SignUpPage() {
 
 
   return (
-    <div className="h-screen bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900">
+    <div className="h-screen bg-gradient-to-r from-gradient-lr via-gradient-m to-gradient-lr">
       <FormLayout typeForm={{name: "Register", submit_name: "Create", text: "Already have an account?", link: "/login", link_name: "Login", third: true}} />
     </div>
   );

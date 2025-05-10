@@ -8,7 +8,7 @@ const TrafficIncident = ({ incident }) => {
   
   return (
     <div className="incident-card">
-      <div className="incident-header">
+      <div className="incident-header ">
         <span className={`incident-severity ${incident.severity.toLowerCase()}`}>
           {incident.severity}
         </span>

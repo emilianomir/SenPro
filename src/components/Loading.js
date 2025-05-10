@@ -1,9 +1,9 @@
 function Loading ({message}){
     return (
-        <div className="w-100 h-100 bg-secondary-subtle d-flex justify-content-center align-items-center">
-            <div className="row row-cols-1">
-                <div className="text-center fs-1 col mb-4"> {message ? message : "Loading" } </div>
-                <div className="col d-flex justify-content-center"><img className="w-25 h-75" src = "https://i.gifer.com/ZKZg.gif" alt = "loading gif" /></div>
+        <div className="w-full h-screen flex justify-center items-center">
+            <div className="grid grid-cols-1">
+                <div className="text-center text-4xl font-extrabold mb-4 text-content-text"> {message ? message : "Loading" } </div>
+                <div className=" flex justify-center"><img className="" src = "/imgs/plane-loading.gif" alt = "loading gif" /></div>
             </div>
 
         </div>

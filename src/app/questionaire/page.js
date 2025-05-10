@@ -56,10 +56,10 @@ function Questionaire(){
                     ])
                     await new Promise(resolve => setTimeout(resolve, 800));
                 }
-                /*
+                
                 console.log("Service result in services page: "); //debugging purposes
                 console.log(services_result);
-                */
+                
                 // if (change){
                 setAPIServices(services_result);
                 router.push("/services");
@@ -410,11 +410,11 @@ function Questionaire(){
         <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 
             <>
-                <div className="relative h-screen bg-[url(https://images.alphacoders.com/674/674925.png)] bg-cover bg-black/500" />
-                <div className="absolute top-0 left-0 h-full w-full bg-slate-800/90" />
+                <div className="relative h-screen bg-[url(/imgs/question-bg.png)] bg-cover bg-black/500" />
+                <div className="absolute top-0 left-0 h-full w-full bg-question-cover/90" />
               
                 <div className="absolute top-0 left-0 h-screen w-full">
-                    <h1 className="pt-5 pl-5 underline text-5xl text-white font-bold">Place {userServices.length + 1}:</h1>  
+                    <h1 className="pt-5 pl-5 underline text-5xl text-content-text font-bold">Place {userServices.length + 1}:</h1>  
                     <Question className = "" theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading}  />
                 </div>
 

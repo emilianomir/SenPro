@@ -114,7 +114,8 @@ export default function Services(){
         setServices([...userServices, desired_service]);
         router.push("/services/" + desired_service.displayName.text);
     }
-
+    console.log(userAddress[1]);
+    console.log({ lat: 26.3017, lng: -98.1633 });
 
     const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : userAddress ? [userAddress[1].latitude, userAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
@@ -132,10 +133,13 @@ export default function Services(){
         }
         const earthR = 3959; //Miles
         const convertRadius = angle => angle * Math.PI / 180;
+        const diffLat = convertRadius(la2 - la1);
+        const diffLon = convertRadius(lo2- lo1);
         const lat1Radius = convertRadius(la1);
         const lat2Radius = convertRadius(la2);
-        const innerEquation = Math.sin((lat2Radius-lat1Radius)/2)**2 +
-                              Math.cos(lat1Radius) * Math.cos(lat2Radius) * (Math.sin(convertRadius(lo2-lo1)/2) ** 2);
+
+        const innerEquation = Math.sin(diffLat/2)**2 +
+                              Math.cos(lat1Radius) * Math.cos(lat2Radius) * (Math.sin(diffLon/2) ** 2);
         const fullEquation = 2 * earthR * Math.asin(Math.sqrt(innerEquation));
         
         return fullEquation;
@@ -217,22 +221,22 @@ export default function Services(){
     return (
         <div className="">
             <ServicePageHeading />
-                <div className="">
+                <div className="h-[115vh] md:h-screen bg-land-sec-bg">
                     {clickedService ?
                     <div>
                         <div className="text-center flex flex-col justify-center items-center h-100"> 
-                            <div className="text-wrap text-3xl text-4xl mb-5 px-2">Fetching addtional information. Loading... </div>
+                            <div className="text-wrap text-3xl text-4xl mb-5 px-2 text-content-text">Fetching additional information. Loading... </div>
                         </div>
                     </div>
                     :
                     <>
                         <div className="md:grid md:grid-cols-2">
-                            <div className="ml-2 mt-2 text-center md:text-start">
-                                {currentServices && <Link href={"/questionaire"}><button className="outline outline-2 text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link> }
+                            <div className="ml-2 pt-2 text-center md:text-start">
+                                {currentServices && <Link href={"/questionaire"}><button className="outline-text-content outline-1 text-content-text text-xl px-3 py-2 hover:bg-gray-500">Search Another</button></Link> }
                             </div>
                             <div className="w-4/5 flex justify-end mt-2">
                                 <div className="text-2xl grid md:grid-cols-2">
-                                    <div className="text-center md:text-end">
+                                    <div className="text-content-text text-center md:text-end">
                                         Sort By: 
                                     </div>
                                     <div className="inline">
@@ -275,8 +279,8 @@ export default function Services(){
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-5 bg-slate-800/10 h-screen">
-                            <div className="text-center text-2xl lg:text-3xl py-4 font-bold">
+                        <div className="mt-5 h-7/10 md:h-4/5">
+                            <div className="text-center text-content-text text-2xl lg:text-3xl py-4 font-bold">
                                 Choose your service:
                                 {clickedService && 
                                 <span className="justify-content-center position-absolute start-50 translate-middle-x">
@@ -293,7 +297,7 @@ export default function Services(){
                                 
                                 
                                 {currentServices ? currentServices.map(service_object=>(
-                                    <div className="inline-block mr-7 h-13/20 min-w-1/5" key ={service_object.id}>
+                                    <div className="inline-block mr-7 h-3/4 min-w-1/5" key ={service_object.id}>
                                         
                                             <div className="h-full w-full" >
                                                 {userEmail != null && <Favorites service={service_object}/>}    
@@ -311,7 +315,7 @@ export default function Services(){
                                     </div>
                                     
                                 )):    
-                                <div className="text-center flex flex-col justify-center items-center h-100"> 
+                                <div className="text-center flex flex-col justify-center items-center h-100 text-content-text"> 
                                     <div className="text-wrap text-3xl md:text-4xl mb-5 px-2">No services avaiable based on response. Try to search again </div>
                                     <Link href={"/questionaire"}><button className="outline outline-2 text-3xl px-3 py-2 hover:bg-gray-500">Retry</button></Link>
                                 </div>
