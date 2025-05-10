@@ -1,6 +1,6 @@
 "use client"
 import { useAppContext } from '@/context';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { getUserSession, getGuestAddress} from '@/components/DBactions';
 import Loading from '@/components/Loading';
@@ -8,12 +8,13 @@ import ServicePageHeading from '@/components/ServicePageHeading';
 
 
 function StartPage(){
-    const {userEmail, setNumberPlaces, setUserEmail, userServices, guestAddress, setGuestAddress} = useAppContext();
+    const {userEmail, setNumberPlaces, setUserEmail, userServices, guestAddress, setGuestAddress, userAddress} = useAppContext();
     const router = useRouter();
     const [goLogin, setLogin] = useState(false);
 
     // Gets the session
     useEffect(() => {
+        console.log(userAddress);
         const fetchProducts = async () => {
             try{
                 let userName = await getUserSession();
@@ -32,6 +33,8 @@ function StartPage(){
             } 
         }
         if(!userEmail) fetchProducts();
+        if (userEmail && !userAddress)
+            redirect("/address");
     }, []);
 
 

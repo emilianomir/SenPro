@@ -15,7 +15,7 @@ export default function Services(){
     const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces, setUserAddress, setGuestAddress, guestAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
@@ -89,7 +89,8 @@ export default function Services(){
             }
         }
         }
-        fetchProducts();
+        if (!userEmail)
+            fetchProducts();
     }, [yes]);
 
     const getMoreInfo = async (id) =>{

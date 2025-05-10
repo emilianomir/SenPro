@@ -135,7 +135,8 @@ function Questionaire(){
             }
             }
         }
-        fetchProducts();
+        if (!userEmail)
+            fetchProducts();
         }, [yes]);
 
 

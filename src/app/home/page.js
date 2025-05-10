@@ -20,21 +20,10 @@ export default function Begin(){
     const [goLogin, setLogin] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [yes, setyes] = useState(true);
+    const [post, setPost] = useState(false);
     const [back, setBack] = useState(false);
     const [openOverlay, setOverlay] = useState(null);
-    const [cardInfo, setCardInfo ] = useState(
-[
-    {header: "Mexican Restaurant and Bowling in Pharr, TX!", user: "markb", likes: 2,
-        services: ["ChIJrWKDoUIKZYYRVqobpuKHnrs", "ChIJxVOO0r2gZYYRjgQklz1c_0U"],
-        location:  [26.1509653, -98.1884949] 
-    },
-    {header: "Visit this restaraunt in Pharr!", user: "markb", likes: 0,
-        services: ["ChIJjdkzkEILZYYRUwghGCbuT9M"],
-        location:  [26.1509653, -98.1884949] 
-    }
-]
-    )
+    const [cardInfo, setCardInfo ] = useState([])
     const [qr, setQR] = useState(false);
 
     console.log(cardInfo);
@@ -52,8 +41,9 @@ export default function Begin(){
             else {
                 setUserEmail([userName[0].username, userName[0].email]);
                 const cords = await getCords(userName[0].email);
-                setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
+                setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}]);
             }
+            setPost(true);
           }
         
     
@@ -66,16 +56,16 @@ export default function Begin(){
         
       }
       if(!userEmail)fetchProducts();
-}, [yes]);
+      else setPost(true);
+}, []);
 
     useEffect(() => {
       const fetchPosts = async () => {
         try{
             setLoading(true)
-            const values = await getPosts()
+            const values = await getPosts(userEmail[1]);
+            console.log(values);
             setCardInfo(values)
-
-
           }
         
     
@@ -87,8 +77,9 @@ export default function Begin(){
         }
         
       }
-      fetchPosts();
-    }, []);
+      if (post)
+        fetchPosts();
+    }, [post]);
 
     const getServices = async (index)=> {
         setOverlay(index);
@@ -165,6 +156,7 @@ export default function Begin(){
                             <div className="mt-2 w-full flex justify-center">
                                 <div className="w-4/5 bg-content-text/50 h-1"/>
                             </div>
+                            {cardInfo.length > 0 ?
                             <div className="grid grid-cols-4 gap-2">
                                 {cardInfo.map((information, index)=> (
                                     <div key = {index} className="w-full">
@@ -213,6 +205,25 @@ export default function Begin(){
                                 ))}
 
                             </div>
+                            :
+                            <div className="w-full flex flex-col justify-center items-center mt-2">
+                                <div>
+                                    <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    
+                                    <circle cx="50" cy="50" r="45" stroke="blue" stroke-width="4" fill="white" />
+
+
+                                    <circle cx="35" cy="40" r="5" fill="blue" />
+                                    <circle cx="65" cy="40" r="5" fill="blue" />
+
+                                    <path d="M35 70 Q50 55 65 70" stroke="blue" stroke-width="4" fill="transparent" />
+                                    </svg>
+                                </div>
+                                <div className="text-2xl text-content-text font-semibold">
+                                    No Users Nearby
+                                </div>
+                            </div>
+                            }
                             
                         </div>
                     </div>

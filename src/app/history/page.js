@@ -165,7 +165,7 @@ export default function History(){
     const tabContent = {
         pastTab: (
             <div className="md:flex bg-history-side/50 rounded-bl-xl h-4/5">
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 md:mb-4 md:mb-0 py-5 md:pl-6 w-full md:w-1/10">
+            <ul className={`flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 md:mb-4 md:mb-0 py-5 md:pl-6 w-full ${data.length == 0 ? "md:w-26/100": "md:w-1/10"} `}>
             
                 {data.map((info, index) => (
                     <li key={index}> 
@@ -183,8 +183,8 @@ export default function History(){
                 ))}
             </ul>
            {data.length === 0?
-            <div className="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No History</h3>
+            <div className="p-6 text-content-text w-full bg-land-sec-bg">
+            <h3 className="text-lg md:text-3xl font-bold mb-2">No History</h3>
             </div>
             :
             <ul className="flex-column space-y space-y-4 text-sm font-medium  md:me-4 md:mb-4 md:mb-0 py-5 px-1 w-1/2 md:w-1/7">
@@ -402,9 +402,9 @@ export default function History(){
             <ServicePageHeading heading ={"History"}/>
             
             {(data.length === 0 && futureDate.length === 0) ?
-            <div className="container w-100 vh-100 mt-4">   
-            <div>
-                <h2>No Previous History. Make one to show up here!</h2>
+            <div className="container w-full h-[75vh] mt-4">   
+            <div className=" flex flex-col h-full items-center justify-center text-content-text">
+                <h2 className="text-center text-2xl md:text-3xl px-3 mb-3">No Previous History. Make one to show up here!</h2>
                 <RouteButton name ={"Make Plan!"} location={"/start"} />
             </div>
             </div>
