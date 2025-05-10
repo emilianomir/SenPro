@@ -71,7 +71,7 @@ export default function FormLayout ({typeForm}){
             let userName
             if (!userEmail)
               userName = await getUserSession();
-            if((userEmail && userEmail[0] != 'guest') || userName != null ){
+            if(userName != null ){
               router.push("/home");
             }
           } catch(error) {
