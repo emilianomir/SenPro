@@ -16,7 +16,7 @@ import TravelMode from "@/components/TravelMode";
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses, userEmail, userAddress, setGuestAddress} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail, userAddress, setGuestAddress, guestAddress} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
@@ -25,7 +25,7 @@ export default function ServiceInfo(){
     const [isOpen, setIsOpen] = useState(false);
     const current_service = userServices[userServices.length-1];
     const prevService = userServices.length > 1 ? userServices[userServices.length-2] : null; // check if there is a previous service, used for the travelmode.js component
-    const originAddressToUse = prevService ? prevService.formattedAddress : userAddress[0]; // if there is a previous service, use the previous service's address as the origin, otherwise use the user's address or guest address
+    const originAddressToUse = prevService ? prevService.formattedAddress : (guestAddress? guestAddress[0] : userAddress[0]); // if there is a previous service, use the previous service's address as the origin, otherwise use the user's address or guest address
     const router = useRouter();
     const [addServices, setYes] = useState(false)
     const [clickedPop, setClickedPop] = useState(false);
@@ -104,7 +104,7 @@ export default function ServiceInfo(){
         };
 
         const handleAdd = async () => {
-            if (numberPlaces == userServices.length && !moreThan1 && userEmail)
+            if (numberPlaces == userServices.length && !moreThan1 && userEmail && userEmail[0] != 'guest')
                 {
                     const addressArr = [];
                     userServices.forEach(element => {

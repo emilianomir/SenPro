@@ -22,7 +22,7 @@ export default function ServicePageHeading(){
                 <div className = "pb-2 grid grid-cols-8 md:grid-cols-3">
                     <div className = "col-span-2 md:col-span-1 flex items-center justify-center md:justify-start md:pl-5 md:pt-2 w-full" onClick={resetUserServices} >
                         <div className="w-1/2 md:w-2/5 lg:w-3/20">
-                            <Link href={"/home"} >
+                            <Link href={(userEmail[0] == 'guest'? "/" :"/home") >
                             <img className="md:ml-10 w-auto" src ="/imgs/home-head.png" alt = "home icon" />
                             </Link>
                         </div>
@@ -33,10 +33,14 @@ export default function ServicePageHeading(){
                     </div>
 
                 
+                    {userEmail[0] != 'guest' ?
                     <div className="col-span-2 md:col-span-1 pt-2 flex items-center justify-center md:justify-end">
                         <img className = "md:relative md:mr-20 w-1/2 md:w-2/5 lg:w-3/20" onClick={toggleOverlay}  src = "/imgs/avatar-head.png"  alt = "profileIcon" /> 
                         {isVisible && <Account_Overlay />}
                     </div>
+                    :
+                    <></>
+                    }
                 </div>
                 <div className="h-2 bg-heading-border"/>
             </>

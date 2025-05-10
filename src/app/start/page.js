@@ -2,13 +2,13 @@
 import { useAppContext } from '@/context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import { getUserSession } from '@/components/DBactions';
+import { getUserSession, getGuestAddress} from '@/components/DBactions';
 import Loading from '@/components/Loading';
 import ServicePageHeading from '@/components/ServicePageHeading';
 
 
 function StartPage(){
-    const {userEmail, setNumberPlaces, setUserEmail, userServices} = useAppContext();
+    const {userEmail, setNumberPlaces, setUserEmail, userServices, guestAddress, setGuestAddress} = useAppContext();
     const router = useRouter();
     const [goLogin, setLogin] = useState(false);
 
@@ -16,13 +16,16 @@ function StartPage(){
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-            
                 let userName = await getUserSession();
                 if (userName != null) 
                     setUserEmail([userName[0].username, userName[0].email]);
                 // else 
                 //     setLogin(true);
-            
+                else{
+                    setUserEmail(["guest", "guest"]);
+                    const guestAddress = await getGuestAddress();
+                    setGuestAddress([guestAddress.address, guestAddress.cords]);
+                }
             } catch(error) {
                 
                 console.error("Error fetching DB:", error);
@@ -33,6 +36,8 @@ function StartPage(){
         if(!userEmail) fetchProducts();
     }, []);
 
+
+
     useEffect(() => {
         if (goLogin) {
             router.replace("/login"); // replace() avoids back button issues
@@ -41,7 +46,6 @@ function StartPage(){
     
     if (goLogin) 
         return;
-
     
 
     const formSubmit = (event)=>{

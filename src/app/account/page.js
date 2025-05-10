@@ -1,9 +1,9 @@
 "use client"
-import { redirect } from 'next/navigation'
+import { redirect, useServerInsertedHTML } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { useAppContext } from '@/context';
-import { getUser, testExistingUser } from '@/components/DBactions';
+import { getUser, testExistingUser, deleteSession} from '@/components/DBactions';
 import Account_Modal from '@/components/Modals/Account_Modal';
 import Loading from '@/components/Loading';
 
@@ -81,8 +81,8 @@ export default function Account(){
     
 
     // Logout
-    const routeClick = () => {
-        router.push("/");
+    const routeClick =  async () => {
+        if (await deleteSession('session') != 'pending') router.push("/");
     }
 
 
