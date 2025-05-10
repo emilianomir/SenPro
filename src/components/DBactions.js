@@ -13,6 +13,7 @@ import { history } from "../db/schema/history.js";
 import { sessions } from "../db/schema/sessions.js";
 import { datasession } from "../db/schema/datasession.js";
 import { addresses } from "../db/schema/addresses.js";
+import { postedHistory } from "../db/schema/postedHistory.js";
 
 // encryption
 import bcrypt from "bcryptjs";
@@ -427,6 +428,48 @@ export async function selectHistory(email)
     console.error("error in in service adding:", e);
     throw e;
   }
+}
+
+// posted History
+
+
+// check
+async function checkPost(userEmail, info, services)
+{
+  const data = await db.select().from(postedHistory).where(and(eq(userEmail, postedHistory.userEmail), (info, postedHistory.description), (services, postedHistory.sAddress)))
+  return data.length == 0
+}
+//add
+export async function addPost(userEmail, info, services)
+{
+  try {
+  console.log("adding service to db:", {
+    services,
+    userEmail,
+    info
+  });
+  if(await checkPost(userEmail, info, services)) {
+  await db.insert(postedHistory).values({
+    userEmail: userEmail,
+    description: info,
+    sAddress:  JSON.stringify(services),
+  })
+  }
+  } catch (e) {
+  console.error("error in in service adding:", e);
+  throw e;
+  }
+}
+
+//get
+export async function getPosts()
+{
+  const data = await db.select().from(postedHistory).fullJoin(users, eq(users.email, postedHistory.userEmail))
+  const result =  data.filter(values => values.postedHistory).map((values, index) => {
+      return({header: values.postedHistory.description, user: values.users.username, likes:0, services: JSON.parse(values.postedHistory.sAddress), location: JSON.parse(values.users.cords)})
+  })
+
+  return result;
 }
 
 

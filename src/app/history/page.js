@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import { useState, useEffect, act } from "react";
-import { selectHistory, getUserSession, checkService, getAPI  } from "@/components/DBactions";
+import { selectHistory, getUserSession, checkService, getAPI, addPost} from "@/components/DBactions";
 // import Favorites from "@/components/Favorites";
 import Loading from "@/components/Loading";
 import Image from "next/image";
@@ -29,6 +29,8 @@ export default function History(){
     const [pastActiveSection, setPastActiveSection] = useState(0);
     const [todayActiveTab, setTodayActiveTab] = useState(0);
     const [todayActiveSection, setTodayActiveSection] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
+    const [clicked, setClicked] = useState(false);
 
     useEffect(() => {
         const fetchInfo = async () => {
@@ -126,6 +128,34 @@ export default function History(){
     // API function calls
 
 
+    // submit
+    const submitPastForm = async (event) => {  
+        event.preventDefault();
+        const description = event.target.inputDescription.value;
+        if(description.length > 0)
+        {
+            const services = [];
+            {data[pastActiveTab][pastActiveSection].services.map((service, index) => (
+                services.push(service.id)
+            ))}
+            await addPost(userEmail[1], description, services)
+        }
+    };
+
+    const submitTodayForm = async (event) => {  
+        event.preventDefault();
+        const description = event.target.inputDescription.value;
+        if(description.length > 0)
+        {
+            const services = [];
+            {futureDate[todayActiveTab][todayActiveSection].services.map((service, index) => (
+                services.push(service.id)
+            ))}
+            await addPost(userEmail[1], description, services)
+        }
+    };
+
+
     // Tabbing
     const tabs = [
         {id: "pastTab", label:"Past"},
@@ -204,7 +234,44 @@ export default function History(){
                     </div>
                 </div>                        
                     ))
-                    }  
+                    }
+
+
+                    <div className="mt-5 md:mt-10 w-full flex justify-center">
+                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(true)}>Post History</button>
+
+                    <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                    <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
+                    <h2 className="text-3xl font-bold text-content-text">{clicked ? "Loading..." : "Description:"}</h2>
+                    <div className="overflow-x-auto whitespace-nowrap h-9/10">
+                    <form className="mt-5 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitPastForm}>
+                        <div className="ml-5">
+                        <div className="grid grid-cols-1">
+                            <input
+                            type="description"
+                            placeholder="Enter a description for your post"
+                            className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
+                            id="inputDescription"
+                            />
+                        </div>
+                        <button type="submit" className="mt-5 md:mt-2 px-5 shadow-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg w-1/6" 
+                        onClick={() => setIsOpen(false)}>
+                        Submit
+                        </button>
+                        </div>
+                        </form>
+                    </div> 
+                    <button
+                    className="bg-red-500 text-white px-4 py-2 rounded absolute top-0 right-0 mr-2 mt-2"
+                    onClick={() => setIsOpen(false)}
+                    >
+                    Close
+                    </button>
+                    </div>
+                    </div>
+                    </div>
+
+
                 </div>
                 }
         </div>
@@ -283,6 +350,42 @@ export default function History(){
                     </div>
                 </div> 
                 ))}
+
+
+                                    <div className="mt-5 md:mt-10 w-full flex justify-center">
+                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(true)}>Post History</button>
+
+                    <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
+                    <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
+                    <h2 className="text-3xl font-bold text-content-text">{clicked ? "Loading..." : "Description:"}</h2>
+                    <div className="overflow-x-auto whitespace-nowrap h-9/10">
+                    <form className="mt-5 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitTodayForm}>
+                        <div className="ml-5">
+                        <div className="grid grid-cols-1">
+                            <input
+                            type="description"
+                            placeholder="Enter a description for your post"
+                            className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
+                            id="inputDescription"
+                            />
+                        </div>
+                        <button type="submit" className="mt-5 md:mt-2 px-5 shadow-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg w-1/6" 
+                        onClick={() => setIsOpen(false)}>
+                        Submit
+                        </button>
+                        </div>
+                        </form>
+                    </div> 
+                    <button
+                    className="bg-red-500 text-white px-4 py-2 rounded absolute top-0 right-0 mr-2 mt-2"
+                    onClick={() => setIsOpen(false)}
+                    >
+                    Close
+                    </button>
+                    </div>
+                    </div>
+                    </div>
+
             </div>
                 }
         </div>
@@ -320,7 +423,7 @@ export default function History(){
                 </div>
                 <div className="h-full">
                     {tabContent[activeTab]}
-                </div>
+                </div>  
             </div>
             }
             </div>
