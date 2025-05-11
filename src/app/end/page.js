@@ -4,7 +4,7 @@ import ServicePageHeading from "@/components/ServicePageHeading";
 import { useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import { getUserSession, getInfoSession, createStatelessQ, deleteSession, getFavAPI, getCords, getGuestAddress} from '@/components/DBactions';
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { users } from "@/db/schema/users";
 import { useQRCode } from 'next-qrcode';
 
@@ -22,6 +22,7 @@ export default function End(){
     const fullURL = googleMapURL + (guestAddress? guestAddress[0] : (userAddress ? userAddress[0]: "")) + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [goLogin, setLogin] = useState(false);
     const router = useRouter();
 
     console.log(userServices)
@@ -44,17 +45,10 @@ export default function End(){
                     if(favoritesList) setFavorites(favoritesList);
                 }
             }
-            else if(userEmail){
-                userName = [{username: userEmail[0], email:userEmail[1]}];
+            else {
+                setLogin(true);
+                return;
             }
-            else
-            {
-                setUserEmail(["guest", "guest"])
-                const guestAddress = await getGuestAddress();
-                setGuestAddress([guestAddress.address, guestAddress.cords]);
-            }
-
-
             let sessionValues = null;
             if (numberPlaces <= 0) sessionValues = await getInfoSession();
             if(sessionValues == null || numberPlaces > 0)
@@ -83,6 +77,11 @@ export default function End(){
         if (!userEmail)
             fetchProducts();
     }, [yes]);
+
+    useEffect(()=> {
+        if (goLogin)
+            redirect("/login"); 
+    }, [goLogin])
             
     
 
@@ -90,11 +89,8 @@ export default function End(){
         return (<Loading message= "Fetching Session"/>)
     }
 
-
-    
-    // if(loading){
-    //     return (<Loading message= "Fetching Session"/>)
-    // }
+    if (!userEmail)
+        return (<></>)
     return(
         <div className="bg-land-sec-bg h-screen">
             <ServicePageHeading />

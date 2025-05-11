@@ -19,14 +19,6 @@ function AddressPage(){
             redirect("/login"); 
     }, [])
 
-    // const formSubmit = (event)=>{
-    //     const userNumber = event.target[0].value;
-    //     setNumberPlaces(userNumber);
-    //     event.preventDefault();
-    //     router.push("/questionaire")
-
-    // }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("handleSubmit called with:", { theInput, selectType });
@@ -59,18 +51,11 @@ function AddressPage(){
                         alert("Enter a valid address");
                 }
                 else {
-                    if (userEmail == null){
-                        var fullAddress = [returnData.formattedAddress ? returnData.formattedAddress: theInput, returnData.info];
-                        await inputGuestAddress(fullAddress);
-                        setGuestAddress(fullAddress);  //holds the formatted address and second index holds the lat and long
-                        router.push("/start");
-                    }
-                    else {
+                    if (userEmail != null) {
                         console.log("existing user F - updating address:", { email: userEmail[1], address: theInput });
 
                         try {
                             await updateUserAddress(userEmail[1], returnData.formattedAddress);
-
                             await addCords(userEmail[1], [returnData.info.latitude, returnData.info.longitude]);
                             setUserAddress([returnData.formattedAddress, returnData.info])
                             router.push(`/start`); // pass user email to start page

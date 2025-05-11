@@ -85,9 +85,6 @@ export default function Account(){
         if (await deleteUserSession(userEmail[1]) != 'pending') router.push("/");
     }
 
-
-
-
     if(loading)
         return <Loading message={"Getting Account Details"} />
 

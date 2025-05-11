@@ -550,7 +550,7 @@ export async function createSession (id) {
       expiresAt,
     });
     const idval = await bcrypt.hash(id, 5);
-    if(await getUser(id)){
+    if((await getUser(id))){
       if(await hasSession(id))
       {
         await db.delete(sessions).where(eq(sessions.userEmail, id))
@@ -600,6 +600,8 @@ export async function getUserFS(hashedEmail) {
 export async function getUserSession()
 {
   let session = await getSession('session');
+  console.log("Session below: ")
+  console.log(session)
   if (!session) return null;
   let value = await getUserFS(session.idval);
   return await getUser(value[0].email);

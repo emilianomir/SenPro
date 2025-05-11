@@ -87,12 +87,11 @@ function Question({theQuestion, current, func, changeLoading}){
     const changeSpecLoc = (e) => { //to tell us that the user is ready to search with name
         e.preventDefault();
         const text = e.target.nameSearch.value;
+
         setTheTest(new Responses()); //here, I do a full reset on the object because the types the user currently selected and the name of the service might not be connected. 
         // Like the user can select food as type, but then search Academy, which would lead to no services showing up due to strict type searching.
-        theTest.name = text[0].toUpperCase() + text.length > 1 ? text.substring(1): "";
-        setResponses(theTest)
-        changeLoading()
-        func()
+        setTheTest({...theTest, name: text});
+        setGeneralSearch(true);
     }
 
     const generalSearch = ()=> { //ready to search generally

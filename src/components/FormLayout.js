@@ -63,15 +63,22 @@ export default function FormLayout ({typeForm}){
         </div>
       )
     }
+
+    const guestMode = async ()=> {
+      await createSession("Trial");
+      setUserEmail("Trial");
+      router.push("/address");
+    }
     
     // Gets the session
     useEffect(() => {
       const fetchProducts = async () => {
           try{
-            let userName
+            let userName;
             if (!userEmail)
               userName = await getUserSession();
-            if(userName != null ){
+              
+            if(userName != null && userName.length != 0 ){
               router.push("/home");
             }
           } catch(error) {
@@ -214,16 +221,7 @@ export default function FormLayout ({typeForm}){
               <Link className="md:ml-4 underline text-blue-400 hover:text-blue-500" href={typeForm.link}>
                   {typeForm.link_name}
               </Link></h2>
-            
-            {typeForm.name == "Login" &&
-            <>
-                <div className="w-full mt-3 flex justify-center pb-3">
-                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline text-center md:text-left text-blue-400 hover:text-blue-500">Here</Link></div>
-                </div>
 
-            </>
-            }
-  
           </div>
         </div>)
 }

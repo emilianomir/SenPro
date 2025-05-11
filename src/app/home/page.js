@@ -177,7 +177,7 @@ export default function Begin(){
                                                         <div className="col-span-2">
                                                             <img className = "w-10"  src = "/imgs/avatar-head.png"  alt = "profileIcon" /> 
                                                         </div>
-                                                        <div className="flex items-center col-span-2">
+                                                        <div className="flex items-center col-span-3">
                                                             <div className="text-gray-700 text-lg">
                                                                 {information.user}
                                                             </div>
@@ -210,13 +210,13 @@ export default function Begin(){
                                 <div>
                                     <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                                     
-                                    <circle cx="50" cy="50" r="45" stroke="blue" stroke-width="4" fill="white" />
+                                    <circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="4" fill="white" />
 
 
                                     <circle cx="35" cy="40" r="5" fill="blue" />
                                     <circle cx="65" cy="40" r="5" fill="blue" />
 
-                                    <path d="M35 70 Q50 55 65 70" stroke="blue" stroke-width="4" fill="transparent" />
+                                    <path d="M35 70 Q50 55 65 70" stroke="blue" strokeWidth="4" fill="transparent" />
                                     </svg>
                                 </div>
                                 <div className="text-2xl text-content-text font-semibold">

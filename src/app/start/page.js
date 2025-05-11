@@ -21,9 +21,8 @@ function StartPage(){
                 if (userName != null) 
                     setUserEmail([userName[0].username, userName[0].email]);
                 else{
-                    setUserEmail(["guest", "guest"]);
-                    const guestAddress = await getGuestAddress();
-                    setGuestAddress([guestAddress.address, guestAddress.cords]);
+                    setLogin(true);
+                    return;
                 }
             } catch(error) {
                 
