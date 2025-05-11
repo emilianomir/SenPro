@@ -3,7 +3,7 @@ import { redirect, useServerInsertedHTML } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { useAppContext } from '@/context';
-import { getUser, testExistingUser, deleteUserSession} from '@/components/DBactions';
+import { getUser, testExistingUser, deleteUserSession, setUserTheme } from '@/components/DBactions';
 import Account_Modal from '@/components/Modals/Account_Modal';
 import Loading from '@/components/Loading';
 
@@ -67,14 +67,16 @@ export default function Account(){
         handleTheme();
     }, []);
 
-    const changeTheme = ()=> {
+    const changeTheme = async ()=> {
         const htmlElement = document.documentElement;
 
         if (htmlElement.classList.contains('dark')) {
           htmlElement.classList.replace('dark', 'light');
+          await setUserTheme(userEmail[1], 'light')
           setTheme('Light');
         } else if (htmlElement.classList.contains('light')) {
             htmlElement.classList.replace('light', 'dark');
+            await setUserTheme(userEmail[1], 'dark')
             setTheme('Dark');
         } 
     }

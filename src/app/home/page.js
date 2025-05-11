@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import { useRouter, redirect } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState} from "react";
-import { getUserSession, getCords, getPosts} from "@/components/DBactions";
+import { getUserSession, getCords, getPosts, getUser} from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
 import { useQRCode } from 'next-qrcode';
@@ -29,7 +29,6 @@ export default function Begin(){
     useEffect(() => {
       const fetchProducts = async () => {
         try{
-        
             setLoading(true)
             let userName = await getUserSession();
             if(userName == null){
@@ -65,7 +64,10 @@ export default function Begin(){
             setLoading(true)
             const values = await getPosts(userEmail[1]);
             console.log(values);
-            setCardInfo(values)
+            setCardInfo(values);
+            const user = await getUser(userEmail[1])
+            const htmlElement = document.documentElement;
+            htmlElement.classList.replace('light', user[0].theme)
           }
         
     
