@@ -11,7 +11,7 @@ import Loading from '@/components/Loading';
 
 export default function Account(){
     const router = useRouter();
-    const {userEmail, setFavorites, setNumberPlaces} = useAppContext();
+    const {userEmail, setFavorites, setNumberPlaces, setHistoryData} = useAppContext();
     if (userEmail == null)
         redirect("/login");
     // States to be user in async function. 
@@ -85,6 +85,7 @@ export default function Account(){
         if (await deleteUserSession(userEmail[1]) != 'pending') {
             setNumberPlaces(0);
             setFavorites(null);
+            setHistoryData(null);
             router.push("/");
         } 
     }

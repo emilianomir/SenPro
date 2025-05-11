@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import { useState, useEffect, act } from "react";
-import { selectHistory, getUserSession, checkService, getAPI, addPost} from "@/components/DBactions";
+import { selectHistory, getUserSession, checkService, getAPI, addPost, postSelect} from "@/components/DBactions";
 import Loading from "@/components/Loading";
 import ServicePageHeading from "@/components/ServicePageHeading";
 import { useQRCode } from "next-qrcode";
@@ -39,6 +39,13 @@ export default function History(){
                 let history2;
                 if (historyData == null){
                     const history = await selectHistory(userName[0].email);
+                    const posts = await postSelect(userName[0].email);
+                    for (let elm of history){
+                        for (let elm2 of posts){
+                            elm.post = elm.length === elm2.length && elm.services.every((val, i) => val === elm2.sAddress[i])
+                        }
+                    }
+                    console.log(posts);
                     console.log("HISTORY:")
                     console.log(history);
                     history2 = await Promise.all(
@@ -260,9 +267,9 @@ export default function History(){
                     }
 
 
-                    <div className="mt-5 md:mt-10 w-full flex justify-center">
-                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(true)}>Post History</button>
-                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(2)}>Get QR Code</button>
+                    <div className="mt-5 md:mt-10 w-full flex justify-center flex-row gap-3">
+                    <button className={`rounded-lg text-xl md:text-2xl py-2 px-3 ${data[pastActiveTab][pastActiveSection].post ? "bg-blue-600 text-white": "cursor-pointer hover:bg-land-hover focus:outline-2 active:bg-gray-700 text-content-text outline-2"}`} onClick={()=>setIsOpen(true)}>{data[pastActiveTab][pastActiveSection].post ? "Posted" : "Post History"}</button>
+                    <button className="rounded-lg text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700 cursor-pointer" onClick={()=>setIsOpen(2)}>Get QR Code</button>
                     <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
                     <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
                     {isOpen == 1 ?
@@ -271,7 +278,7 @@ export default function History(){
                     <div className="overflow-x-auto whitespace-nowrap h-9/10">
                     <form className="mt-5 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitPastForm}>
                         <div className="ml-5">
-                        <div className="grid grid-cols-1">
+                        <div className="grid grid-cols-1 text-content-text">
                             <input
                             type="description"
                             placeholder="Enter a description for your post"
@@ -289,7 +296,7 @@ export default function History(){
                     </>
                     :
                     <div className="w-full flex flex-col items-center justify-center">
-                        <h1 className="text-4xl font-bold mb-5">Revist this Plan!</h1>
+                        <h1 className="text-4xl text-content-text font-bold mb-5">Revist this Plan!</h1>
                         <div className="h-50 w-50">
                         <Image text ={urlGenerate()} />
                         </div>
@@ -387,9 +394,9 @@ export default function History(){
                 ))}
 
 
-                <div className="mt-5 md:mt-10 w-full flex justify-center">
-                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700 mr-20" onClick={()=>setIsOpen(1)}>Post History</button>
-                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(2)}>Get QR Code</button>
+                <div className="mt-5 md:mt-10 w-full flex flex-row gap-3 justify-center">
+                    <button className={`rounded-lg text-xl md:text-2xl py-2 px-3 ${futureDate[todayActiveTab][todayActiveSection].post ? "bg-blue-600 text-white": "cursor-pointer hover:bg-land-hover focus:outline-2 active:bg-gray-700 text-content-text outline-2"}`} onClick={()=>setIsOpen(1)}>{futureDate[todayActiveTab][todayActiveSection].post ? "Posted" : "Post History"}</button>
+                    <button className="rounded-lg text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700 cursor-pointer" onClick={()=>setIsOpen(2)}>Get QR Code</button>
                     <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
                     <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
                     {isOpen == 1 ?
@@ -416,7 +423,7 @@ export default function History(){
                     </>
                     :
                     <div className="w-full flex flex-col items-center justify-center">
-                        <h1 className="text-4xl font-bold mb-5">Revist this Plan!</h1>
+                        <h1 className="text-4xl text-content-text font-bold mb-5">Revist this Plan!</h1>
                         <div className="h-50 w-50">
                         <Image text ={urlGenerate()} />
                         </div>

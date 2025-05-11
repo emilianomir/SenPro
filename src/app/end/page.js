@@ -10,8 +10,9 @@ import { useQRCode } from 'next-qrcode';
 
 export default function End(){
 
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress, setUserAddress, guestAddress, setGuestAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-
+    const {userServices, setUserEmail, setFavorites, favorites, userEmail, userAddress, setUserAddress, reset} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    if (userEmail && !userServices)
+        redirect("/home");
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const googleMapURL = "https://www.google.com/maps/dir/";
@@ -19,15 +20,25 @@ export default function End(){
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
 
-    const fullURL = googleMapURL + (guestAddress? guestAddress[0] : (userAddress ? userAddress[0]: "")) + "/" + addressURLS.join('/');
+    const fullURL = googleMapURL + ((userAddress ? userAddress[0]: "")) + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [goLogin, setLogin] = useState(false);
+    const [goLogin, setLogin] = useState(null);
     const router = useRouter();
 
-    console.log(userServices)
     
-    
+    useEffect(() => {
+        const handlePopState = () => {
+            console.log("Ran");
+            reset();
+        };
+
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+        window.removeEventListener("popstate", handlePopState);
+        };
+        }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -44,27 +55,12 @@ export default function End(){
                     const favoritesList = await getFavAPI(userName[0].email);
                     if(favoritesList) setFavorites(favoritesList);
                 }
-            }
-            else {
-                setLogin(true);
+                setLogin(1);
                 return;
             }
-            let sessionValues = null;
-            if (numberPlaces <= 0) sessionValues = await getInfoSession();
-            if(sessionValues == null || numberPlaces > 0)
-            {
-
-                if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
-                let email = "HASHTHIS";
-                if(userName)
-                {
-                    email = userName[0].email;
-                }
-                await createStatelessQ(numberPlaces, userServices, [], [], email);
-            }
-            else
-            {
-                setServices(sessionValues.userServices);
+            else {
+                setLogin(2);
+                return;
             }
             } catch(error) {
                 console.error("Error fetching DB:", error);
@@ -80,7 +76,7 @@ export default function End(){
 
     useEffect(()=> {
         if (goLogin)
-            redirect("/login"); 
+            redirect(goLogin == 1 ? "/home":  "/login"); 
     }, [goLogin])
             
     

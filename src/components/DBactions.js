@@ -440,6 +440,19 @@ async function checkPost(userEmail, info, services)
   const data = await db.select().from(postedHistory).where(and(eq(userEmail, postedHistory.userEmail), (info, postedHistory.description), (services, postedHistory.sAddress)))
   return data.length == 0
 }
+
+
+export async function postSelect(userEmail){
+  const info = await db.select().from(postedHistory).where(eq(userEmail, postedHistory.userEmail));
+  
+  const data = info.map(service =>({
+   ...service, 
+   sAddress: JSON.parse(service.sAddress)
+  }));
+
+  console.log(data);
+  return data;
+}
 //add
 export async function addPost(userEmail, info, services)
 {

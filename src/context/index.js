@@ -14,6 +14,13 @@ export function AppWrapper ({children}){
     const [favorites, setFavorites] = useState(null);
     const [historyData, setHistoryData] = useState(null);
 
+    const reset = ()=>{
+      console.log("RESET ran")
+      setNumberPlaces(0);
+      setServices([]);
+      setAPIServices(null);
+    }
+
 
     const contextValues = { //for better practice
         userServices,
@@ -34,6 +41,7 @@ export function AppWrapper ({children}){
         setFavorites,
         historyData,
         setHistoryData,
+        reset
     }
 
   return (

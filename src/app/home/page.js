@@ -16,7 +16,7 @@ const info = [
 
 export default function Begin(){
     const { Image } = useQRCode();
-    const {userEmail, userAddress, setUserEmail, setUserAddress} = useAppContext();
+    const {userEmail, userAddress, setUserEmail, setUserAddress, reset, numberPlaces} = useAppContext();
     const [goLogin, setLogin] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -24,9 +24,6 @@ export default function Begin(){
     const [back, setBack] = useState(false);
     const [openOverlay, setOverlay] = useState(null);
     const [cardInfo, setCardInfo ] = useState([])
-    const [qr, setQR] = useState(false);
-
-    console.log(cardInfo);
 
     // Gets the session
     useEffect(() => {
@@ -57,6 +54,9 @@ export default function Begin(){
       }
       if(!userEmail)fetchProducts();
       else setPost(true);
+
+      if (numberPlaces != 0)
+        reset()
 }, []);
 
     useEffect(() => {
@@ -178,7 +178,7 @@ export default function Begin(){
                                                             <img className = "w-10"  src = "/imgs/avatar-head.png"  alt = "profileIcon" /> 
                                                         </div>
                                                         <div className="flex items-center col-span-3">
-                                                            <div className="text-gray-700 text-lg">
+                                                            <div className="text-content-text/70 text-lg">
                                                                 {information.user}
                                                             </div>
                                                         </div>

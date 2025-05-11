@@ -12,7 +12,9 @@ function Questionaire(){
 
     console.log("Questionnaire ran")
   
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress, setGuestAddress, guestAddress} = useAppContext(); 
+    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress, guestAddress} = useAppContext(); 
+    if (userEmail && userServices.length == 0)
+        redirect("/home")
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
     const [goLogin, setLogin] = useState(false);
