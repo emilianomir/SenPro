@@ -14,8 +14,6 @@ import TravelMode from "@/components/TravelMode";
 
 export default function ServiceInfo(){
     const {userServices, setServices, numberPlaces, userResponses, userEmail, userAddress, guestAddress} = useAppContext();
-    if (userEmail && userServices.length == 0)
-        redirect("/home")
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
@@ -172,11 +170,6 @@ export default function ServiceInfo(){
 
     return(
         <div className="h-screen ">
-              {/* <Script
-                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
-                onLoad={() => setIsScriptLoaded(true)}
-                strategy="afterInteractive"
-            /> */}
             <ServicePageHeading />
             {current_service && 
             <div className="h-full md:grid md:grid-cols-7 relative bg-land-sec-bg/50 ">

@@ -170,7 +170,7 @@ export async function getAPI(id) {
     const headers = {
       "Content-Type": "application/json",
       "X-Goog-Api-Key": api_key,
-      "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
+      "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours,location"
     };
     const response = await fetch(`https://places.googleapis.com/v1/places/${id}`,{
         method: "GET",

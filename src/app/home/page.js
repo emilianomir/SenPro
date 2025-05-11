@@ -3,7 +3,7 @@ import { useAppContext } from "@/context"
 import { useRouter, redirect } from "next/navigation";
 import Favorites_Section from "@/components/Favorites_Section";
 import { useEffect, useState} from "react";
-import { getUserSession, getCords, getPosts, getUser} from "@/components/DBactions";
+import { getUserSession, getCords, getPosts, getUser, createStatelessQ, deleteSession} from "@/components/DBactions";
 import Home_Squares from "@/components/Home_Squares";
 import Loading from "@/components/Loading";
 import { useQRCode } from 'next-qrcode';
@@ -17,8 +17,6 @@ const info = [
 export default function Begin(){
     const { Image } = useQRCode();
     const {userEmail, userAddress, setUserEmail, setUserAddress, reset, numberPlaces} = useAppContext();
-    const [goLogin, setLogin] = useState(false);
-    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [post, setPost] = useState(false);
     const [back, setBack] = useState(false);
@@ -51,11 +49,18 @@ export default function Begin(){
         }
         
       }
+
+      const fullReset = async ()=> {
+        reset();
+        await deleteSession('Qsession');
+        await createStatelessQ(0, [], null, null, userEmail[1]);
+      }
+
       if(!userEmail)fetchProducts();
       else setPost(true);
 
-      if (numberPlaces != 0)
-        reset()
+      if (numberPlaces != 0) 
+        fullReset()
 }, []);
 
     useEffect(() => {

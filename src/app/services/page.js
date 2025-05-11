@@ -12,11 +12,8 @@ import Favorites from "@/components/Favorites";
 
 
 export default function Services(){
-    const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces, setUserAddress, guestAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
-    if (userEmail && numberPlaces == 0)
-        redirect("/home");
+    const {fullSessionReturn, userResponses, userServices, apiServices, userAddress, userEmail, setUserEmail, favorites, setFavorites, setServices, numberPlaces, setUserAddress, guestAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
-    const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
@@ -24,13 +21,15 @@ export default function Services(){
     const [sortValue, setSortValue] = useState("Options");
     const [currentServices, setCurrentServices] = useState(apiServices);
     const [goLogin, setLogin] = useState(false);
+    const [finished, setFinished] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const fetchProducts = async () => {
-        if (yes){
+        
             try{
-            setyes(false);
+            if (!userEmail)
+                setLoading(true);
             let userName = await getUserSession();
             if (userName != null) {
                 setUserEmail([userName[0].username, userName[0].email]);
@@ -42,7 +41,7 @@ export default function Services(){
                 }
             }
             else {
-                setLogin(true);
+                setLogin(2);
             }
             let sessionValues = null;
             if (numberPlaces <= 0) sessionValues = await getInfoSession();
@@ -70,29 +69,30 @@ export default function Services(){
                 }
                 else
                 {
-                    setNumberPlaces(sessionValues.numberPlaces);
-                    setServices(sessionValues.userServices);
-                    setResponses(sessionValues.userResponses);
-                    // for api
-                    setAPIServices(sessionValues.apiServices);
-                    setCurrentServices(sessionValues.apiServices);
+                    if (sessionValues.numberPlaces == 0)
+                        setLogin(1);
+                    else {
+                        fullSessionReturn(sessionValues);
+                        setCurrentServices(sessionValues.apiServices);
+
+                    }
+
                 }
 
         } catch(error) {
             console.error("Error fetching DB:", error);
             alert("There was an issue getting the data.");
         } finally {
+            
             setLoading(false);
             }
         }
-        }
-        if (!userEmail)
-            fetchProducts();
+        fetchProducts();
     }, []);
 
     useEffect(()=> {
         if (goLogin)
-            redirect("/login")
+            redirect(goLogin == 1 ? "/home": "/login")
     }, [goLogin])
 
     const getMoreInfo = async (id) =>{
@@ -117,7 +117,6 @@ export default function Services(){
         setServices([...userServices, desired_service]);
         router.push("/services/" + desired_service.displayName.text);
     }
-    const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : userAddress ? [userAddress[1].latitude, userAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
         if (asc){
             la1 = la1 ? la1 : 999
@@ -148,11 +147,16 @@ export default function Services(){
 
     useEffect(()=> {
         const getMiles = () => {
+            console.log(userAddress);
+            console.log(currentServices)
+            console.log(userServices)
+            console.log(apiServices);
+            const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : [userAddress[1].latitude, userAddress[1].longitude]; //need to use external api to convert location of user to lat and long
             setCurrentServices(currentServices.map(obj => ({...obj, miles : (Math.round(distanceCalculate(referencePoint[0], referencePoint[1], obj.location?.latitude, obj.location?.longitude) * 100))/100})));
         }
         if (currentServices)    
             getMiles();
-    }, []);
+    }, [apiServices]);
 
 
 

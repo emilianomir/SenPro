@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppWrapper } from "@/context";
 
 
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],

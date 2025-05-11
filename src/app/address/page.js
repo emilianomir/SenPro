@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { addCords, addUser, inputGuestAddress, updateUserAddress } from "@/components/DBactions";
-import Image from "next/image";
 function AddressPage(){
     const router = useRouter();
     const {userEmail, setUserAddress, setGuestAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
@@ -80,7 +79,7 @@ function AddressPage(){
         <div className="h-19/20 w-19/20 flex justify-center items-center bg-land-sec-bg/25 p-5 mt-4 rounded-lg border-outline border-2">
             <div className="grid md:grid-cols-2 md:gap-0">
                 <div className="w-full flex justify-center md:justify-end h-full">
-                    <img className="bg-heading-bg w-3/4 md:w-19/20 object-cover p-5 rounded-2xl " src ="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt = "Map Image"/>
+                    <img className="bg-heading-bg w-3/4 md:w-19/20 object-cover p-5 rounded-2xl " src ="/imgs/marker.png" alt = "Map Image"/>
                 </div>
                 <div className="text-content-text">
                     <h2 className="mt-3 md:mt-10 text-center px-10 text-xl md:text-3xl lg:text-5xl font-bold">Welcome {userEmail != null ? userEmail[0] : "Guest"}!</h2>

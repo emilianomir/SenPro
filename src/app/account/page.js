@@ -140,7 +140,7 @@ export default function Account(){
                         </div> }
                     <div className='mt-3'>
                         <div className='w-full flex justify-center'>
-                            <img width="50%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "w-2/5 md: w-1/2" alt = "profileIcon" /> 
+                            <img width="50%" src = "/imgs/avatar-head.png" className = "w-2/5 md: w-1/2" alt = "profileIcon" /> 
                         </div>
                         <div className='font-bold text-2xl mt-2 text-center text-content-text'>Hi {products[0].username}!</div>
                         <div className='text-xl text-account-sec-text text-center'>{products[0].email}</div>

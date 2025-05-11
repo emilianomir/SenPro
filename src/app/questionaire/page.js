@@ -4,31 +4,69 @@ import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
 import { useState, useEffect } from "react";
 import Loading from "@/components/Loading";
-import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI, getCords, getGuestAddress} from "@/components/DBactions";
-import { ConsoleLogWriter } from "drizzle-orm";
+import { createStatelessQ, getInfoSession, deleteSession, getUserSession, getFavAPI, getCords} from "@/components/DBactions";
+
 
 
 function Questionaire(){
-
-    console.log("Questionnaire ran")
-  
-    const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress, guestAddress} = useAppContext(); 
-    if (userEmail && userServices.length == 0)
-        redirect("/home")
+    const { setAPIServices, userServices, numberPlaces, sessionReturn, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress, guestAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
-    const [isSessionLoading, setSessionLoad] = useState(true);
+    // const [isSessionLoading, setSessionLoad] = useState(true);
     const [goLogin, setLogin] = useState(false);
-    const [yes, setyes] = useState(true);
     const [callAPI, setcallAPI] = useState(false);
     const router = useRouter();
 
-    // if (numberPlaces < userServices.length + 1 && (userResponses.name ? userResponses.name: userResponses.main_category) != "Favorites"){ //reset the services list
-    //     setServices([]);
-    //     redirect("/start")
-    // }
-    // if (numberPlaces == 0) { //this means the user has not entered the number of places
-    //     redirect("/login"); 
-    // }
+    useEffect(() => {
+        const fetchProducts = async () => {
+            
+            try{
+                
+                let userName = await getUserSession();
+                if (userName != null) {
+                    setUserEmail([userName[0].username, userName[0].email]);
+                    const cords = await getCords(userName[0].email);
+                    setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
+                    if(!favorites){
+                        const favoritesList = await getFavAPI(userName[0].email);
+                        if(favoritesList) setFavorites(favoritesList);
+                    }
+                }
+                else {
+                    setLogin(2);
+                    return;
+                }
+                let sessionValues = null;
+                if (numberPlaces <= 0) sessionValues = await getInfoSession();
+                console.log(sessionValues);
+                if(sessionValues == null || numberPlaces > 0)
+                {
+                    
+                    if(numberPlaces > 0) await deleteSession('Qsession');
+                    let email = "HASHTHIS";
+                    if(userName)
+                    {
+                        email = userName[0].email;
+                    }
+                    await createStatelessQ(numberPlaces, userServices, [], [], email);
+                }
+                else
+                {
+                    if (sessionValues.numberPlaces == 0)
+                        setLogin(1)
+                    else
+                        sessionReturn(sessionValues);
+                }
+
+
+            } catch(error) {
+                console.error("Error fetching DB:", error);
+                alert("There was an issue getting the data.");
+            }
+            
+        }
+        
+        fetchProducts();
+        }, []);
 
 
     useEffect(()=> {
@@ -91,91 +129,19 @@ function Questionaire(){
         return () => {
           document.body.classList.remove('overflow-hidden');
         };
-        // console.log("The apiServices: ") //debugging
-        // console.log(apiServices);
     }, [callAPI]);
-
-
-    // Gets the session
-    useEffect(() => {
-        const fetchProducts = async () => {
-            if (yes){
-            try{
-                setyes(false);
-                let userName = await getUserSession();
-                if (userName != null) {
-                    setUserEmail([userName[0].username, userName[0].email]);
-                    const cords = await getCords(userName[0].email);
-                    setUserAddress([userName[0].address, {latitude: cords[0], longitude: cords[1]}])
-                    if(!favorites){
-                        const favoritesList = await getFavAPI(userName[0].email);
-                        if(favoritesList) setFavorites(favoritesList);
-                    }
-                }
-                else {
-                    setLogin(true);
-                    return
-                }
-                let sessionValues = null;
-                if (numberPlaces <= 0) sessionValues = await getInfoSession();
-                if(sessionValues == null || numberPlaces > 0)
-                {
-                    
-                    if(numberPlaces > 0) await deleteSession('Qsession');
-                    let email = "HASHTHIS";
-                    if(userName)
-                    {
-                        email = userName[0].email;
-                    }
-                    await createStatelessQ(numberPlaces, userServices, [], [], email);
-                }
-                else
-                {
-                    setNumberPlaces(sessionValues.numberPlaces);
-                    setServices(sessionValues.userServices);
-                }
-
-
-            } catch(error) {
-                console.error("Error fetching DB:", error);
-                alert("There was an issue getting the data.");
-            } finally {
-                setSessionLoad(false);
-            }
-            }
-        }
-        if (!userEmail)
-            fetchProducts();
-        }, []);
 
     
     useEffect(()=> {
         if (goLogin)
-            redirect("/login");
+            redirect(goLogin == 1? "/home": "/login");
     }, [goLogin])
 
 
-    // const goToNext = ()=>{
-    //     if (apiServices)
-    //         setAPIServices(null); //reset the copy of services for new services
-    //     router.push("/services");
-    // }
 
     const goToNext = () => {
         setcallAPI(true);
     }
-
-
-    // const fromFavorites = () =>{
-    //     setResponses({name: "Favorites", main_category: "Favorites_List"});
-    //     var favoritesList = [];
-    //     favorites.forEach(element => {
-    //         const val = JSON.parse(element.info);
-    //         favoritesList.push(val);
-    //         console.log(favoritesList)
-    //     })
-    //     setAPIServices(favoritesList);
-    // }
   
 
     const loading = () =>{
@@ -417,11 +383,6 @@ function Questionaire(){
     );
 
 
-
-
-    // if(isSessionLoading){
-    //     return (<Loading message= "Fetching Session"/>)
-    // }
     return (
         <div>
             {isLoading ? <Loading message= "Fetching Services Based On Responses"/>: 
@@ -430,8 +391,8 @@ function Questionaire(){
                 <div className="absolute top-0 left-0 h-full w-full bg-question-cover/90" />
               
                 <div className="absolute top-0 left-0 h-screen w-full">
-                    <h1 className="pt-5 pl-5 underline text-5xl text-content-text font-bold">Place {userServices.length + 1}:</h1>  
-                    <Question className = "" theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading}  />
+                    <h1 className="pt-5 pl-5 underline text-5xl text-content-text font-bold">Place {userServices ? userServices.length + 1: 0}:</h1>  
+                    <Question  theQuestion= {questionsList} current = {"Begin"} func={goToNext} changeLoading={loading}/>
                 </div>
 
             </>

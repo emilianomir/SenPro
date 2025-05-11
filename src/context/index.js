@@ -21,6 +21,19 @@ export function AppWrapper ({children}){
       setAPIServices(null);
     }
 
+    const sessionReturn = (sessionValues)=> {
+      setNumberPlaces(sessionValues.numberPlaces);
+      setServices(sessionValues.userServices);
+    }
+
+    const fullSessionReturn = (sessionValues)=> {
+      setNumberPlaces(sessionValues.numberPlaces);
+      setServices(sessionValues.userServices);
+      setResponses(sessionValues.userResponses);
+      // for api
+      setAPIServices(sessionValues.apiServices);
+    }
+
 
     const contextValues = { //for better practice
         userServices,
@@ -41,7 +54,9 @@ export function AppWrapper ({children}){
         setFavorites,
         historyData,
         setHistoryData,
-        reset
+        reset,
+        sessionReturn,
+        fullSessionReturn
     }
 
   return (
