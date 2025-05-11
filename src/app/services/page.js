@@ -15,18 +15,15 @@ export default function Services(){
     const {userResponses, userServices, apiServices, userAddress, setAPIServices, userEmail, setUserEmail, favorites, setFavorites, setServices, setResponses, numberPlaces, setNumberPlaces, setUserAddress, setGuestAddress, guestAddress} = useAppContext(); //apiServices holds a copy of the services in case the user goes back and returns to page. Also used to avoid extra API calls
     const [clickedService, setClicked] = useState(false); //loading purposes
     const [yes, setyes] = useState(true);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [sort, setSort] = useState(4); //0: distance, 1: rating, 2: userRating count, 3: priceRange (only food)
     const [asc, setAsc] = useState(true);
     const [hideDrop, setDrop] = useState(true);
     const [sortValue, setSortValue] = useState("Options");
     const [currentServices, setCurrentServices] = useState(apiServices);
+    const [goLogin, setLogin] = useState(false);
     const router = useRouter();
 
-
-
-    
-        
     useEffect(() => {
         const fetchProducts = async () => {
         if (yes){
@@ -42,10 +39,8 @@ export default function Services(){
                     if(favoritesList) setFavorites(favoritesList);
                 }
             }
-            else if(guestAddress) setUserEmail(["guest", "guest"]);
-            else{
-                const guestAddress = await getGuestAddress();
-                setGuestAddress([guestAddress.address, guestAddress.cords]);
+            else {
+                setLogin(true);
             }
             let sessionValues = null;
             if (numberPlaces <= 0) sessionValues = await getInfoSession();
@@ -89,8 +84,14 @@ export default function Services(){
             }
         }
         }
-        fetchProducts();
-    }, [yes]);
+        if (!userEmail)
+            fetchProducts();
+    }, []);
+
+    useEffect(()=> {
+        if (goLogin)
+            redirect("/login")
+    }, [goLogin])
 
     const getMoreInfo = async (id) =>{
         const desired_service = apiServices.find(obj => obj.id === id);
@@ -114,9 +115,6 @@ export default function Services(){
         setServices([...userServices, desired_service]);
         router.push("/services/" + desired_service.displayName.text);
     }
-    console.log(userAddress[1]);
-    console.log({ lat: 26.3017, lng: -98.1633 });
-
     const referencePoint = userServices.length > 0 ? [userServices[userServices.length-1].location?.latitude, userServices[userServices.length-1].location?.longitude] : userAddress ? [userAddress[1].latitude, userAddress[1].longitude] : [31.0000, -100.0000]; //need to use external api to convert location of user to lat and long
     const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
         if (asc){
@@ -215,9 +213,12 @@ export default function Services(){
 
     },[sort, asc] );
 
-        if(loading){
-            return (<Loading message= "Fetching Session"/>)
-        }
+    if(loading){
+        return (<Loading message= "Fetching Session"/>)
+    }
+
+    if (userResponses == null)
+        return(<></>)
     return (
         <div className="">
             <ServicePageHeading />

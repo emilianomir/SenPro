@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
-import { checkLogin, createSession, getUser, getCords } from "@/components/DBactions";
+import { checkLogin, createSession, getUser, getCords, addUser } from "@/components/DBactions";
 import { useEffect, useState} from "react";
 import { getUserSession} from "@/components/DBactions";
 
@@ -63,15 +63,22 @@ export default function FormLayout ({typeForm}){
         </div>
       )
     }
+
+    const guestMode = async ()=> {
+      await createSession("Trial");
+      setUserEmail("Trial");
+      router.push("/address");
+    }
     
     // Gets the session
     useEffect(() => {
       const fetchProducts = async () => {
           try{
-            let userName
+            let userName;
             if (!userEmail)
               userName = await getUserSession();
-            if(userName != null ){
+              
+            if(userName != null && userName.length != 0 ){
               router.push("/home");
             }
           } catch(error) {
@@ -108,20 +115,42 @@ export default function FormLayout ({typeForm}){
         }
 
         try{
+          if (typeForm.name == "Register") {
+            if (await checkLogin(theUserName, thePass)){
+              setMessage(["Alert", "User already exists"])
+              return;
+            }
+            else {
+              const name = theUserName.split('@')[0];
+              try {
+                await addUser(theUserName, name, thePass);
+                setUserEmail([name, theUserName]);
+                router.push("/address");
+              }catch(error){
+                console.error("Error adding to db: ", error)
+                alert(["Error", "There was an issue adding user"])
+              }
+            }
+          }
+          else {
             if(await checkLogin(theUserName, thePass)){
+              
               await createSession(theUserName);
               let userName = await getUser(theUserName);
               setUserEmail([userName[0].username, userName[0].email]);
               const temp = await getCords(userName[0].email);
-              console.log(temp)
-              setUserAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
+              if (temp.length != 0) 
+                setUserAddress([userName[0].address, {latitude: temp[0], longitude: temp[1]}])
               router.push("/home");
             }
             else
             {
+              console.log(await getUser(theUserName))
               setMessage(["Alert", "Invalid email or pass"]);
               return;
             }
+          }
+     
         } catch(error) {
             console.error("Error fetching DB:", error);
             setMessage(["Error", "There was an issue getting the data."]);
@@ -192,16 +221,7 @@ export default function FormLayout ({typeForm}){
               <Link className="md:ml-4 underline text-blue-400 hover:text-blue-500" href={typeForm.link}>
                   {typeForm.link_name}
               </Link></h2>
-            
-            {typeForm.name == "Login" &&
-            <>
-                <div className="w-full mt-3 flex justify-center pb-3">
-                    <div className="grid grid-cols-1 md:block text-xl md:text-2xl">Or Try It Out With Guest Mode: <Link href={"/address"} className="underline text-center md:text-left text-blue-400 hover:text-blue-500">Here</Link></div>
-                </div>
 
-            </>
-            }
-  
           </div>
         </div>)
 }

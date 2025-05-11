@@ -1,7 +1,6 @@
 "use client"
 import ServicePageHeading from "@/components/ServicePageHeading";
-import { useAppContext } from "@/context";
-import { useRouter } from "next/navigation";
+import { useAppContext } from "@/context";import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { addService, addHistoryService } from '@/components/DBactions';
@@ -25,6 +24,8 @@ export default function ServiceInfo(){
     const [isOpen, setIsOpen] = useState(false);
     const current_service = userServices[userServices.length-1];
     const prevService = userServices.length > 1 ? userServices[userServices.length-2] : null; // check if there is a previous service, used for the travelmode.js component
+    if (!userEmail)
+        redirect("/login")
     const originAddressToUse = prevService ? prevService.formattedAddress : (guestAddress? guestAddress[0] : userAddress[0]); // if there is a previous service, use the previous service's address as the origin, otherwise use the user's address or guest address
     const router = useRouter();
     const [addServices, setYes] = useState(false)
@@ -166,7 +167,7 @@ export default function ServiceInfo(){
         return () => window.removeEventListener("resize", handleResize);
       }, []);
 
-    
+
 
 
 

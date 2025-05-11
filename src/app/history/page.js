@@ -16,14 +16,9 @@ import ServicePageHeading from "@/components/ServicePageHeading";
 export default function History(){
     const current_date = new Date();
     const {userEmail, setUserEmail, setHistoryData, historyData} = useAppContext();
-    const [changed, setChanged] = useState([false, false]);
-    const [collapse, setCollapse] = useState(null);
     const [data, setData] = useState([]); 
     const [futureDate, setFutureDate] = useState([])
     const [isLoading, setLoading] = useState(true);
-    const [isAPIload, setAPIload] = useState(true);
-    const [error, setError] = useState(false);
-    const [optionSelect, setOptionSelect] = useState([0, {services: "Select Service"}]);
     const [activeTab, setActiveTab] = useState("pastTab");
     const [pastActiveTab, setPastActiveTab] = useState(0);
     const [pastActiveSection, setPastActiveSection] = useState(0);
@@ -31,13 +26,17 @@ export default function History(){
     const [todayActiveSection, setTodayActiveSection] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [clicked, setClicked] = useState(false);
+    const [goLogin, setLogin] = useState(false);
 
     useEffect(() => {
         const fetchInfo = async () => {
             try{
                 let userName = await getUserSession();
                 if (userName != null) setUserEmail([userName[0].username, userName[0].email]);
-                else userName = [{username: userEmail[0], email: userEmail[1]}];
+                else  {
+                    setLogin(true);
+                    return;
+                }
                 let history2;
                 if (historyData == null){
                     const history = await selectHistory(userName[0].email);
@@ -93,6 +92,8 @@ export default function History(){
                 console.log("GROUP PAST ARRAY")
                 console.log(group_past_array)
                 setData(group_past_array);
+                if (group_past_array.length == 0)
+                    setActiveTab("todayTab");
                 const sorted_future = upcoming_array.sort((a,b)=>a.date-b.date);
                 sorted_future.map((theCurrent) => {
                     const monthAndDay = `${theCurrent.date.getMonth() + 1}/${theCurrent.date.getDate()}`;
@@ -117,9 +118,15 @@ export default function History(){
                     setLoading(false);
                 }
             }
+            
             fetchInfo();
         }, []);
 
+
+    useEffect(()=> {
+        if (goLogin)
+            redirect("/login")
+    }, [goLogin])
 
 
     console.log("DATA: ")
@@ -165,7 +172,7 @@ export default function History(){
     const tabContent = {
         pastTab: (
             <div className="md:flex bg-history-side/50 rounded-bl-xl h-4/5">
-            <ul className="flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 md:mb-4 md:mb-0 py-5 md:pl-6 w-full md:w-1/10">
+            <ul className={`flex-column space-y space-y-4 text-sm font-medium text-content-text/50  md:me-4 md:mb-4 md:mb-0 py-5 md:pl-6 w-full ${data.length == 0 ? "md:w-26/100": "md:w-1/10"} `}>
             
                 {data.map((info, index) => (
                     <li key={index}> 
@@ -183,8 +190,8 @@ export default function History(){
                 ))}
             </ul>
            {data.length === 0?
-            <div className="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No History</h3>
+            <div className="p-6 text-content-text w-full bg-land-sec-bg">
+            <h3 className="text-lg md:text-3xl font-bold mb-2">No History</h3>
             </div>
             :
             <ul className="flex-column space-y space-y-4 text-sm font-medium  md:me-4 md:mb-4 md:mb-0 py-5 px-1 w-1/2 md:w-1/7">
@@ -402,9 +409,9 @@ export default function History(){
             <ServicePageHeading heading ={"History"}/>
             
             {(data.length === 0 && futureDate.length === 0) ?
-            <div className="container w-100 vh-100 mt-4">   
-            <div>
-                <h2>No Previous History. Make one to show up here!</h2>
+            <div className="container w-full h-[75vh] mt-4">   
+            <div className=" flex flex-col h-full items-center justify-center text-content-text">
+                <h2 className="text-center text-2xl md:text-3xl px-3 mb-3">No Previous History. Make one to show up here!</h2>
                 <RouteButton name ={"Make Plan!"} location={"/start"} />
             </div>
             </div>
@@ -415,10 +422,18 @@ export default function History(){
                 
                 <div className="flex flex-wrap boarder-b w-full md:w-14/65 bg-history-side/50 pl-2 rounded-tl-2xl">
                     {tabs.map((tab) => (
-                        <button key={tab.id} className={`inline-block p-4 text-xl ${activeTab === tab.id ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500" 
+                        tab.label == "Past" ?
+
+                        data.length > 0 && <button key={tab.id} className={`inline-block p-4 text-xl ${activeTab === tab.id ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500" 
                             : "cursor-pointer border-b-2 border-transparent text-content-text rounded-t-lg hover:text-content-text/60 hover:border-gray-300"}`} onClick={() => setActiveTab(tab.id)}>
                                 {tab.label}
                             </button>
+                        :
+                        futureDate.length > 0 && <button key={tab.id} className={`inline-block p-4 text-xl ${activeTab === tab.id ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500" 
+                            : "cursor-pointer border-b-2 border-transparent text-content-text rounded-t-lg hover:text-content-text/60 hover:border-gray-300"}`} onClick={() => setActiveTab(tab.id)}>
+                                {tab.label}
+                        </button>
+
                     ))}
                 </div>
                 <div className="h-full">

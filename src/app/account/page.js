@@ -85,9 +85,6 @@ export default function Account(){
         if (await deleteUserSession(userEmail[1]) != 'pending') router.push("/");
     }
 
-
-
-
     if(loading)
         return <Loading message={"Getting Account Details"} />
 
@@ -183,7 +180,7 @@ export default function Account(){
                                         Address:
                                     </div> 
                                     <div className='md:ml-2 md:inline md:border-b-2'>
-                                        {products[0].address}
+                                        {products[0].address == "" ? "UNKNOWN": products[0].address}
                                     </div>
                                 </div>
                                 <div className="mt-6">

@@ -1,7 +1,7 @@
 "use server";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/users.js";
-import { eq, and, sql, min, max} from "drizzle-orm";
+import { eq, and, sql, min, max, ne} from "drizzle-orm";
 
 import { NextResponse, userAgentFromString } from "next/server.js";
 
@@ -56,7 +56,7 @@ export async function addUser(
     await db.insert(users).values({
       email: email,
       username: username,
-      password: password,
+      password: pass,
       address: address,
       type: type,
     });
@@ -69,8 +69,9 @@ export async function addUser(
 
 // Checking Login
 export async function checkLogin(email, password){
-    
+    console.log(password)
     const data = await db.select().from(users).where(eq(users.email, email));
+    console.log(data);
     if(data.length === 0)
     {
 
@@ -461,14 +462,38 @@ export async function addPost(userEmail, info, services)
   }
 }
 
-//get
-export async function getPosts()
-{
-  const data = await db.select().from(postedHistory).fullJoin(users, eq(users.email, postedHistory.userEmail))
-  const result =  data.filter(values => values.postedHistory).map((values, index) => {
-      return({header: values.postedHistory.description, user: values.users.username, likes:0, services: JSON.parse(values.postedHistory.sAddress), location: JSON.parse(values.users.cords)})
-  })
+const distanceCalculate = (la1, lo1, la2, lo2) => {  //uses the Haversine Formula
+        const earthR = 3959; //Miles
+        const convertRadius = angle => angle * Math.PI / 180;
+        const diffLat = convertRadius(la2 - la1);
+        const diffLon = convertRadius(lo2- lo1);
+        const lat1Radius = convertRadius(la1);
+        const lat2Radius = convertRadius(la2);
 
+        const innerEquation = Math.sin(diffLat/2)**2 +
+                              Math.cos(lat1Radius) * Math.cos(lat2Radius) * (Math.sin(diffLon/2) ** 2);
+        const fullEquation = 2 * earthR * Math.asin(Math.sqrt(innerEquation));
+        console.log(fullEquation)
+        console.log(fullEquation <=20)
+        return fullEquation;
+
+  }
+
+//get
+export async function getPosts(currentEmail)
+{
+  const data = await db.select().from(postedHistory).where(ne(currentEmail, postedHistory.userEmail)).fullJoin(users, eq(users.email, postedHistory.userEmail))
+  const currentUserCords = await getCords(currentEmail);
+  if (currentUserCords.length == 0)
+    return []; 
+  const result =  data.filter(values => { 
+    const userLoc = JSON.parse(values.users.cords);
+    console.log(userLoc);
+    return (distanceCalculate(currentUserCords[0], currentUserCords[1], userLoc[0], userLoc[1]) <= 20);
+  }).map((values, index) => {
+    return ({header: values.postedHistory.description, user: values.users.username, likes:0, services: JSON.parse(values.postedHistory.sAddress), location: JSON.parse(values.users.cords)})
+  })
+  console.log(result);
   return result;
 }
 
@@ -525,7 +550,7 @@ export async function createSession (id) {
       expiresAt,
     });
     const idval = await bcrypt.hash(id, 5);
-    if(await getUser(id)){
+    if((await getUser(id))){
       if(await hasSession(id))
       {
         await db.delete(sessions).where(eq(sessions.userEmail, id))
@@ -575,6 +600,8 @@ export async function getUserFS(hashedEmail) {
 export async function getUserSession()
 {
   let session = await getSession('session');
+  console.log("Session below: ")
+  console.log(session)
   if (!session) return null;
   let value = await getUserFS(session.idval);
   return await getUser(value[0].email);

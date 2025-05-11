@@ -15,6 +15,7 @@ function Questionaire(){
     const {apiServices, setAPIServices, userServices, numberPlaces, setNumberPlaces, setServices, setResponses, favorites, setFavorites, userResponses, setUserEmail, userEmail, userAddress, setUserAddress, setGuestAddress, guestAddress} = useAppContext(); 
     const [isLoading, setLoading] = useState(false);
     const [isSessionLoading, setSessionLoad] = useState(true);
+    const [goLogin, setLogin] = useState(false);
     const [yes, setyes] = useState(true);
     const [callAPI, setcallAPI] = useState(false);
     const router = useRouter();
@@ -42,9 +43,16 @@ function Questionaire(){
                 }
         
                 const {services_result} = await response.json();
-                if (services_result) {
+                let serviceArray;
+                if (userServices.length > 0 && services_result){
+                    const lastServiceID = userServices[userServices.length-1].id;
+                    serviceArray = services_result.filter(service => service.id != lastServiceID)
+                }
+                else 
+                    serviceArray = services_result;
+                if (serviceArray) {
                     await Promise.all([
-                        services_result.map(async i => {
+                        serviceArray.map(async i => {
                             if (i.photos) {
                                 const result = await fetch('/api/maps/places?thePhoto=' + i.photos[0].name);
                                 if (result.ok) {
@@ -58,10 +66,10 @@ function Questionaire(){
                 }
                 
                 console.log("Service result in services page: "); //debugging purposes
-                console.log(services_result);
+                console.log(serviceArray);
                 
                 // if (change){
-                setAPIServices(services_result);
+                setAPIServices(serviceArray);
                 router.push("/services");
                     // }
 
@@ -102,10 +110,9 @@ function Questionaire(){
                         if(favoritesList) setFavorites(favoritesList);
                     }
                 }
-                else if(guestAddress) setUserEmail(["guest", "guest"]);
-                else{
-                    const guestAddress = await getGuestAddress();
-                    setGuestAddress([guestAddress.address, guestAddress.cords]);
+                else {
+                    setLogin(true);
+                    return
                 }
                 let sessionValues = null;
                 if (numberPlaces <= 0) sessionValues = await getInfoSession();
@@ -135,8 +142,15 @@ function Questionaire(){
             }
             }
         }
-        fetchProducts();
-        }, [yes]);
+        if (!userEmail)
+            fetchProducts();
+        }, []);
+
+    
+    useEffect(()=> {
+        if (goLogin)
+            redirect("/login");
+    }, [goLogin])
 
 
     // const goToNext = ()=>{
