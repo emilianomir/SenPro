@@ -142,6 +142,7 @@ export async function getUser(email) {
       email: users.email,
       username: users.username,
       address: users.address,
+      theme: users.theme
     })
     .from(users)
     .where(eq(users.email, email));
@@ -812,6 +813,26 @@ export async function getGuestAddress()
   var fullAddress = await db.select({address: addresses.address, cords: addresses.cords}).from(addresses).where(eq(addresses.userEmail, 'guest'));
   fullAddress[0].cords = JSON.parse(fullAddress[0].cords);
   return fullAddress[0]
+}
+
+
+
+// theme
+
+export async function setUserTheme(inputEmail, updatedTheme) {
+  try
+  {
+    console.log("saving theme for user:", {
+      inputEmail,
+    });
+    await db.update(users)
+    .set({ theme: updatedTheme })
+    .where(eq(users.email, inputEmail))
+
+  } catch (e) {
+  console.error("error in in theme update:", e);
+  throw e;
+  }
 }
 
 /*

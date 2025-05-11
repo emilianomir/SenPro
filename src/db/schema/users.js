@@ -8,6 +8,7 @@ export const users = sqliteTable("users", {
   username: text('username').notNull(),
   password: text('password').notNull(),
   type: text('type', { enum: ["user", "admin"] }),
+  theme: text('theme').default('light'),
   address: text('address'),
   createdAt: integer("created_at").default(sql`(CURRENT_TIMESTAMP)`),
   cords: text('cords', {mode: json})
