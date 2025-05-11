@@ -14,6 +14,7 @@ export function AppWrapper ({children}){
     const [favorites, setFavorites] = useState(null);
     const [historyData, setHistoryData] = useState(null);
 
+
     const contextValues = { //for better practice
         userServices,
         setServices,
@@ -32,7 +33,7 @@ export function AppWrapper ({children}){
         favorites,
         setFavorites,
         historyData,
-        setHistoryData
+        setHistoryData,
     }
 
   return (

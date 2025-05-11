@@ -1,14 +1,12 @@
 "use client"
 import ServicePageHeading from "@/components/ServicePageHeading";
-import { useAppContext } from "@/context";import { redirect, useRouter } from "next/navigation";
+import { useAppContext } from "@/context";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { addService, addHistoryService } from '@/components/DBactions';
-import GenericSingleMap from "@/components/GenericSingleMap";
-import Script from "next/script";
 import Loading from "@/components/Loading";
 import Service_Image from "@/components/Service_Image";
-import { users } from "@/db/schema/users";
 import TravelMode from "@/components/TravelMode";
 
 
@@ -19,7 +17,6 @@ export default function ServiceInfo(){
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
-    const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const [onlyFuel, setOnlyFuel] = useState(false); //used for fuel toggle
     const [isOpen, setIsOpen] = useState(false);
     const current_service = userServices[userServices.length-1];

@@ -157,9 +157,9 @@ export default function Begin(){
                                 <div className="w-4/5 bg-content-text/50 h-1"/>
                             </div>
                             {cardInfo.length > 0 ?
-                            <div className="grid grid-cols-4 gap-2">
+                            <div className="flex w-full justify-center flex-row gap-2">
                                 {cardInfo.map((information, index)=> (
-                                    <div key = {index} className="w-full">
+                                    <div key = {index} className="w-1/4">
                                         <div onClick={()=>getServices(index)} className="w-full h-85 bg-land-card mt-3 ml-3 rounded-lg group cursor-pointer">
                                             <div className="h-2/3 flex w-full justify-center items-center bg-[url(https://img.freepik.com/free-vector/realistic-travel-background-with-elements_52683-77784.jpg?semt=ais_hybrid&w=740)] bg-cover">
                                             <div className="h-full opacity-0 transition-opacity ease-in-out duration-300 group-hover:opacity-100 bg-gray-200/40 w-full flex justify-center items-center">

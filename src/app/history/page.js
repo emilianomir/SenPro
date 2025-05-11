@@ -4,18 +4,17 @@ import { redirect } from "next/navigation";
 import RouteButton from "@/components/route_button";
 import { useState, useEffect, act } from "react";
 import { selectHistory, getUserSession, checkService, getAPI, addPost} from "@/components/DBactions";
-// import Favorites from "@/components/Favorites";
 import Loading from "@/components/Loading";
-import Image from "next/image";
-import { checkIsRoutePPREnabled } from "next/dist/server/lib/experimental/ppr";
 import ServicePageHeading from "@/components/ServicePageHeading";
+import { useQRCode } from "next-qrcode";
 
 
 
 
 export default function History(){
+    const {Image} = useQRCode();
     const current_date = new Date();
-    const {userEmail, setUserEmail, setHistoryData, historyData} = useAppContext();
+    const {userEmail, userAddress, setUserEmail, setHistoryData, historyData} = useAppContext();
     const [data, setData] = useState([]); 
     const [futureDate, setFutureDate] = useState([])
     const [isLoading, setLoading] = useState(true);
@@ -162,6 +161,23 @@ export default function History(){
         }
     };
 
+    const urlGenerate = ()=> {
+        const googleMapURL = "https://www.google.com/maps/dir/";
+        const addressURLS = [];
+        if (activeTab == "pastTab"){
+            data[pastActiveTab][pastActiveSection].services.map(service => {
+                addressURLS.push(service.formattedAddress)
+            })
+        }
+        else {
+            futureDate[todayActiveTab][todayActiveSection].services.map(service => {
+                addressURLS.push(service.formattedAddress);
+            })
+        }
+        const fullAddress = googleMapURL + userAddress[0] + "/" + addressURLS.join('/');
+        return fullAddress;
+    }
+
 
     // Tabbing
     const tabs = [
@@ -246,9 +262,11 @@ export default function History(){
 
                     <div className="mt-5 md:mt-10 w-full flex justify-center">
                     <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(true)}>Post History</button>
-
+                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(2)}>Get QR Code</button>
                     <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
                     <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
+                    {isOpen == 1 ?
+                    <>
                     <h2 className="text-3xl font-bold text-content-text">{clicked ? "Loading..." : "Description:"}</h2>
                     <div className="overflow-x-auto whitespace-nowrap h-9/10">
                     <form className="mt-5 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitPastForm}>
@@ -267,7 +285,17 @@ export default function History(){
                         </button>
                         </div>
                         </form>
-                    </div> 
+                    </div>
+                    </>
+                    :
+                    <div className="w-full flex flex-col items-center justify-center">
+                        <h1 className="text-4xl font-bold mb-5">Revist this Plan!</h1>
+                        <div className="h-50 w-50">
+                        <Image text ={urlGenerate()} />
+                        </div>
+                        <div className="text-center text-xl px-3 mt-3 text-content-text">Scan the QR Code above on your phone for Google Maps Link. Or Click <a className="text-blue-400 hover:underline" href={urlGenerate()} target="_blank" rel="noopener">Here </a></div>
+                    </div>
+                    }
                     <button
                     className="bg-red-500 text-white px-4 py-2 rounded absolute top-0 right-0 mr-2 mt-2"
                     onClick={() => setIsOpen(false)}
@@ -359,11 +387,13 @@ export default function History(){
                 ))}
 
 
-                                    <div className="mt-5 md:mt-10 w-full flex justify-center">
-                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(true)}>Post History</button>
-
+                <div className="mt-5 md:mt-10 w-full flex justify-center">
+                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700 mr-20" onClick={()=>setIsOpen(1)}>Post History</button>
+                    <button className="text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700" onClick={()=>setIsOpen(2)}>Get QR Code</button>
                     <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
                     <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
+                    {isOpen == 1 ?
+                    <>
                     <h2 className="text-3xl font-bold text-content-text">{clicked ? "Loading..." : "Description:"}</h2>
                     <div className="overflow-x-auto whitespace-nowrap h-9/10">
                     <form className="mt-5 text-xl md:text-3xl/15 xl:text-4xl/18" onSubmit={submitTodayForm}>
@@ -382,7 +412,17 @@ export default function History(){
                         </button>
                         </div>
                         </form>
-                    </div> 
+                    </div>
+                    </>
+                    :
+                    <div className="w-full flex flex-col items-center justify-center">
+                        <h1 className="text-4xl font-bold mb-5">Revist this Plan!</h1>
+                        <div className="h-50 w-50">
+                        <Image text ={urlGenerate()} />
+                        </div>
+                        <div className="text-center text-xl px-3 mt-3 text-content-text">Scan the QR Code above on your phone for Google Maps Link. Or Click <a className="text-blue-400 hover:underline" href={urlGenerate()} target="_blank" rel="noopener">Here </a></div>
+                    </div>
+                    } 
                     <button
                     className="bg-red-500 text-white px-4 py-2 rounded absolute top-0 right-0 mr-2 mt-2"
                     onClick={() => setIsOpen(false)}
@@ -405,7 +445,7 @@ export default function History(){
     }
     else { 
         return(
-            <div className="h-screen bg-land-sec-bg">
+            <div className="h-screen bg-land-sec-bg overflow-y-hidden">
             <ServicePageHeading heading ={"History"}/>
             
             {(data.length === 0 && futureDate.length === 0) ?

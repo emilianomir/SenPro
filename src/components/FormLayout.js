@@ -10,7 +10,7 @@ import { getUserSession} from "@/components/DBactions";
 export default function FormLayout ({typeForm}){
     console.log("Ran Form")
     const router = useRouter();
-    const {setUserEmail, setUserAddress, userEmail} = useAppContext();
+    const {setUserEmail, setUserAddress, userEmail, reset} = useAppContext();
     const [message, setMessage] = useState(null);
     console.log(message);
 
@@ -64,11 +64,6 @@ export default function FormLayout ({typeForm}){
       )
     }
 
-    const guestMode = async ()=> {
-      await createSession("Trial");
-      setUserEmail("Trial");
-      router.push("/address");
-    }
     
     // Gets the session
     useEffect(() => {
