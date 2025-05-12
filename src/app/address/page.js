@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react"
 import { redirect, useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
-import { addCords, addUser, inputGuestAddress, updateUserAddress } from "@/components/DBactions";
+import { addCords, getSession, updateUserAddress, getUser, getUserSession } from "@/components/DBactions";
 function AddressPage(){
     const router = useRouter();
-    const {userEmail, setUserAddress, setGuestAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
+    const {userEmail, setUserAddress} = useAppContext(); //need a check to see if a user already has an address in db. This would mean its already an exisiting user. Redirect if so. 
     const [theInput, setInput] = useState('');
     const [selectType, setSelect] = useState('');
 
@@ -14,8 +14,15 @@ function AddressPage(){
     };
 
     useEffect(()=> {
-        if (userEmail == null)
-            redirect("/login"); 
+        const check = async ()=> {
+            const theUser = userEmail ? userEmail[1] : await getUserSession();
+            if (!theUser)
+                redirect('/login');
+            const info = await getUser(theUser);
+            if (info.address != "")
+                redirect("/home");
+        }
+        check()
     }, [])
 
     const handleSubmit = async (event) => {
