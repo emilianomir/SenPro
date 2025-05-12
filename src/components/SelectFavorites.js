@@ -59,7 +59,7 @@ export default function SelectFavorites(){
                         </div>
                             
                         )):    
-                        <div className="text-center mt-4 h-full flex flex-col items-center justify-center"> 
+                        <div className="text-center mt-4 h-full flex flex-col items-center justify-center text-content-text"> 
                             <div className="w-full flex justify-center">
                                 <img className="rounded-lg bg-white/10 outline outline-1 outline-black p-1 opacity-80" src = "https://static.vecteezy.com/system/resources/thumbnails/013/713/828/small_2x/the-simple-twinkling-star-free-png.png" alt = "Star" width={100} height={100} />
                             </div>

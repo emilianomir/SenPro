@@ -238,14 +238,14 @@ export default function ServiceInfo(){
                                 <div className="px-3 text-xl">Visit their website here:
                                     <span>
                                     <a href={current_service.websiteUri} target="_blank" rel="noopener">
-                                        <div className="p-2 px-4 border-2 border-gray-200 inline ml-3">Website</div>
+                                        <div className="p-2 px-4 inline bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg">Website</div>
                                     </a>
                                     </span> 
                                 </div>
                             </div>
                             }
                             <div className="flex h-full w-full md:justify-center md:items-center md:col-span-2">
-                                <div className="border-2 border-gray-200 text-content-text text-xl p-2 text-center" onClick={handleToggle}>
+                                <div className="p-2 px-4 inline bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg cursor-pointer" onClick={handleToggle}>
                                     {onlyFuel ? "Info": "Current Gas Prices"}
                                 </div> 
                             </div>

@@ -151,7 +151,7 @@ export default function Account(){
                         </div>
                     </div>
                     <div className='mt-5 md:mt-30 w-full flex justify-center md:justify-end text-center'>
-                            <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl text-white p-3 mr-2 hover:bg-red-700/95'>
+                            <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl text-white p-3 mr-2 hover:bg-red-700/95 cursor-pointer'>
                                 Log Out
                             </div>
                     </div>
@@ -191,7 +191,7 @@ export default function Account(){
                                     </div>
                                 </div>
                                 <div className="mt-6">
-                                    <button className='rounded-lg p-2 bg-theme-btn text-gray-100 group hover:bg-theme-btn-hover text-xl md:text-3xl' 
+                                    <button className='cursor-pointer rounded-lg p-2 bg-theme-btn text-gray-100 group hover:bg-theme-btn-hover text-xl md:text-3xl' 
                                     onClick={changeTheme}>
                                         {theme + " Mode" }
                                     </button>
