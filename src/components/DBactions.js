@@ -463,7 +463,9 @@ export async function addPost(userEmail, info, services)
     userEmail,
     info
   });
-  if(await checkPost(userEmail, info, services)) {
+  const getInfo = await checkPost(userEmail, info, services);
+  console.log(getInfo)
+  if(getInfo) {
   await db.insert(postedHistory).values({
     userEmail: userEmail,
     description: info,

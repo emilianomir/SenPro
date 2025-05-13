@@ -96,7 +96,7 @@ export default function Account(){
         return <Loading message={"Getting Account Details"} />
 
     return (
-        <div className='w-full h-screen flex justify-center items-center'>
+        <div className='w-full h-[105vh] md:h-screen flex justify-center items-center'>
             <div className='bg-land-sec-bg w-[95%] h-[95%] rounded-xl flex flex-col'>
                 <div className='w-full border-b-3 border-gray-400 grid grid-cols-2'>
                     <div className='text-4xl font-extrabold ml-6 py-6 text-content-text'>
@@ -112,7 +112,7 @@ export default function Account(){
                 <div className='flex-grow grid grid-cols-10'>
                     <div className={`${clickedBars ? "col-span-10" : "col-span-2 md:col-span-3 lg:col-span-2"} h-full border-r-2 border-gray-400 `}>
                     {smallScreen && !clickedBars? 
-                        <div onClick={() => setClickedBars(true)} className='text-xl/3 flex flex-col items-center justify-center'>
+                        <div onClick={() => setClickedBars(true)} className='cursor-pointer text-xl/3 flex flex-col items-center justify-center'>
                             <div>
                                 ------
                             </div>
@@ -126,7 +126,7 @@ export default function Account(){
                         </div>
                         :
                         <>
-                        {smallScreen && <div onClick={() => setClickedBars(false)} className='text-xl/3 flex flex-col w-1/5 justify-center items-center'>
+                        {smallScreen && <div onClick={() => setClickedBars(false)} className='cursor-pointer text-xl/3 flex flex-col w-1/5 justify-center items-center'>
                             <div>
                                 ------
                             </div>

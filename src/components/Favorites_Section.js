@@ -71,7 +71,7 @@ export default function Favorites_Section (){
             <>
             {favorites ? 
 
-            <div className="container h-1/3 mt-6">
+            <div className="w-full flex justify-center h-1/3 mt-6">
                 {favorites.length === 0 ? 
                 <div className="text-content-text">
                     <div className="w-full flex justify-center">
@@ -86,11 +86,11 @@ export default function Favorites_Section (){
                 </div>
  
                 :
-                <div className="flex w-full h-full justify-center flex-row gap-4">
+                <div className="overflow-x-auto whitespace-nowrap h-9/10 gap-4">
                     {/* {favorites.map((service, index) => ( */}
                     {favorites.map((service, index) => (
 
-                        <div key ={index} className="h-full">
+                        <div key ={service.id} className="h-full inline-block mr-3 max-sm:ml-3">
                             <div className="">
                             {userEmail != null && <Favorites service={service}/>}
                             </div> 

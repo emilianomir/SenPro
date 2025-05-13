@@ -145,6 +145,7 @@ export default function History(){
     const submitPastForm = async (event) => {  
         event.preventDefault();
         const description = event.target.inputDescription.value;
+        console.log(description);
         if(description.length > 0)
         {
             const services = [];
@@ -152,6 +153,7 @@ export default function History(){
                 services.push(service.id)
             ))}
             await addPost(userEmail[1], description, services)
+            setIsOpen(false);
         }
     };
 
@@ -165,6 +167,7 @@ export default function History(){
                 services.push(service.id)
             ))}
             await addPost(userEmail[1], description, services)
+            setIsOpen(false);
         }
     };
 
@@ -267,7 +270,7 @@ export default function History(){
                     }
 
 
-                    <div className="mt-5 md:mt-10 w-full flex justify-center flex-row gap-3">
+                    <div className="mt-5 md:mt-7 w-full flex justify-center flex-row gap-3 pb-4">
                     <button className={`rounded-lg text-xl md:text-2xl py-2 px-3 ${data[pastActiveTab][pastActiveSection].post ? "bg-blue-600 text-white": "cursor-pointer hover:bg-land-hover focus:outline-2 active:bg-gray-700 text-content-text outline-2"}`} onClick={()=>setIsOpen(true)}>{data[pastActiveTab][pastActiveSection].post ? "Posted" : "Post History"}</button>
                     <button className="rounded-lg text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700 cursor-pointer" onClick={()=>setIsOpen(2)}>Get QR Code</button>
                     <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
@@ -287,7 +290,7 @@ export default function History(){
                             />
                         </div>
                         <button type="submit" className="mt-5 md:mt-2 px-5 shadow-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg w-1/6" 
-                        onClick={() => setIsOpen(false)}>
+                        >
                         Submit
                         </button>
                         </div>
@@ -394,7 +397,7 @@ export default function History(){
                 ))}
 
 
-                <div className="mt-5 md:mt-10 w-full flex flex-row gap-3 justify-center">
+                <div className="mt-5 md:mt-10 w-full flex flex-row gap-3 justify-center pb-10">
                     <button className={`rounded-lg text-xl md:text-2xl py-2 px-3 ${futureDate[todayActiveTab][todayActiveSection].post ? "bg-blue-600 text-white": "cursor-pointer hover:bg-land-hover focus:outline-2 active:bg-gray-700 text-content-text outline-2"}`} onClick={()=>setIsOpen(1)}>{futureDate[todayActiveTab][todayActiveSection].post ? "Posted" : "Post History"}</button>
                     <button className="rounded-lg text-content-text outline-2 text-xl md:text-2xl py-2 px-3 hover:bg-land-hover focus:outline-2 active:bg-gray-700 cursor-pointer" onClick={()=>setIsOpen(2)}>Get QR Code</button>
                     <div className={`${isOpen ? "opacity-100 z-2" : "opacity-0 -z-2"} ease-out duration-300 fixed inset-0 flex items-center justify-center bg-black/50`}>
@@ -414,7 +417,7 @@ export default function History(){
                             />
                         </div>
                         <button type="submit" className="mt-5 md:mt-2 px-5 shadow-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg w-1/6" 
-                        onClick={() => setIsOpen(false)}>
+                        >
                         Submit
                         </button>
                         </div>
@@ -464,9 +467,6 @@ export default function History(){
             </div>
             :
             <div className="h-full">
-
-
-                
                 <div className="flex flex-wrap boarder-b w-full md:w-14/65 bg-history-side/50 pl-2 rounded-tl-2xl">
                     {tabs.map((tab) => (
                         tab.label == "Past" ?
@@ -494,65 +494,3 @@ export default function History(){
 }
 
 
-
-// {futureDate[todayActiveTab][todayActiveSection].services.map((service, index) => (
-//     <div className="w-1/2" key = {service.id}>
-//         <div className="w-full bg-blue-300/50 rounded-xl">
-//             <div className="grid grid-cols-2">
-//                 <div className="col-span-3 outline-white outline-1">
-//                     {index}
-//                 </div>
-//                 <div className="col-span-9">
-//                     <div className="font-bold text-3xl text-black">
-//                         {service.displayName.text}
-//                     </div>
-//                     <div className="text-white/40 text-2xl">
-//                         {service.formattedAddress}
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-//             <div key ={index} className="">
-//                 <div className="">
-//                 {/* {userEmail != null && <Favorites service={service}/>} */}
-//                 </div> 
-//                 <div className="w-full max-w-2xs bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 shadow-lg transition ease-in-out delay-100 duration-400 hover:-translate-y-5 mt-5">
-            
-//                 <Image className = "size-75 object-cover rounded-t-xl" src= {error || !service.photoURL? "https://static.vecteezy.com/system/resources/thumbnails/005/720/408/small_2x/crossed-image-icon-picture-not-available-delete-picture-symbol-free-vector.jpg": service.photoURL } width={100} height={100} onError={() => setError(true)} alt = "Service image" unoptimized = {true} />  
-//                 <div className="flex items-center px-5 pb-5"> 
-//                     <h4 className = {`${service.displayName.text.length > 25 ? "text-xl" : "text-2xl"} font-semibold tracking-tight text-gray-900 dark:text-white`}>{service.displayName.text}</h4>
-//                 </div>
-//                 <div className="flex items-center mt-2.5 mb-5">
-//                     <div className="flex items-center space-x-1 rtl:space-x-reverse">
-//                         <svg className={service.rating >= 1? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-//                         </svg>
-//                         <svg className={service.rating >= 2? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-//                         </svg>
-//                         <svg className={service.rating >= 3? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-//                         </svg>
-//                         <svg className={service.rating >= 4? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-//                         </svg>
-//                         <svg className={service.rating >= 5? "w-4 h-4 text-yellow-300":"w-4 h-4 text-gray-200 dark:text-gray-600"} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-//                         <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-//                         </svg>
-//                     </div>
-                    
-                    
-//                     <p className = "bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-sm dark:bg-blue-200 dark:text-blue-800 ms-3"> Rating: {service.rating ? service.rating : "N/A" }</p> 
-//                     {service.rating && <img className="ms-2 pb-3"  width = "10%" height = "50%" src = "https://th.bing.com/th/id/R.3462ebc891558b2ec8bde920fc3e41c1?rik=E8O%2fhD3daKvtqQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fyellow-stars-png-hd-hd-quality-wallpaper-collection-pattern-2000x2000-star-2000.png&ehk=c3jJXJdBQ08FuZM9zuSX6iQGLOq3E56vFYYk59%2fe39I%3d&risl=&pid=ImgRaw&r=0"/>}
-//                 </div>
-//                 <div className="flex items-center justify-between">
-//                 {service.priceRange != null && <p className = "text-1x1 font-bold text-gray-900 dark:text-white">Price Range: {service.priceRange?.startPrice?.units?  "$" + service.priceRange.startPrice.units: "UNKNOWN"} 
-//                                                                 {service.priceRange?.endPrice?.units? ("-$" + service.priceRange.endPrice.units): (service.priceRange?.startPrice? "-UNKNOWN": "") //this is checking if there are start and end prices. If there is neither, its only UNKNOWN. If start, then start price-UNKNOWN. If both, show both
-//                                                                 }</p>}
-//                 </div>
-//             </div> 
-//             </div>
-            
-//         ))
-//         }

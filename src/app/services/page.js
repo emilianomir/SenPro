@@ -24,6 +24,7 @@ export default function Services(){
     const [finished, setFinished] = useState(false);
     const router = useRouter();
 
+
     useEffect(() => {
         const fetchProducts = async () => {
         
@@ -301,7 +302,7 @@ export default function Services(){
                             <div className="overflow-x-auto ml-3 mt-3 h-full whitespace-nowrap">
                                 
                                 
-                                {currentServices ? currentServices.map(service_object=>(
+                                {currentServices && currentServices.length != 0 ? currentServices.map(service_object=>(
                                     <div className="inline-block mr-7 h-3/4 min-w-1/5" key ={service_object.id}>
                                         
                                             <div className="h-full w-full" >

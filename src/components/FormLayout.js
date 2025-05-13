@@ -167,11 +167,11 @@ export default function FormLayout ({typeForm}){
               <div className="ml-10">
                 <div className="grid grid-cols-1">
                   <label htmlFor="inputEmail" className="form-label">
-                    Username:{" "}
+                    Email:{" "}
                   </label>
                   <input
                     type="email"
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                     className="form-control border-b-4 w-5/6 text-base md:text-xl lg:text-2xl"
                     id="inputEmail"
                     aria-describedby="emailHelp"

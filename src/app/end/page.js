@@ -88,17 +88,20 @@ export default function End(){
     if (!userEmail)
         return (<></>)
     return(
-        <div className="bg-land-sec-bg h-screen">
+        <div className="bg-land-sec-bg h-full md:h-screen">
             <ServicePageHeading />
             <div className="px-3 text-center text-content-text text-3xl mt-3 font-bold">Here is your services list:</div>
             <div className="flex justify-center mt-3">
-                <Image
-                text={fullURL}
-                />
+                <div className="max-sm:w-40 max-sm:h-40">
+                    <Image
+                    text={fullURL}
+                    />
+                </div>
+
             </div>
             <div className="text-center text-xl px-3 mt-3 text-content-text">Scan the QR Code above on your phone for Google Maps Link. Or Click <a className="text-blue-400 hover:underline" href={fullURL} target="_blank" rel="noopener">Here </a></div>
             <div className="w-full flex justify-center">
-                <table className="w-3/4 mt-1 mb-3">
+                <table className="w-3/4 mt-1 mb-3 overflow-auto-y">
                     <tbody >
                         {userServices.map((theService, index)=>
                             <tr key={theService.id}>

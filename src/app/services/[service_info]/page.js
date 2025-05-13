@@ -196,10 +196,10 @@ export default function ServiceInfo(){
                                 </tr>
                             </thead>
                             <tbody className=" text-center bg-land-card text-lg md:text-xl">
-                                {current_service.fuelOptions.fuelPrices.map((item)=> (
-                                    <tr key = {item.type} className="border-separate border-ind-border border-1">
-                                        <td className="text-content-text/90 font-semibold">{item.type}</td>
-                                        <td className="text-content-text/80 ">{item.price.currencyCode == "USD" && "$"} {Number(item.price.units)  + (item.price.nanos? item.price.nanos/1000000000: 0)} </td>
+                                {current_service?.fuelOptions?.fuelPrices?.map((item)=> (
+                                    <tr key = {item.type} className="border-separate border-ind-border border-1 text-base  md:text-lg">
+                                        <td className="text-content-text/90 font-semibold py-2 px-2">{item.type}</td>
+                                        <td className="text-content-text/80  ">{item.price.currencyCode == "USD" && "$"} {Number(item.price.units)  + (item.price.nanos? item.price.nanos/1000000000: 0)} </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -210,17 +210,21 @@ export default function ServiceInfo(){
                         <div className={`${!isLargeScreen && "h-[25vh]" } relative group`}>
                             <Image className = "rounded-lg object-cover object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} fill alt = "Service image" unoptimized = {true} />
 
-                            {(current_service && current_service.photos.length > 5) &&
+                            {(current_service && current_service.photos?.length > 5) &&
                                 <div onClick={goToGallery } className= {`h-full w-full md:opacity-0 md:group-hover:opacity-100 bg-gray-500/35 absolute top-0 z-10 transition-opacity duration-300 flex justify-center items-center text-gray-100 text-4xl font-bold`}>Gallery</div>}
                         </div>
                         <div className="mt-4 px-3">
                             <div className={`bg-land-card ${theme == "Light" && "border-2 border-outline shadow-md"} rounded-lg py-1 text-content-text`}>
-                                {current_service.regularOpeningHours?.weekdayDescriptions &&
+                                {current_service.regularOpeningHours?.weekdayDescriptions ?
                                 <div className="text-center mt-3 px-2">
                                     <div className="font-bold text-base md:text-2xl">Weekly Operations:</div>
-                                    {current_service.regularOpeningHours.weekdayDescriptions.map((desc, index)=>
+                                    {current_service.regularOpeningHours.weekdayDescriptions.map(desc=>
                                         <div key = {desc} className="text-sm md:text-md pb-1">{desc}</div>
                                     )}
+                                </div>
+                                :
+                                <div className="w-full h-full flex justify-center items-center text-2xl">
+                                    No Hours Available
                                 </div>
                                 }     
                             </div>
