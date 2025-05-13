@@ -11,7 +11,7 @@ import Loading from '@/components/Loading';
 
 export default function Account(){
     const router = useRouter();
-    const {userEmail} = useAppContext();
+    const {userEmail, setFavorites, setNumberPlaces, setHistoryData} = useAppContext();
     if (userEmail == null)
         redirect("/login");
     // States to be user in async function. 
@@ -84,14 +84,19 @@ export default function Account(){
 
     // Logout
     const routeClick =  async () => {
-        if (await deleteUserSession(userEmail[1]) != 'pending') router.push("/");
+        if (await deleteUserSession(userEmail[1]) != 'pending') {
+            setNumberPlaces(0);
+            setFavorites(null);
+            setHistoryData(null);
+            router.push("/");
+        } 
     }
 
     if(loading)
         return <Loading message={"Getting Account Details"} />
 
     return (
-        <div className='w-full h-screen flex justify-center items-center'>
+        <div className='w-full h-[105vh] md:h-screen flex justify-center items-center'>
             <div className='bg-land-sec-bg w-[95%] h-[95%] rounded-xl flex flex-col'>
                 <div className='w-full border-b-3 border-gray-400 grid grid-cols-2'>
                     <div className='text-4xl font-extrabold ml-6 py-6 text-content-text'>
@@ -107,7 +112,7 @@ export default function Account(){
                 <div className='flex-grow grid grid-cols-10'>
                     <div className={`${clickedBars ? "col-span-10" : "col-span-2 md:col-span-3 lg:col-span-2"} h-full border-r-2 border-gray-400 `}>
                     {smallScreen && !clickedBars? 
-                        <div onClick={() => setClickedBars(true)} className='text-xl/3 flex flex-col items-center justify-center'>
+                        <div onClick={() => setClickedBars(true)} className='cursor-pointer text-xl/3 flex flex-col items-center justify-center'>
                             <div>
                                 ------
                             </div>
@@ -121,7 +126,7 @@ export default function Account(){
                         </div>
                         :
                         <>
-                        {smallScreen && <div onClick={() => setClickedBars(false)} className='text-xl/3 flex flex-col w-1/5 justify-center items-center'>
+                        {smallScreen && <div onClick={() => setClickedBars(false)} className='cursor-pointer text-xl/3 flex flex-col w-1/5 justify-center items-center'>
                             <div>
                                 ------
                             </div>
@@ -135,7 +140,7 @@ export default function Account(){
                         </div> }
                     <div className='mt-3'>
                         <div className='w-full flex justify-center'>
-                            <img width="50%" src = "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-Picture.png" className = "w-2/5 md: w-1/2" alt = "profileIcon" /> 
+                            <img width="50%" src = "/imgs/avatar-head.png" className = "w-2/5 md: w-1/2" alt = "profileIcon" /> 
                         </div>
                         <div className='font-bold text-2xl mt-2 text-center text-content-text'>Hi {products[0].username}!</div>
                         <div className='text-xl text-account-sec-text text-center'>{products[0].email}</div>
@@ -146,7 +151,7 @@ export default function Account(){
                         </div>
                     </div>
                     <div className='mt-5 md:mt-30 w-full flex justify-center md:justify-end text-center'>
-                            <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl text-white p-3 mr-2 hover:bg-red-700/95'>
+                            <div onClick={routeClick} className='bg-red-600 w-1/2 text-3xl text-white p-3 mr-2 hover:bg-red-700/95 cursor-pointer'>
                                 Log Out
                             </div>
                     </div>
@@ -186,7 +191,7 @@ export default function Account(){
                                     </div>
                                 </div>
                                 <div className="mt-6">
-                                    <button className='rounded-lg p-2 bg-theme-btn text-gray-100 group hover:bg-theme-btn-hover text-xl md:text-3xl' 
+                                    <button className='cursor-pointer rounded-lg p-2 bg-theme-btn text-gray-100 group hover:bg-theme-btn-hover text-xl md:text-3xl' 
                                     onClick={changeTheme}>
                                         {theme + " Mode" }
                                     </button>

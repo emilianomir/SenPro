@@ -2,13 +2,13 @@
 import { useAppContext } from '@/context';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import { getUserSession, getGuestAddress} from '@/components/DBactions';
+import { getUserSession, getGuestAddress, addService, addHistoryService} from '@/components/DBactions';
 import Loading from '@/components/Loading';
 import ServicePageHeading from '@/components/ServicePageHeading';
 
 
 function StartPage(){
-    const {userEmail, setNumberPlaces, setUserEmail, userServices, guestAddress, setGuestAddress, userAddress} = useAppContext();
+    const {userEmail, setNumberPlaces, setUserEmail, userServices, userResponses, userAddress} = useAppContext();
     const router = useRouter();
     const [goLogin, setLogin] = useState(false);
 
@@ -48,12 +48,21 @@ function StartPage(){
         return;
     
 
-    const formSubmit = (event)=>{
+    const formSubmit = async (event)=>{
         const userNumber = event.target[0].value;
         setNumberPlaces(userNumber);
         event.preventDefault();
-        if (userServices.length == userNumber)
+        if (userServices.length == userNumber) {
+            const addressArr = [];
+            userServices.forEach(element => {
+                //addService(element.id)
+                addService(element.id, JSON.stringify(userResponses));
+                addressArr.push(element.id);
+            });
+            await addHistoryService(addressArr, userEmail[1]);
             router.push("/end");
+        }
+
         else
             router.push("/questionaire")
 
@@ -73,10 +82,10 @@ function StartPage(){
         <div className='relative w-full h-[90vh] bg-[url(/imgs/start-bg.jpg)] bg-cover'/>
         <div className="absolute top-27 left-0 h-[90vh] w-full bg-land-sec-bg/65 shadow-md" />
 
-        <div className='absolute top-1/5 w-full h-1/2 flex justify-center'>
-            <div className = "rounded-lg bg-land-card w-2/5 flex justify-center pt-5 text-content-text">
+        <div className='absolute top-1/4 md:top-1/5 w-full h-1/3 flex justify-center items'>
+            <div className = "rounded-lg bg-land-card w-3/5 md:w-2/5 flex justify-center items-center pt-5 text-content-text shadow-lg">
                 <div className="p-3">
-                    <h1 className="text-xl md:text-3xl font-bold">How many places do you want to visit? </h1>
+                    <h1 className="text-lg md:text-3xl font-bold text-center p-3">How many places do you want to visit? (Max 5) </h1>
                     <div className='flex justify-center'>
                     <form onSubmit={formSubmit}>
                     <div className="" >

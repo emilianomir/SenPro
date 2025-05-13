@@ -1,11 +1,17 @@
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context";
+import { deleteUserSession } from "./DBactions";
 
 export default function Account_Overlay(){
-    const {userEmail} = useAppContext();
+    const {userEmail, setNumberPlaces, setFavorites, setHistoryData} = useAppContext();
     const router = useRouter();
-    const routeClick = () => {
-        router.push("/account");
+    const routeClick =  async () => {
+        if (await deleteUserSession(userEmail[1]) != 'pending') {
+            setNumberPlaces(0);
+            setFavorites(null);
+            setHistoryData(null);
+            router.push("/");
+        } 
     }
 
 
@@ -16,10 +22,10 @@ export default function Account_Overlay(){
                 <div className="mb-3 pb-1 border-b-2 border-gray-300">Hi, {userEmail != null ? userEmail[0]: "User"}</div>
                 
                 <div className="w-full flex justify-center">
-                    <div onClick={()=>router.push("/account")} className="mb-3 w-9/10 hover:rounded-lg hover:bg-account-o-hover">Account Settings</div>
+                    <div onClick={()=>router.push("/account")} className="mb-3 w-9/10 hover:rounded-lg hover:bg-account-o-hover cursor-pointer">Account Settings</div>
                 </div>
                 <div className="w-full flex justify-center">
-                    <div className="w-9/10 rounded-lg text-white bg-red-600 hover:bg-red-700">Sign Out</div>
+                    <div onClick={routeClick} className="cursor-pointer w-9/10 rounded-lg text-white bg-red-600 hover:bg-red-700">Sign Out</div>
                 </div>
 
             </div>

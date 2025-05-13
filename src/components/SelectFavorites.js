@@ -43,7 +43,7 @@ export default function SelectFavorites(){
                 <div className={`${isOpen ? "opacity-100": "opacity-0"} transition-opacity ease-in-out duration-500 bg-land-sec-bg p-6 rounded-lg shadow-lg w-5/6 h-4/5 relative`}>
                     <h2 className="text-3xl font-bold text-content-text">{clicked ? "Loading..." : "Choose your service:"}</h2>
                     <div className="overflow-x-auto whitespace-nowrap h-9/10">
-                        {favorites && favorites.length > 0 ? favorites.map((service_object)=>(
+                        {favorites && favorites.length > 0 ? favorites.map((service_object)=> ((service_object.id !=  userServices[userServices.length-1]?.id) ? (
                         <div className="inline-block mr-3" key ={service_object.id}>
                             
                             <div className="h-100 md:h-125" onClick={() => getMoreInfo(service_object.id)} > 
@@ -58,9 +58,23 @@ export default function SelectFavorites(){
                             </div> */}
                         </div>
                             
-                        )):    
-                        <div className="text-center mt-4 h-full flex items-center justify-center"> 
-                            <div className="text-xl md:text-3xl mb-5 text-black text-content-text/70">No favorites yet</div>
+                        ):          
+                        (<div key={service_object.id} className="flex flex-col h-full justify-center items-center text-4xl font-extrabold text-content-text">
+                            <div className="w-2/3 text-wrap text-center">
+                                Sorry, you cannot have the same favorite back-to-back. Search another service please.
+                            </div>
+                            <img className="h-50 w-50" src="https://static.vecteezy.com/system/resources/previews/048/045/339/non_2x/not-allowed-forbidden-sign-isolated-on-transparent-background-free-png.png" />
+                        </div>))):    
+                        <div className="text-center mt-4 h-full flex flex-col items-center justify-center text-content-text"> 
+                            <div className="w-full flex justify-center">
+                                <img className="rounded-lg bg-white/10 outline outline-1 outline-black p-1 opacity-80" src = "https://static.vecteezy.com/system/resources/thumbnails/013/713/828/small_2x/the-simple-twinkling-star-free-png.png" alt = "Star" width={100} height={100} />
+                            </div>
+                            <div className="text-center font-bold mt-6 text-2xl">
+                                No Favorites Yet. 
+                            </div> 
+                            <div className="text-center mt-1">
+                                Favorite your favorite services to see them here!
+                            </div> 
                         </div>
                         }
         

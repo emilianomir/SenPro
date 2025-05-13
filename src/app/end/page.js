@@ -10,8 +10,9 @@ import { useQRCode } from 'next-qrcode';
 
 export default function End(){
 
-    const {userServices, numberPlaces, setUserEmail, setServices, setFavorites, favorites, userEmail, userAddress, setUserAddress, guestAddress, setGuestAddress} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
-
+    const {userServices, setUserEmail, setFavorites, favorites, userEmail, userAddress, setUserAddress, reset} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
+    if (userEmail && !userServices)
+        redirect("/home");
     const { Image } = useQRCode();
     //const {userServices, numberPlaces} = useAppContext(); //this should have the full list of services once the user reaches decided number of services
     const googleMapURL = "https://www.google.com/maps/dir/";
@@ -19,15 +20,25 @@ export default function End(){
     service.formattedAddress.substr(0, service.formattedAddress.indexOf('#'))
     : service.formattedAddress));
 
-    const fullURL = googleMapURL + (guestAddress? guestAddress[0] : (userAddress ? userAddress[0]: "")) + "/" + addressURLS.join('/');
+    const fullURL = googleMapURL + ((userAddress ? userAddress[0]: "")) + "/" + addressURLS.join('/');
     const [yes, setyes] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [goLogin, setLogin] = useState(false);
+    const [goLogin, setLogin] = useState(null);
     const router = useRouter();
 
-    console.log(userServices)
     
-    
+    useEffect(() => {
+        const handlePopState = () => {
+            console.log("Ran");
+            reset();
+        };
+
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+        window.removeEventListener("popstate", handlePopState);
+        };
+        }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -44,27 +55,12 @@ export default function End(){
                     const favoritesList = await getFavAPI(userName[0].email);
                     if(favoritesList) setFavorites(favoritesList);
                 }
-            }
-            else {
-                setLogin(true);
+                setLogin(1);
                 return;
             }
-            let sessionValues = null;
-            if (numberPlaces <= 0) sessionValues = await getInfoSession();
-            if(sessionValues == null || numberPlaces > 0)
-            {
-
-                if(numberPlaces > 0 && sessionValues != null) await deleteSession('Qsession');
-                let email = "HASHTHIS";
-                if(userName)
-                {
-                    email = userName[0].email;
-                }
-                await createStatelessQ(numberPlaces, userServices, [], [], email);
-            }
-            else
-            {
-                setServices(sessionValues.userServices);
+            else {
+                setLogin(2);
+                return;
             }
             } catch(error) {
                 console.error("Error fetching DB:", error);
@@ -80,7 +76,7 @@ export default function End(){
 
     useEffect(()=> {
         if (goLogin)
-            redirect("/login"); 
+            redirect(goLogin == 1 ? "/home":  "/login"); 
     }, [goLogin])
             
     
@@ -92,17 +88,20 @@ export default function End(){
     if (!userEmail)
         return (<></>)
     return(
-        <div className="bg-land-sec-bg h-screen">
+        <div className="bg-land-sec-bg h-full md:h-screen">
             <ServicePageHeading />
             <div className="px-3 text-center text-content-text text-3xl mt-3 font-bold">Here is your services list:</div>
             <div className="flex justify-center mt-3">
-                <Image
-                text={fullURL}
-                />
+                <div className="max-sm:w-40 max-sm:h-40">
+                    <Image
+                    text={fullURL}
+                    />
+                </div>
+
             </div>
             <div className="text-center text-xl px-3 mt-3 text-content-text">Scan the QR Code above on your phone for Google Maps Link. Or Click <a className="text-blue-400 hover:underline" href={fullURL} target="_blank" rel="noopener">Here </a></div>
             <div className="w-full flex justify-center">
-                <table className="w-3/4 mt-1 mb-3">
+                <table className="w-3/4 mt-1 mb-3 overflow-auto-y">
                     <tbody >
                         {userServices.map((theService, index)=>
                             <tr key={theService.id}>

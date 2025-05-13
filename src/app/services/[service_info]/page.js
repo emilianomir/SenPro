@@ -1,25 +1,22 @@
 "use client"
 import ServicePageHeading from "@/components/ServicePageHeading";
-import { useAppContext } from "@/context";import { redirect, useRouter } from "next/navigation";
+import { useAppContext } from "@/context";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { addService, addHistoryService } from '@/components/DBactions';
-import GenericSingleMap from "@/components/GenericSingleMap";
-import Script from "next/script";
 import Loading from "@/components/Loading";
 import Service_Image from "@/components/Service_Image";
-import { users } from "@/db/schema/users";
 import TravelMode from "@/components/TravelMode";
 
 
 
 
 export default function ServiceInfo(){
-    const {userServices, setServices, numberPlaces, userResponses, userEmail, userAddress, setGuestAddress, guestAddress} = useAppContext();
+    const {userServices, setServices, numberPlaces, userResponses, userEmail, userAddress, guestAddress} = useAppContext();
     const [wentBack, setBack] = useState(false); //used to check when the user leaves page in regards to our UI, not back arrow from browser 
     const [loading, setLoading] = useState(false);
     const [moreThan1, setMoreThan1] = useState(false);
-    const [isScriptLoaded, setIsScriptLoaded] = useState(false);
     const [onlyFuel, setOnlyFuel] = useState(false); //used for fuel toggle
     const [isOpen, setIsOpen] = useState(false);
     const current_service = userServices[userServices.length-1];
@@ -173,11 +170,6 @@ export default function ServiceInfo(){
 
     return(
         <div className="h-screen ">
-              {/* <Script
-                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places&loading=async`}
-                onLoad={() => setIsScriptLoaded(true)}
-                strategy="afterInteractive"
-            /> */}
             <ServicePageHeading />
             {current_service && 
             <div className="h-full md:grid md:grid-cols-7 relative bg-land-sec-bg/50 ">
@@ -204,10 +196,10 @@ export default function ServiceInfo(){
                                 </tr>
                             </thead>
                             <tbody className=" text-center bg-land-card text-lg md:text-xl">
-                                {current_service.fuelOptions.fuelPrices.map((item)=> (
-                                    <tr key = {item.type} className="border-separate border-ind-border border-1">
-                                        <td className="text-content-text/90 font-semibold">{item.type}</td>
-                                        <td className="text-content-text/80 ">{item.price.currencyCode == "USD" && "$"} {Number(item.price.units)  + (item.price.nanos? item.price.nanos/1000000000: 0)} </td>
+                                {current_service?.fuelOptions?.fuelPrices?.map((item)=> (
+                                    <tr key = {item.type} className="border-separate border-ind-border border-1 text-base  md:text-lg">
+                                        <td className="text-content-text/90 font-semibold py-2 px-2">{item.type}</td>
+                                        <td className="text-content-text/80  ">{item.price.currencyCode == "USD" && "$"} {Number(item.price.units)  + (item.price.nanos? item.price.nanos/1000000000: 0)} </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -218,17 +210,21 @@ export default function ServiceInfo(){
                         <div className={`${!isLargeScreen && "h-[25vh]" } relative group`}>
                             <Image className = "rounded-lg object-cover object-center" src= {!current_service.photo_image? "https://cdn-icons-png.flaticon.com/512/2748/2748558.png": current_service.photo_image} fill alt = "Service image" unoptimized = {true} />
 
-                            {(current_service && current_service.photos.length > 5) &&
+                            {(current_service && current_service.photos?.length > 5) &&
                                 <div onClick={goToGallery } className= {`h-full w-full md:opacity-0 md:group-hover:opacity-100 bg-gray-500/35 absolute top-0 z-10 transition-opacity duration-300 flex justify-center items-center text-gray-100 text-4xl font-bold`}>Gallery</div>}
                         </div>
                         <div className="mt-4 px-3">
                             <div className={`bg-land-card ${theme == "Light" && "border-2 border-outline shadow-md"} rounded-lg py-1 text-content-text`}>
-                                {current_service.regularOpeningHours?.weekdayDescriptions &&
+                                {current_service.regularOpeningHours?.weekdayDescriptions ?
                                 <div className="text-center mt-3 px-2">
                                     <div className="font-bold text-base md:text-2xl">Weekly Operations:</div>
-                                    {current_service.regularOpeningHours.weekdayDescriptions.map((desc, index)=>
+                                    {current_service.regularOpeningHours.weekdayDescriptions.map(desc=>
                                         <div key = {desc} className="text-sm md:text-md pb-1">{desc}</div>
                                     )}
+                                </div>
+                                :
+                                <div className="w-full h-full flex justify-center items-center text-2xl">
+                                    No Hours Available
                                 </div>
                                 }     
                             </div>
@@ -246,14 +242,14 @@ export default function ServiceInfo(){
                                 <div className="px-3 text-xl">Visit their website here:
                                     <span>
                                     <a href={current_service.websiteUri} target="_blank" rel="noopener">
-                                        <div className="p-2 px-4 border-2 border-gray-200 inline ml-3">Website</div>
+                                        <div className="p-2 px-4 inline bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg">Website</div>
                                     </a>
                                     </span> 
                                 </div>
                             </div>
                             }
                             <div className="flex h-full w-full md:justify-center md:items-center md:col-span-2">
-                                <div className="border-2 border-gray-200 text-content-text text-xl p-2 text-center" onClick={handleToggle}>
+                                <div className="p-2 px-4 inline bg-land-card hover:bg-ind-hover-btn text-content-text/80 border-ind-border border-1 p-2 rounded-lg cursor-pointer" onClick={handleToggle}>
                                     {onlyFuel ? "Info": "Current Gas Prices"}
                                 </div> 
                             </div>

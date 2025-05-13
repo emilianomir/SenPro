@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context";
-//import { testExistingUser, addQuestion, getUser } from "./DBactions";
-import { useSearchParams } from "next/navigation";
 import SelectFavorites from "@/components/SelectFavorites";
 import Favorites_Section from "./Favorites_Section";
 
@@ -22,7 +20,7 @@ class Responses {
 function Question({theQuestion, current, func, changeLoading}){
     console.log("Question ran")
     const [start, SetStart] = useState(false);
-    const {setResponses, userEmail} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
+    const {setResponses} = useAppContext();  //used to pass the respones of the user to other pages (mainly services menu page)
     const [destSelect, changeDes] = useState("Begin"); //destination for map purposes
     const [prevKeys] = useState([]); //will store the map key and the user selected values as the user goes through questions
     const [prevValues] = useState([]); //an array of arrays that will store in following order: types, textQuery values
@@ -299,7 +297,7 @@ function Question({theQuestion, current, func, changeLoading}){
       }, [finished, readyGeneralSearch]);
 
     return (
-        <div className={`grid ${userEmail && !start ? "grid-rows-2": "grid-rows-3"} lg:grid-cols-2 h-full`}>
+        <div className={`grid ${!start ? "grid-rows-2": "grid-rows-3"} lg:grid-cols-2 h-full`}>
             <div className="w-full md:h-2/3 lg:row-span-3">
                 <div className={`flex flex-col mt-4 md:mt-10 lg:mt-0 ${generalSearchP && start ? "": "justify-center"} md:justify-center items-center h-full p-3`}>
                     {start ? 
@@ -329,7 +327,7 @@ function Question({theQuestion, current, func, changeLoading}){
                                 <button className="outline-content-text text-content-text outline-1 md:text-xl lg:text-2xl p-1 w-1/5" type= "submit">Enter</button>
                             </form>
                         </div>
-                        {(!generalSearchP && userEmail != null && userEmail[0] != "guest") &&
+                        {!generalSearchP &&
                         <>
                             <div className="text-xl md:text-2xl lg:text-3xl text-content-text mt-5 md:mt-20 text-center">Or select from one of your favorites to continue: </div>
                             <SelectFavorites/>
@@ -341,7 +339,7 @@ function Question({theQuestion, current, func, changeLoading}){
                 </div>
                 
             </div>
-            <div className={`${userEmail && !start ? "": "row-span-2"} lg:row-span-3 lg:w-19/20 p-5 md:p-10 bg-question-info/85 h-9/10 rounded-lg`}>
+            <div className={`${!start ? "": "row-span-2"} lg:row-span-3 lg:w-19/20 p-5 md:p-10 bg-question-info/85 h-9/10 rounded-lg`}>
                 <div className="flex flex-col md:justify-center items-center h-full text-center">
                 {start ?
                     <div className="w-full grid grid-cols-2 gap-5 h-full">

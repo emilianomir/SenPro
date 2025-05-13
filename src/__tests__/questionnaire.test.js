@@ -890,7 +890,6 @@ describe("API Object", ()=> {
     it("API object is valid after random choices and stopping randomly", () => {
         let theKey = "Begin";
         let choices_key = "Begin"
-        //const choices = ["Entertainment", "Amusements", "Amusement Center", "4.0+"];
         let objArray  = questionsList.get(choices_key);
         let choices_index = Math.floor(Math.random() * (objArray.answer.length-1)) + 1;
         const choices = [objArray.answer[choices_index][0]];

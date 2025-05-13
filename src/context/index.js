@@ -14,6 +14,27 @@ export function AppWrapper ({children}){
     const [favorites, setFavorites] = useState(null);
     const [historyData, setHistoryData] = useState(null);
 
+    const reset = ()=>{
+      console.log("RESET ran")
+      setNumberPlaces(0);
+      setServices([]);
+      setAPIServices(null);
+    }
+
+    const sessionReturn = (sessionValues)=> {
+      setNumberPlaces(sessionValues.numberPlaces);
+      setServices(sessionValues.userServices);
+    }
+
+    const fullSessionReturn = (sessionValues)=> {
+      setNumberPlaces(sessionValues.numberPlaces);
+      setServices(sessionValues.userServices);
+      setResponses(sessionValues.userResponses);
+      // for api
+      setAPIServices(sessionValues.apiServices);
+    }
+
+
     const contextValues = { //for better practice
         userServices,
         setServices,
@@ -32,7 +53,10 @@ export function AppWrapper ({children}){
         favorites,
         setFavorites,
         historyData,
-        setHistoryData
+        setHistoryData,
+        reset,
+        sessionReturn,
+        fullSessionReturn
     }
 
   return (

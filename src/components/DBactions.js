@@ -170,7 +170,7 @@ export async function getAPI(id) {
     const headers = {
       "Content-Type": "application/json",
       "X-Goog-Api-Key": api_key,
-      "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours"
+      "X-Goog-FieldMask": "displayName,formattedAddress,rating,photos,priceRange,userRatingCount,websiteUri,regularOpeningHours,location"
     };
     const response = await fetch(`https://places.googleapis.com/v1/places/${id}`,{
         method: "GET",
@@ -441,6 +441,19 @@ async function checkPost(userEmail, info, services)
   const data = await db.select().from(postedHistory).where(and(eq(userEmail, postedHistory.userEmail), (info, postedHistory.description), (services, postedHistory.sAddress)))
   return data.length == 0
 }
+
+
+export async function postSelect(userEmail){
+  const info = await db.select().from(postedHistory).where(eq(userEmail, postedHistory.userEmail));
+  
+  const data = info.map(service =>({
+   ...service, 
+   sAddress: JSON.parse(service.sAddress)
+  }));
+
+  console.log(data);
+  return data;
+}
 //add
 export async function addPost(userEmail, info, services)
 {
@@ -450,7 +463,9 @@ export async function addPost(userEmail, info, services)
     userEmail,
     info
   });
-  if(await checkPost(userEmail, info, services)) {
+  const getInfo = await checkPost(userEmail, info, services);
+  console.log(getInfo)
+  if(getInfo) {
   await db.insert(postedHistory).values({
     userEmail: userEmail,
     description: info,

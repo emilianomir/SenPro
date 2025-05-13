@@ -2,29 +2,29 @@
 import Account_Overlay from "./Account_Overlay"
 import { useState } from "react"
 import { useAppContext } from "@/context"
-import Link from "next/link";
+import { redirect, useRouter } from "next/navigation"
 
 export default function ServicePageHeading({heading}){
     const [isVisible, setIsVisible] = useState(false);
-    const {userEmail, setServices} = useAppContext();
+    const {userEmail} = useAppContext();
+    const router = useRouter();
     const toggleOverlay = () => {
       setIsVisible(!isVisible);
     };
 
-    const resetUserServices = () => {
-        setServices([]);
-    }
 
     return (
         <div className="bg-page-heading">
             {userEmail != null ? 
             <>
                 <div className = "pb-2 grid grid-cols-8 md:grid-cols-3">
-                    <div className = "col-span-2 md:col-span-1 flex items-center justify-center md:justify-start md:pl-5 md:pt-2 w-full" onClick={resetUserServices} >
+                    <div className = "col-span-2 md:col-span-1 flex items-center justify-center md:justify-start md:pl-5 md:pt-2 w-full" >
                         <div className="w-1/2 md:w-2/5 lg:w-3/20">
-                            <Link href={userEmail[0] == 'guest'? "/" :"/home"}>
+                            <div className="cursor-pointer" onClick={()=> {
+                                redirect("/home");
+                            }}>
                             <img className="md:ml-10 w-auto" src ="/imgs/home-head.png" alt = "home icon" />
-                            </Link>
+                            </div>
                         </div>
                     </div> 
 
@@ -35,7 +35,7 @@ export default function ServicePageHeading({heading}){
                 
                     {userEmail[0] != 'guest' ?
                     <div className="col-span-2 md:col-span-1 pt-2 flex items-center justify-center md:justify-end">
-                        <img className = "md:relative md:mr-20 w-1/2 md:w-2/5 lg:w-3/20" onClick={toggleOverlay}  src = "/imgs/avatar-head.png"  alt = "profileIcon" /> 
+                        <img className = "md:relative md:mr-20 w-1/2 md:w-2/5 lg:w-3/20 cursor-pointer" onClick={toggleOverlay}  src = "/imgs/avatar-head.png"  alt = "profileIcon" /> 
                         {isVisible && <Account_Overlay />}
                     </div>
                     :
